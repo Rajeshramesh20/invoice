@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+
+class ApiViewController extends Controller
+{
+    public function showRegisterForm()
+    {
+
+        
+        return view('auth.register');
+    }
+
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+
+
+
+    public function showForgotPasswordForm()
+    {
+        return view('auth.Forgotpassword_api');
+    }
+
+    public function showResetPasswordForm($token)
+    {
+        return view('auth.ForgotPasswordLinkForm_api', ['token' => $token]);
+    }
+    public function AddRole()
+    {
+        return view('auth.RoleForm');
+    }
+    public function AddMenu()
+    {
+        return view('auth.MenuForm');
+    }
+    public function AddMenuPermission()
+    {
+        return view('auth.PermissionForm');
+    }
+    public function Addinvoice()
+    {
+        return view('api_views.invoice_form');
+    }
+    public function invoiceList()
+    {
+ 
+            return view('api_views.invoice_list');
+   
+    }
+
+    public function showInvoiceData()
+    {
+        return view('api_views.ShowInvoiceData');
+    }
+    public function customerForm(){
+        return view('api_views.customer_form');
+    }
+    public function companyForm()
+    {
+        return view('api_views.company_form');
+    }
+    public function CustomerEdit ()
+    {
+        return view('api_views.update_customer');
+    }
+    public function customerList()
+    {
+        return view('api_views.customer_list');
+    }
+    public function editinvoice()
+    {
+        return view('api_views.update_invoicce');
+    }
+
+
+}

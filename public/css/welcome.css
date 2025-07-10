@@ -1,0 +1,58 @@
+ * {
+     margin: 0;
+     padding: 0;
+     box-sizing: border-box;
+ }
+
+ body,
+ html {
+     height: 100%;
+     font-family: 'Poppins', sans-serif;
+ }
+
+
+ .wrapper {
+     background-image: url('../images/banner.jpg' );
+     background-size: cover;
+     background-position: center;
+     height: 100vh;
+     position: relative;
+ }
+
+
+ .container {
+     background-color: rgba(0, 0, 0, 0.5);
+     height: 100%;
+     width: 100%;
+     color: white;
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+     align-items: center;
+ }
+
+
+ .school-name {
+     font-size: 60px;
+     font-weight: 700;
+     margin-bottom: 30px;
+     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+ }
+
+
+ .login-btn {
+     padding: 12px 30px;
+     font-size: 18px;
+     font-weight: 600;
+     color: white;
+     background-color: #2575fc;
+     border: none;
+     border-radius: 30px;
+     text-decoration: none;
+     margin-bottom: 20px;
+
+ }
+
+ .login-btn:hover {
+     background-color: #6a11cb;
+ }
