@@ -5,7 +5,7 @@ use App\Http\Controllers\InvoiceControllerV1;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MenusController;
 use App\Http\Controllers\RoleMenuPermissionController;
-
+use App\Http\Controllers\EmployeesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,11 +86,14 @@ Route::middleware(['auth:api'])->group(
 
         //logout
         Route::get('logout', [InvoiceControllerV1::class, 'logout'])->name('logout');
+
+
+
     }
 );
 
 
-Route::middleware(['auth:api'])->group(function () {
+Route::middleware(['auth:api'])->group(function() {
 
     //export in invoice data
     Route::get('invoice/export', [InvoiceControllerV1::class, 'exportInvoiceData']);
@@ -101,8 +104,14 @@ Route::middleware(['auth:api'])->group(function () {
     //pdf download
     Route::get('invoice/download/{id}', [InvoiceControllerV1::class, 'downloadInvoice']);
 
-    Route::get('/invoicechart',[InvoiceControllerV1::class, 'invoiceChart']);
-
-    
+    Route::get('/invoicechart',[InvoiceControllerV1::class, 'invoiceChart']);    
 
 });
+
+    //Employee
+    Route::middleware(['auth:api'])->group(function() {
+
+        //create Employee
+        Route::post('employee',[EmployeesController::class, 'storeEmployee']);
+        Route::GET('employeelist',[EmployeesController::class, 'getEmployeeData']);
+     });

@@ -216,7 +216,7 @@ class InvoiceServiceV1
 
         $pdf = Pdf::loadView('pdf.invoicePdf', $data);
 
-        // Log::error( $invoice->invoice_no);
+         Log::error($invoice->invoice_no);
         return $pdf->download('invoice-' . $invoice->invoice_no . '.pdf');
     }
 

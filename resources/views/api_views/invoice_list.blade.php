@@ -34,7 +34,7 @@
 		<div>
 			<!-- <a href="" class="create-note">Credit Note</a>
 				<a href="" class="group-invoice">Group Invoice</a> -->
-				{{-- <a href="/api/company/form" class="create">Add Company</a> --}}
+				<a href="/api/company/form" class="create">Add Company</a> 
 				<a href="/api/customer/list" class="create">view customer</a>
 			<a href="/api/customer/form" class="create">Add Customer</a>
 			<a href="/api/invoice" class="create"><i class="bi bi-plus"></i>Create</a>

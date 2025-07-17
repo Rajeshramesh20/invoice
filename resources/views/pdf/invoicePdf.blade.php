@@ -189,7 +189,7 @@
                     <td colspan="4"></td>
                     <td></td>
                     <td class="align"><strong>	Grand Total</strong></td>
-                    <td class="algn-right"><strong>{{ $invoice->total_amount }} </strong></td>
+                    <td class="algn-right"><strong>{{ number_format($invoice->total_amount, 2) }} </strong></td>
                 </tr>
             </tbody>
         </table>
