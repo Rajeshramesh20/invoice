@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
     <link rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
+      	<!-- Include Flatpickr -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <style>
         .bg-invoice-header {
@@ -63,6 +68,9 @@
         .container {
             min-height: 850px;
         }
+
+        
+  
     </style>
 </head>
 
@@ -87,15 +95,15 @@
                         <div id="customer_id_error" class="text-danger"></div>
                     </div>
                     <div class="col-md-4">
-                        <label for="invoiceDate" class="form-label pb-3 m-0">Invoice Date <span
+                        <label for="invoice_date" class="form-label pb-3 m-0">Invoice Date <span
                                 class="required">*</span></label>
-                        <input type="date" class="form-control" id="invoiceDate" name="invoice_date">
+                        <input type="date" class="form-control" id="invoice_date" name="invoice_date" placeholder="DD-MM-YYYY">
                         <div id="invoice_date_error" class="text-danger"></div>
                     </div>
                     <div class="col-md-4">
                         <label for="invoice_due_date" class="form-label pb-3 m-0">Invoice Due Date <span
                                 class="required">*</span></label>
-                        <input type="date" class="form-control" id="invoice_due_date" name="invoice_due_date">
+                        <input type="date" class="form-control" id="invoice_due_date" name="invoice_due_date" placeholder="DD-MM-YYYY">
                         <div id="invoice_due_date_error" class="text-danger"></div>
                     </div>
 
@@ -112,8 +120,8 @@
 
 
             <!-- Invoice Items -->
-            <div class="mt-4">
-                <div class="itemheader mb-3">Sales Invoice Items</div>
+            <div >
+                <div class="itemheader ">Sales Invoice Items</div>
                 <table class="table table-bordered align-middle table-responsive">
                     <thead class="custom-thead text-white">
                         <tr>
@@ -170,6 +178,22 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+     document.addEventListener('DOMContentLoaded', function () {
+    flatpickr("#invoice_date", {
+        altInput: true,
+        altFormat: "d-m-Y",      
+        dateFormat: "Y-m-d"      
+    });
+
+    flatpickr("#invoice_due_date", {
+        altInput: true,
+        altFormat: "d-m-Y",
+        dateFormat: "Y-m-d"
+    });
+});
+
+
+
         //get the token to localstorage
          const token = localStorage.getItem("token");
        document.addEventListener("DOMContentLoaded", function () {
@@ -291,7 +315,7 @@ document.getElementById('invoiceForm').addEventListener('submit', function(event
 
         const invoice = {
                     customer_id: document.getElementById("customer").value,
-                    invoice_date: document.getElementById("invoiceDate").value,
+                    invoice_date: document.getElementById("invoice_date").value,
                     invoice_due_date: document.getElementById("invoice_due_date").value,
                     additional_text: document.getElementById("additional_text").value,
                     items: []

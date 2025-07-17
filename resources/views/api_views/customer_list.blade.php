@@ -4,15 +4,15 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Invoice List</title>
-	<link rel="stylesheet" type="text/css" href="/css/invoice_table.css">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{{ asset('css/invoice-table.css') }}">
 </head>
 <body onload="getCustomerList(1)">
 
 		<!-- Header -->
 		<header>
-			<img src="{{ asset('images/twigik.png') }}" class="twigikImage" alt="Twigik Logo">
+			<img src="{{ asset('/images/twigik.png') }}" class="twigikImage" alt="Twigik Logo">
 			<div class="buttondiv">
 				<!-- <a href="" class="create-note">Credit Note</a>
 					<a href="" class="group-invoice">Group Invoice</a> -->
@@ -28,8 +28,6 @@
 		<div class="invoice-search">
 				<p>Customer Details  List</p>	
 				<i class="fa-solid fa-magnifying-glass"></i>
-				
-
 		</div>
 
 		<!-- Search Field in Customer Name -->
@@ -42,13 +40,11 @@
 			</div>	
 
 			<div class="reset">
-			<a href="/api/customer/list" class="clear">Reset</a>
+			<a href="./api/customer/list" class="clear">Reset</a>
 			<input type="submit" name="search" value="Search" class="search">
 		</div>
 		</form>	
 		
-		
-
 		<table>
 			<thead>
 				<tr>	
@@ -68,12 +64,19 @@
 		<div id="paginateButton" class="pagination"></div>
 
 		<script>
-				let token = localStorage.getItem('token');
+
+	  const token = localStorage.getItem('token');
+		if(!token){
+			window.location.replace('/api/login')
+		}else{
+			window.addEventListener('DOMContentLoaded',()=>{
+				document.body.style.display='block';
+			});
+		}
+				// let token = localStorage.getItem('token');
 				let listBody = document.getElementById('customerList');
 				let current_page = 1;
 		  		let isSearching = false;
-
-
 		  		//Invoice List Show
 			  	function getCustomerList(page){
 			  		let customerRequest = new XMLHttpRequest();
@@ -116,9 +119,9 @@
 							Pincode:${list.address?.pincode || ''}
 							</td>
 		<td>
-				<a href="/api/editcustomer/${list.customer_id}" id="update"><i class='fa-solid fa-pencil'></i></a>
+				 <abbr  title="Edite"> <a href="/api/editcustomer/${list.customer_id}" id="update"><i class='fa-solid fa-pencil'></i></a></abbr>
 				<label class="switch">
-					<input type="checkbox" class="myToggle" ${list.status == '1' ? 'checked' : ''}>
+				<input type="checkbox" class="myToggle" ${list.status == '1' ? 'checked' : ''}>
 					<span class="slider round"></span>
 				</label>
 			</td>
@@ -237,7 +240,7 @@ document.querySelectorAll(".myToggle").forEach(toggle => {
 		  		 }	
 
 
-		  		 		 //Customer Deatils
+		 //Customer Deatils
 		 document.addEventListener('DOMContentLoaded', function(){ 	
 		 	let customerData = document.getElementById('customer_name');		 	
 			const http = new XMLHttpRequest();
@@ -273,16 +276,6 @@ document.querySelectorAll(".myToggle").forEach(toggle => {
 		  document.getElementById('closebtn').addEventListener('click',function(){
         window.location.href = "/api/invoice/list";
     });
-
-/////////////////////////////////////////////////////////////
-
-// document.querySelectorAll(".myToggle").forEach(toggle => {
-//     toggle.addEventListener("change", function () {
-//       const statusText = this.closest('td').querySelector('.statusText');
-//       statusText.textContent = this.checked ? "ON" : "OFF";
-//     });
-//   });
-
 		</script>
 
 </body>

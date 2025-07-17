@@ -32,26 +32,23 @@
     </div>
 </div>
 
+
+
 <script>
     document.getElementById("loginForm").addEventListener("submit", function(event) {
         event.preventDefault();
-
         const form = this;
         //it's automatically get the all input data
         const formData = new FormData(form);
-
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "http://127.0.0.1:8000/api/authenticate", true);
         xhr.setRequestHeader('Accept', 'application/json');
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
-
                 const response = JSON.parse(xhr.responseText);
                 if (xhr.status === 200 && response.token) {
-
                     //set the token to localstorage
                     localStorage.setItem("token", response.token);
-                    
                     alert("Login successful");
                     //redirect to student list page
                     window.location.href = "/api/invoice/list";
@@ -74,7 +71,6 @@
 
             }
         };
-
         xhr.send(formData);
     });
 

@@ -4,36 +4,33 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Invoice List</title>
-	<link rel="stylesheet" type="text/css" href="/css/invoice_table.css">
+	<title>Invoice List</title> 
+	
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
 		/>
 		<!-- Include Flatpickr -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 	<link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
-	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-	<style>
-		body {
-			display: none;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="{{asset('css/invoice-table.css')}}">
+
 	<script>
 		const token = localStorage.getItem('token');
 		if(!token){
-			window.location.replace('/api/login')
+			window.location.replace('./api/login')
 		}else{
 			window.addEventListener('DOMContentLoaded',()=>{
 				document.body.style.display='block';
 			});
 		}
+
 	</script>
 </head>
 
 {{-- <body onload="getInvoiceList(1)"> --}}
 <body>
 	<header>
-		<img src="{{ asset('images/twigik.png') }}" class="twigikImage" alt="Twigik Logo">
+		<img src="{{ asset('/images/twigik.png') }}" class="twigikImage" alt="Twigik Logo">
 		<div>
 			<!-- <a href="" class="create-note">Credit Note</a>
 				<a href="" class="group-invoice">Group Invoice</a> -->
@@ -49,19 +46,18 @@
 		<div class="invoice-search">
 			<p>Sales Invoice List</p>
 			<i class="fa-solid fa-magnifying-glass"></i>
-		
 		</div>
 
 		<form id="formSubmit">
 			<div class="form-row">
 				<div class="form-group">
 					<label for="startDate">Start Date</label>
-					<input type="text" id="startDate" name="startDate" placeholder="DD-MM-YYYY" />
+					<input type="text" id="startDate" name="startDate" placeholder="DD-MM-YYYY"/>
 				</div>
 
 				<div class="form-group">
 					<label for="endDate">End Date</label>
-					<input type="text" name="endDate" id="endDate" placeholder="DD-MM-YYYY"  >
+					<input type="text" name="endDate" id="endDate" placeholder="DD-MM-YYYY">
 				</div>
 
 				<div class="form-group">
@@ -107,14 +103,12 @@
 
 	<table>
 		<thead>
-			
 			<tr>
-
 				<th>Invoice Number</th>
 				<th>Invoice Date</th>
 				<th>Due Date</th>
-				<th>Total Value</th>
-				<th>Balance</th>
+				<th> ₹ Total Value</th>
+				<th> ₹ Balance</th>
 				<th>Status</th>
 				<th>Email Status</th>
 				<th>Action</th>
@@ -122,10 +116,43 @@
 		</thead>
 		<tbody id="involiceList"></tbody>
 	</table>
-
 	<!-- Pagination -->
 	<div id="paginateButton" class="pagination"></div>
+
+        {{-- modal --}}
+    </div>
+	<!-- Custom alert Box -->
+	<div id="customAlert" class="custom-alert">
+	  <p id="alertMessage"></p>
+	  <button onclick="closeAlert()" class="alertBtn">OK</button>
+</div>
+
+	<!-- change status use Popup -->
+	<!-- Modal Overlay -->
+<div id="modalOverlay">
+  <div id="changeStatus">
+	<span id="closePopup">&times;</span>
+	<form id="status">
+		<label>Select Status</label>
+	  <label><input type="radio" name="invoice_status" value="1"> Draft</label>
+	  <label><input type="radio" name="invoice_status" value="2"> Finalised</label>
+	  <label><input type="radio" name="invoice_status" value="3"> Partially Paid</label>
+	  <label><input type="radio" name="invoice_status" value="4"> Paid</label>
+	  <input type="submit" name="submit" id="statusSubmit" value="Update">
+	</form>
+  </div>
+</div>
+
+	<!-- Custom alert Box for Partially Paid -->
+	<div id="paidAlert" class="custom-alert paid">
+			<span id="closePopup" onclick="closePaidAlert()">&times;</span>
+			<label for="partiallyPaid">Enter Amount</label>
+		  <input type="number" name="partiallyPaid" id="partiallyPaid" placeholder="Enter Amount">
+		  <button onclick="closeAlert()" class="alertBtn">Enter</button>
+	</div>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="/js/invoiceListV1.js"></script>
+
 </body>
 
 </html>

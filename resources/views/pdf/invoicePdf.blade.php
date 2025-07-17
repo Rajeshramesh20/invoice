@@ -15,7 +15,7 @@
             font-size: 13px;
             color: #000;
         }
-    
+
         .container {
             width: 100%;
             margin: auto;
@@ -75,7 +75,7 @@
         }
     
         .footer {
-            margin-top: 40px;
+        /* margin-top: 40px; */
             font-size: 12px;
         }
     
@@ -105,6 +105,14 @@
         .align {
             text-align: center;
         }
+        p{
+            margin:10px;  
+
+        }
+        .algn-right{
+            text-align: right;
+        }
+     
       
     </style>
 </head>
@@ -130,10 +138,10 @@
             <div class="right">
                 <p><strong>Invoice #:</strong> {{ $invoice->invoice_no }}</p>
                 <p><strong>Invoice date:</strong> {{ $formattedInvoiceDate }}</p>
-                <p><strong>Bill to:</strong> {{$invoice->customer->customer_name }}</p>
+                <p><strong>Bill to:</strong> {{ucfirst($invoice->customer->customer_name)}}</p>
                 <p><strong>Address:</strong> {{ $invoice->customer->address->line1 }}
-                    {{ $invoice->customer->address->line2 }}, {{ $invoice->customer->address->line3 }},{{
-                    $invoice->customer->address->line4 }} -
+                    {{ $invoice->customer->address->line2 }}, {{ $invoice->customer->address->line3 }},
+                    {{$invoice->customer->address->line4 }} -
                     {{ $invoice->customer->address->pincode }}</p>
                 <p><strong>Phone:</strong> +91-{{ $invoice->customer->contact_number}}</p>
             </div>
@@ -145,23 +153,23 @@
                 <tr>
                     <th>Description</th>
                     <th>Qty</th>
-                    <th>Unit price</th>
-                    <th>Net Amount</th>
+                    <th>₹ Unit price</th>
+                    <th>₹  Net Amount</th>
                     <th>GST(%)</th>
-                    <th>GST Amount</th>
-                    <th>Total</th>
+                    <th>₹ GST Amount</th>
+                    <th>₹ Total</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($invoice->items as $item)
                 <tr>
-                    <td class="align">  {{ $item->item_name }}</td>
-                    <td class="align">  {{ $item->quantity }}</td>
-                    <td class="align">₹ {{number_format($item->unit_price, 2) }}</td>
-                    <td class="align">₹ {{number_format($item->net_amount)}}</td>
-                    <td class="align">  {{number_format($item->gst_percent) }}%</td>
-                    <td class="align">₹ {{number_format($item->gst_amount, 2) }}</td>
-                    <td class="align">₹ {{number_format($item->total, 2) }}</td>
+                    <td class="align">{{ $item->item_name }}</td>
+                    <td class="align">{{ $item->quantity }}</td>
+                    <td class="align">{{number_format($item->unit_price, 2) }}</td>
+                    <td class="align">{{number_format($item->net_amount)}}</td>
+                    <td class="align">{{number_format($item->gst_percent) }}%</td>
+                    <td class="align">{{number_format($item->gst_amount, 2) }}</td>
+                    <td class="algn-right">{{number_format($item->total, 2) }}</td>
                 </tr>
                 @endforeach
                 <tr class="no-border">
@@ -169,19 +177,19 @@
                     <td></td>
                     <td class="align"><strong>Net Total</strong></td>
 
-                    <td class="align">₹ {{ number_format($netTotal, 2) }}</td>
+                    <td class="algn-right">{{ number_format($netTotal, 2) }}</td>
                 </tr>
                 <tr class="no-border">
                     <td colspan="4"></td>
                     <td></td>
                     <td class="align"><strong>GST Total</strong></td>
-                    <td class="align">₹ {{ number_format($gstTotal, 2) }}</td>
+                    <td class="algn-right">{{ number_format($gstTotal, 2) }}</td>
                 </tr>
                 <tr class="border-bottom-total">
                     <td colspan="4"></td>
                     <td></td>
                     <td class="align"><strong>	Grand Total</strong></td>
-                    <td class="align"><strong>₹ {{ $invoice->total_amount }} </strong></td>
+                    <td class="algn-right"><strong>{{ $invoice->total_amount }} </strong></td>
                 </tr>
             </tbody>
         </table>
@@ -189,7 +197,7 @@
         <!-- Footer -->
         <div class="footer align">
 
-            <p>(Amount in words:{{$numberInWords}})</p>
+            <p>(Amount in words:{{$numberInWords}} rupees only.)</p>
             <p>Please make all payments payable to {{$company->company_name}}.</p>
             <p>{{ $company->email }}|{{ $company->website_url }}</p>
         </div>

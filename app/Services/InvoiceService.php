@@ -183,6 +183,8 @@ class InvoiceService
         $pdf = Pdf::loadView('pdf.invoicePdf', $data);
 
         $file_name = 'invoice-' . $invoice->invoice_no . '.pdf';
+        Log::error('file_path' . $file_name);
+        
         $file_path = 'invoice/' . $file_name;
         Log::error('file_path' . $file_path);
 

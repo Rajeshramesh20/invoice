@@ -24,6 +24,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class InvoiceServiceV1
 {
 
+
+// create new invoice
     public function store($data, $userId)
     {
 
@@ -72,6 +74,8 @@ class InvoiceServiceV1
 
         return $invoice;
     }
+
+
 
     //update status
     public function updateStatusTOInvoiceTable($data, $invoice_id)
@@ -141,8 +145,9 @@ class InvoiceServiceV1
         $customer->save();
         return $customer;
     }
-    //update customer status
 
+
+    //update customer status
     public function updateCustomerStatus($id, $status)
     {
         $customer = Customers::findOrfail($id);
@@ -152,12 +157,15 @@ class InvoiceServiceV1
         return $customer;
     }
 
+
+
     //get customer data
     public function getAllCostomer()
     {
         $coustomer = Customers::where('status','1')->get();
         return $coustomer;
     }
+
 
     //get all company
     public function getAllCompany()
@@ -208,8 +216,10 @@ class InvoiceServiceV1
 
         $pdf = Pdf::loadView('pdf.invoicePdf', $data);
 
+        // Log::error( $invoice->invoice_no);
         return $pdf->download('invoice-' . $invoice->invoice_no . '.pdf');
     }
+
 
 
     //store company
@@ -266,6 +276,7 @@ class InvoiceServiceV1
         return $company;
     }
 
+    
 
     //show invoice table data
     public function invoiceData()
@@ -274,7 +285,7 @@ class InvoiceServiceV1
         return $invoiceData;
     }
 
-
+    
     //Invoice Search
     public function searchField($request, $paginate = true)
     {
@@ -331,12 +342,14 @@ class InvoiceServiceV1
         }
     }
 
+
     //Invoice status Table
     public function invoiceStatustable()
     {
         $status = InvoiceStatus::all();
         return $status;
     }
+
 
     //delete invoiceTable Data
     public function deleteInvoiceData($invoice_id)
@@ -346,7 +359,7 @@ class InvoiceServiceV1
         // $invoiceData->delete();
         return $invoiceData;
     }
-
+    
     //invoice list 
     public function showInvoiceData($id)
     {
@@ -357,8 +370,8 @@ class InvoiceServiceV1
         }
     }
 
-    //mail Send to the customer
 
+    //mail Send to the customer
     public function sendInvoiceMail($invoice)
     {
         $invoiceMail = $invoice->customer->customer_email;
@@ -387,7 +400,7 @@ class InvoiceServiceV1
             'bankDetails' => $company->bankDetails->first(),
             'gstTotal' => $gstTotal,
             'netTotal' => $netTotal,
-            'numberInWords' => $numberInWords,
+            'numberInWords' => ucfirst($numberInWords),
             'logo_path' => $logopath,
             'formattedInvoiceDate' => $formattedInvoiceDate,
         ];
@@ -396,10 +409,10 @@ class InvoiceServiceV1
 
 
         // Send Email with PDF attached from memory
-        Mail::send('mail.invoice_customer_mail', ['invoiceCustomer' => $invoice], function ($message) use ($invoiceMail, $pdf, $invoice) {
+        Mail::send('mail.invoice_customer_mail', ['invoiceCustomer' => $invoice], function ($message) use ($invoiceMail, $pdf, $invoice, $company) {
             $message->to($invoiceMail);
-            $message->subject('Your Invoice from ' . config('app.name'));
-
+            // $message->subject('Your Invoice from ' . config('app.name'));
+            $message->subject('Your Invoice from ' . $company->company_name);
             $message->attachData($pdf->output(), 'Invoice-' . $invoice->invoice_no . '.pdf', [
                 'mime' => 'application/pdf',
             ]);
@@ -418,6 +431,7 @@ class InvoiceServiceV1
         return true;
     }
 
+
     //Customer list For Show Details
     public function customerData()
     {
@@ -428,6 +442,7 @@ class InvoiceServiceV1
             Log::error('Error in Get Customer data' . $e->getMessage());
         }
     }
+
 
     //search for customer
     public function customerSearch($request, $paginate = true)
@@ -452,6 +467,7 @@ class InvoiceServiceV1
         }
     }
 
+
     //Edit customerData  
     public function getCustomerdata($id)
     {
@@ -462,6 +478,7 @@ class InvoiceServiceV1
             Log::error('Error in edit Customer data' . $e->getMessage());
         }
     }
+
 
     //Update customerData  
     public function updateCustomerData($request, string $id)
@@ -489,7 +506,6 @@ class InvoiceServiceV1
         }
     }
 
-
     //edit invoice data
     public function getInvoiceData($id)
     {
@@ -501,6 +517,7 @@ class InvoiceServiceV1
         }
     }
 
+    
     //update invoice data
     public function updateInvoiceData($request, string $id )
     {
@@ -559,7 +576,36 @@ class InvoiceServiceV1
             Log::error('Update invoice Data Error:' . $e->getMessage());
         }
     }
+
+    //chart 
+    public function getInvoiceChart()
+    {
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+
+        $thisMonthInvoices = Invoice::whereMonth('created_at', $currentMonth)
+            ->whereYear('created_at', $currentYear)
+            ->get();
+
+        $allInvoices = Invoice::all();
+
+        return [
+            'thisMonth' => [
+                'count' => $thisMonthInvoices->count(),
+                'total' => $thisMonthInvoices->sum('total_amount'),
+                'paid' => $thisMonthInvoices->sum('paid_amount'),
+            ],
+            'overall' => [
+                'count' => $allInvoices->count(),
+                'total' => $allInvoices->sum('total_amount'),
+                'paid' => $allInvoices->sum('paid_amount'),
+            ],
+            'recent' => $allInvoices->sortByDesc('created_at')->take(5)->values(),
+        ];
+    }
 }
+
+
 
    /* public function sendInvoiceMail($invoice)
     { 

@@ -77,5 +77,8 @@ class ApiViewController extends Controller
         return view('api_views.update_invoicce');
     }
 
-
+    public function invoiceChart()
+    {
+        return view('api_views.invoiceChart');
+    }
 }

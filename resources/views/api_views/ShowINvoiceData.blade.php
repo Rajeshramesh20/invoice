@@ -75,7 +75,7 @@
 
         <!-- Form Section -->
         <form id="invoiceForm">
-            <div class="container form-warpper py-4 mb-4 rounded">
+            <div class="container form-warpper py-4 rounded">
                 <div class="row pb-4">
                     <div class="col-md-4">
                         <label for="customer_id" class="form-label pb-3 m-0">Customer </label>
@@ -107,12 +107,10 @@
                 </div>
             </div>
 
-
-
             <!-- Invoice Items -->
             <div>
                 <div class="itemheader ">Sales Invoice Items</div>
-                <div class="table-responsive pt-4">
+                <div class="table-responsive">
                     <table class="table table-bordered align-middle">
                         <thead class="custom-thead text-white">
                             <tr>
@@ -162,7 +160,8 @@
                 <button type="submit" class="btn btn-primary">Submit</button>
             </div> --}}
         </form>
-    </div>
+
+
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -191,14 +190,26 @@
                     console.log(data);
 
                 document.getElementById('invoice_no').textContent = data.invoice_no;
-                document.getElementById('invoiceDate').textContent = data.invoice_date;
-                document.getElementById('invoice_due_date').textContent = data.invoice_due_date;
+                // document.getElementById('invoiceDate').textContent = data.invoice_date;
+                // document.getElementById('invoice_due_date').textContent = data.invoice_due_date;
+                document.getElementById('invoiceDate').textContent = formatDate(data.invoice_date);
+                document.getElementById('invoice_due_date').textContent = formatDate(data.invoice_due_date);
                 document.getElementById('customer').textContent = data.customer.customer_name;
-                document.getElementById('additional_text').textContent= data.additional_text;
+                // document.getElementById('additional_text').textContent= data.additional_text;
                  const invoiceStatus =  data.invoice_status.invoice_status;
                  let status =invoiceStatus.charAt(0).toUpperCase()+invoiceStatus.slice(1);
                 document.getElementById('invoice_status').textContent =status;
               
+
+
+                const descriptionBox = document.getElementById('additional_text').parentElement;
+
+                if (data.additional_text && data.additional_text.trim() !== '') {
+                    document.getElementById('additional_text').textContent = data.additional_text;
+                    descriptionBox.style.display = 'block'; 
+                } else {
+                    descriptionBox.style.display = 'none';
+                 }
             //get items
             const itemTableBody = document.getElementById('itemTableBody');
             itemTableBody.innerHTML = '';
@@ -243,6 +254,15 @@
          document.getElementById('closebtn').addEventListener('click',function(){
                     window.location.href = "/api/invoice/list";
             });
+            function formatDate(dateStr) {
+                if (!dateStr) return '';
+                const parts = dateStr.split('-'); // [YYYY, MM, DD]
+                if (parts.length !== 3) return dateStr;
+                return `${parts[2]}-${parts[1]}-${parts[0]}`;
+            }
+
+
+
     </script>
 </body>
 
