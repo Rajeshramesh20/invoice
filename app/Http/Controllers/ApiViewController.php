@@ -81,4 +81,9 @@ class ApiViewController extends Controller
     {
         return view('api_views.invoiceChart');
     }
+       public function employeesList()
+    {
+        return view('api_views.employees-list');
+    }
+
 }

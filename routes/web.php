@@ -30,6 +30,9 @@ Route::prefix('api')->name('api.')->group(function () {
     Route::get('edit/invoice/{id}',[ApiViewController::class, 'editinvoice']);
 
     Route::get('invoiceChart',[ApiViewController::class, 'invoiceChart']);
+
+    Route::get('employeeList', [ApiViewController::class, 'employeesList']);
+    
 });
 
 

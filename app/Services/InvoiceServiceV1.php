@@ -75,17 +75,15 @@ class InvoiceServiceV1
         return $invoice;
     }
 
-
-
     //update status
     public function updateStatusTOInvoiceTable($data, $invoice_id)
     {
-
         $updateinvoicestatus = Invoice::findOrfail($invoice_id);
 
         $updateinvoicestatus->update([
             'status_id' => $data['status_id']
         ]);
+        
         return  $updateinvoicestatus;
     }
 
@@ -95,6 +93,8 @@ class InvoiceServiceV1
         $invoice = Invoice::findOrFail($id);
 
         $invoice->paid_amount = $paidAmount;
+
+
         $invoice->balance_amount = $invoice->total_amount - $paidAmount;
 
         $invoice->is_payment_received = ($invoice->balance_amount == 0) ? 1 : 0;
@@ -517,7 +517,7 @@ class InvoiceServiceV1
         }
     }
 
-    
+
     //update invoice data
     public function updateInvoiceData($request, string $id )
     {
