@@ -188,7 +188,7 @@ function customerValidation(){
 						 	pincode_err.innerHTML = "";
 						 }
 
-						return isValid;
+						return isValid;
 					}
 					
 					let token = localStorage.getItem('token');
