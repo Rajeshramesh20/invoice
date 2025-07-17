@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
     <link rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
+      	<!-- Include Flatpickr -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <style>
         .bg-invoice-header {
@@ -63,6 +68,46 @@
         .container {
             min-height: 850px;
         }
+
+        /*custom alert box */
+    .custom-alert {
+          display: none;
+          position: fixed;
+          top: 20%;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 20px 30px;
+          border-radius: 8px;
+          color: white;
+          font-family: sans-serif;
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+          z-index: 1000;
+          text-align: center;
+          min-width: 300px;
+    } 
+
+    .custom-alert.success {
+      background-color: #4CAF50; /* Green */
+    }
+
+    .custom-alert button {
+      margin-top: 15px;
+      padding: 8px 12px;
+      border: none;
+      background-color: white;
+      color:black;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .custom-alert button:hover {
+      opacity: 0.8;
+    }
+
+    .alertBtn {
+        color: black;
+    }
     </style>
 </head>
 
@@ -79,6 +124,7 @@
             <div class="form-section">
                 <div class="row row-gap-4">
                     <div class="col-md-4">
+
                         <label for="customer_id" class="form-label pb-3 m-0">Customer <span
                                 class="required">*</span></label>
                         <select class="form-select" id="customer" name="customer_id">
@@ -86,16 +132,18 @@
                         </select>
                         <div id="customer_id_error" class="text-danger"></div>
                     </div>
+
                     <div class="col-md-4">
-                        <label for="invoiceDate" class="form-label pb-3 m-0">Invoice Date <span
+                        <label for="invoice_date" class="form-label pb-3 m-0">Invoice Date <span
                                 class="required">*</span></label>
-                        <input type="date" class="form-control" id="invoiceDate" name="invoice_date">
+                        <input type="text" class="form-control" id="invoice_date"  name="invoice_date"  placeholder="DD-MM-YYYY">
                         <div id="invoice_date_error" class="text-danger"></div>
                     </div>
+
                     <div class="col-md-4">
                         <label for="invoice_due_date" class="form-label pb-3 m-0">Invoice Due Date <span
                                 class="required">*</span></label>
-                        <input type="date" class="form-control" id="invoice_due_date" name="invoice_due_date">
+                        <input type="text" class="form-control" id="invoice_due_date" name="invoice_due_date"  placeholder="DD-MM-YYYY">
                         <div id="invoice_due_date_error" class="text-danger"></div>
                     </div>
 
@@ -108,21 +156,20 @@
                 </div>
             </div>
 
-
             <!-- Invoice Items -->
             <div>
                 <div class="itemheader ">Sales Invoice Items</div>
-                <div class="table-responsive pt-4">
+                <div class="table-responsive ">
                     <table class="table table-bordered align-middle">
                         <thead class="custom-thead text-white">
                             <tr>
                                 <th class="text-white">Item Name </th>
                                 <th class="text-white">Quantity </th>
-                                <th class="text-white">Unit Price </th>
-                                <th class="text-white">Net Amount</th>
+                                <th class="text-white">₹ Unit Price </th>
+                                <th class="text-white">₹ Net Amount</th>
                                 <th class="text-white">GST (%)</th>
-                                <th class="text-white">GST Amount</th>
-                                <th class="text-white">Total</th>
+                                <th class="text-white">₹ GST Amount</th>
+                                <th class="text-white">₹ Total</th>
                                 <th class="text-white">Actions</th>
                             </tr>
                         </thead>
@@ -165,9 +212,56 @@
         </form>
     </div>
 
+     <!-- Custom alert Box -->
+     <div id="customAlert" class="custom-alert">
+        <p id="alertMessage"></p>
+        <button onclick="closeAlert()" class="alertBtn">Close</button>
+      </div>
+
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+
+
+//Show Alert Box 
+function showAlert(message, type) {
+                  const alertBox = document.getElementById("customAlert");
+                  const alertMessage = document.getElementById("alertMessage");
+
+                  alertMessage.textContent = message;
+
+                  // Remove previous types
+                  alertBox.className = "custom-alert";
+                  
+                  // Add new type
+                  alertBox.classList.add(type);
+
+                  alertBox.style.display = "block";
+                }
+
+                function closeAlert() {
+                  const alertBox = document.getElementById("customAlert");
+                  alertBox.style.display = "none";
+                  window.location.href = '/api/invoice/list';
+                }
+
+let invoiceDatePicker;
+let invoiceDueDatePicker;
+
+document.addEventListener('DOMContentLoaded', function () {
+  invoiceDatePicker = flatpickr("#invoice_date", {
+        altInput: true,
+        altFormat: "d-m-Y",
+        dateFormat: "Y-m-d"
+    });
+
+    invoiceDueDatePicker = flatpickr("#invoice_due_date", {
+        altInput: true,
+        altFormat: "d-m-Y",
+        dateFormat: "Y-m-d"
+    });
+});
         //Get Id In the Url
         function getId(){                     
             const pathSegments = window.location.pathname.split('/');
@@ -202,10 +296,16 @@
                     console.log(data);
 
                     document.getElementById('customer').value = customerData.customer_id || '';
-                    document.getElementById('invoiceDate').value = data.invoice_date || '';
+                    // document.getElementById('invoice_date').value = data.invoice_date || '';
                     document.getElementById('additional_text').value = data.additional_text || '';
-                    document.getElementById('invoice_due_date').value = data.invoice_due_date || '';
-                    
+                    // document.getElementById('invoice_due_date').value = data.invoice_due_date || '';
+                       if (invoiceDatePicker) {
+                            invoiceDatePicker.setDate(data.invoice_date || '');
+                        }
+                        if (invoiceDueDatePicker) {
+                            invoiceDueDatePicker.setDate(data.invoice_due_date || '');
+                        }
+                                            
                     //get items
             itemTableBody.innerHTML = '';
 
@@ -312,10 +412,15 @@
 
                     updateData.onload = function() {
                      if(updateData.status === 200){
-                        let response = JSON.parse(updateData.responseText);
-                        console.log(response);
-                        alert("Updated Successfully");
-                        window.location.href = '/api/invoice/list';
+                        let successResponse = JSON.parse(updateData.responseText);
+                        let successMsg = successResponse.type;
+                        let message = successResponse.message;
+                        let error = successResponse.errorMsg;                    
+                        showAlert(message,successMsg); 
+                        // let response = JSON.parse(updateData.responseText);
+                        // console.log(response);
+                        // alert("Updated Successfully");
+                        // window.location.href = '/api/invoice/list';
                     } 
                 else if(updateData.status === 422){
                     let errResponse = JSON.parse(updateData.responseText);
@@ -379,6 +484,7 @@
   document.getElementById('closebtn').addEventListener('click',function(){
         window.location.href = "/api/invoice/list";
     });
+    
     </script>
 </body>
 </html>

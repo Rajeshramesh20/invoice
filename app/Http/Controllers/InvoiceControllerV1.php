@@ -8,11 +8,8 @@ use App\Services\AuthServices;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
-
 use App\Http\Resources\InvoiceResource;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Http\Requests\StoreInvoiceRequest;
@@ -25,7 +22,7 @@ use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\InvoiceRequest;
 
 use App\Exports\InvoiceExport;
-use Illuminate\Auth\Events\Validated;
+
 
 
 
@@ -33,6 +30,7 @@ use Illuminate\Auth\Events\Validated;
 class InvoiceControllerV1 extends Controller
 {
 
+    //create invoice 
     public function store(StoreInvoiceRequest $request, InvoiceServiceV1 $invoiceService)
     {
         try {
@@ -85,6 +83,7 @@ class InvoiceControllerV1 extends Controller
             ], 500);
         }
     }
+
     //update payment
     public function updatePayment(Request $request, $id, InvoiceServiceV1 $invoiceService)
     {
@@ -97,6 +96,7 @@ class InvoiceControllerV1 extends Controller
 
             return response()->json([
                 'success' => true,
+
                 'data' => $invoice,
                 'message' => 'Invoice payment updated successfully.',
             ]);
@@ -134,7 +134,6 @@ class InvoiceControllerV1 extends Controller
     }
 
     //update customer status
-
     public function updateCustomerStatus($id, InvoiceServiceV1 $invoiceService,  Request $request )
     {
         try{
@@ -157,7 +156,6 @@ class InvoiceControllerV1 extends Controller
         }
         
     }
-
 
     // get all customer 
     public function getAllCoustomer(InvoiceServiceV1 $invoiceService)
@@ -188,7 +186,6 @@ class InvoiceControllerV1 extends Controller
             ], 500);
         }
     }
-
 
     //get all company
     public function getAllCompany(InvoiceServiceV1 $invoiceService)
@@ -244,8 +241,6 @@ class InvoiceControllerV1 extends Controller
         }
     }
 
-
-
     // get All invoice details
     public function invoiceDataList(InvoiceServiceV1 $invoiceData)
     {
@@ -287,6 +282,7 @@ class InvoiceControllerV1 extends Controller
             if ($search) {
                 return response()->json([
                     'success' => true,
+                    // 'type'=> ''
                     'data' => InvoiceResource::collection($search),
                     'meta' => [
                         'current_page' => $search->currentPage(),
@@ -294,6 +290,11 @@ class InvoiceControllerV1 extends Controller
                         'per_page'  => $search->perPage()
                     ],
                 ]);
+            } else {
+                return response()->json([
+                    'type' => 'warning',
+                    'error' => 'Not Found Search Data'
+                ], 404);
             }
         } catch (Exception $e) {
             Log::error('error in search Data' . $e->getMessage());
@@ -329,11 +330,13 @@ class InvoiceControllerV1 extends Controller
             if ($deleteInvoiceData) {
                 return response()->json([
                     'success' => true,
+                    'type' => 'success',
                     'message' => 'inVoiceData is deleted successsfully',
                 ], 200);
             } else {
                 return response()->json([
                     'success' => false,
+                    'type' => 'error',
                     'errors' => 'Invoice Data Does Not Found'
                 ], 404);
             }
@@ -378,8 +381,8 @@ class InvoiceControllerV1 extends Controller
             Log::error('Error In  show Invoicedata list' . $e->getMessage());
         }
     }
+    
     //download pdf
-
     public function downloadInvoice($invoiceId, InvoiceServiceV1 $invoiceService)
     {
         $response = $invoiceService->generatePdf($invoiceId);
@@ -439,11 +442,13 @@ class InvoiceControllerV1 extends Controller
             if ($mail) {
                 return response()->json([
                     'success' => true,
+                    'type' => 'success',
                     'message' => 'Invoice email sent successfully to the customer'
                 ], 200);
             } else {
                 return response()->json([
                     'success' => false,
+                    'type' => 'error',
                     'error' => 'Invoice not finalized'
                 ], 422);
             }
@@ -542,11 +547,13 @@ class InvoiceControllerV1 extends Controller
             if ($customer) {
                 return response()->json([
                     'success' => 'true',
+                    'type' => 'success',
                     'message' => 'Updated successfully',
                     'data' => $customer
                 ]);
             } else {
                 return response()->json([
+                    'type' => 'error',
                     'success' => false,
                     'error' => 'something wrong'
                 ]);
@@ -588,12 +595,14 @@ class InvoiceControllerV1 extends Controller
             if ($invoice) {
                 return response()->json([
                     'success' => 'true',
+                    'type' => 'success',
                     'message' => 'Updated successfully',
                     'data' => $invoice
                 ]);
             } else {
                 return response()->json([
                     'success' => false,
+                    'type' => 'error',
                     'error' => 'something wrong',
                     // 'data'=> $data
                 ]);
@@ -707,6 +716,27 @@ class InvoiceControllerV1 extends Controller
                 'message' => 'failed to change password.',
                 'error' => $e->getMessage()
             ]);
+        }
+    }
+
+    public function invoiceChart(InvoiceServiceV1 $invoiceService) 
+    {
+        try {
+            $data = $invoiceService->getInvoiceChart();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Invoice dashboard data fetched successfully.',
+                'data' => $data
+            ]);
+        } catch (Exception $e) {
+            // Log the error if needed: \Log::error($e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to fetch dashboard data.',
+                'error' => $e->getMessage() // remove this in production if needed
+            ], 500);
         }
     }
 }

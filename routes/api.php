@@ -101,4 +101,8 @@ Route::middleware(['auth:api'])->group(function () {
     //pdf download
     Route::get('invoice/download/{id}', [InvoiceControllerV1::class, 'downloadInvoice']);
 
+    Route::get('/invoicechart',[InvoiceControllerV1::class, 'invoiceChart']);
+
+    
+
 });
