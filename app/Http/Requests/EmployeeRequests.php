@@ -44,7 +44,7 @@ class EmployeeRequests extends FormRequest
             'date_of_birth' => 'required',
             'nationality'=> 'required',
             'marital_status' =>'required',
-            'photo' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'photo' => 'required|file|mimes:jpg,jpeg,png|max:5120',
             'permanent_address' => 'required|string',
             'current_address' => 'required|string'
         ];

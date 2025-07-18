@@ -114,4 +114,5 @@ Route::middleware(['auth:api'])->group(function() {
         //create Employee
         Route::post('employee',[EmployeesController::class, 'storeEmployee']);
         Route::GET('employeelist',[EmployeesController::class, 'getEmployeeData']);
+        Route::get('searchEmployee', [EmployeesController::class, 'searchData']);
      });

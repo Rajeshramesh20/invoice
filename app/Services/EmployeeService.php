@@ -52,5 +52,44 @@ class EmployeeService
         $employee = Employees::where('is_deleted','0')->where('status','1')->orderBy('id','desc')->paginate(5);
         return $employee;
     }
-    
+
+  
+    public function searchField($request, $paginate = true)
+    {
+        try {
+            
+            $employee_name = $request['employee_name'] ?? '';
+
+            $employee_Id = $request['employee_id'] ?? '';
+
+            $email = $request['email'] ?? '';
+
+          $searchData = Employees::where('is_deleted', '0')
+            ->where('status', '1')
+        
+                ->when($employee_name, function ($searchData, $employee_name) {
+                    return $searchData->where('id','LIKE', '%' . $employee_name . '%');
+                })
+
+                ->when($employee_Id, function ($searchData, $employee_Id) {
+                    return $searchData->where('employee_id','LIKE', '%' . $employee_Id . '%');
+                })
+                
+                ->when($email, function ($searchData, $email) {
+                    return $searchData->where('email','LIKE', '%' . $email . '%');
+                });
+
+
+
+
+            if (!$paginate) {
+                $searchData = $searchData->get();
+            } else {
+                $searchData = $searchData->paginate(5);
+            }
+            return $searchData;
+        } catch (Exception $e) {
+            Log::error('employee Search Error' . $e->getMessage());
+        }
+    }
 }

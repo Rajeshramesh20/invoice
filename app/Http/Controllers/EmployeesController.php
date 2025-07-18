@@ -6,8 +6,9 @@ use App\Models\Employees;
 
 use App\Services\EmployeeService;
 use App\Http\Requests\EmployeeRequests;
-
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class EmployeesController extends Controller
 {
@@ -66,5 +67,37 @@ class EmployeesController extends Controller
             ], 500);
         }    
      }
+    public function searchData(Request $request, EmployeeService $employeeSearchData)
+    {
+        try {
+            $requestData = $request->all();
+            $search = $employeeSearchData->searchField($requestData);
 
+            if ($search) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $search,
+                    'meta' => [
+                        'current_page' => $search->currentPage(),
+                        'last_page' => $search->lastPage(),
+                        'per_page' => $search->perPage()
+                    ],
+                ]);
+            } else {
+                return response()->json([
+                    'type' => 'warning',
+                    'success' => false,
+                    'message' => 'No matching employee data found.'
+                ], 404);
+            }
+        } catch (Exception $e) {
+            Log::error('Error in searchData: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while searching for employees.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

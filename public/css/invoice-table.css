@@ -104,7 +104,7 @@
     background-color: #f9faf2;
   }
 
-  .form-group input[type="text"] {
+  .form-group input[type="text"] ,input[type="email"]{
     width: 100%;
     box-sizing: border-box;
     padding: 8px;
@@ -533,3 +533,7 @@
   	#changeStatus input[type="radio"] {
   	  margin-right: 8px;
   	}
+
+    .align-center{
+      text-align: center;
+    }
