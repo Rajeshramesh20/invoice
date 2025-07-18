@@ -193,7 +193,6 @@ data.forEach((list, index) => {
 	  const photoUrl = `${window.location.origin}/storage/${list.photo}`;
         let row = document.createElement('tr');
         row.innerHTML += `
-
 		                    <td>${list.employee_id}</td>
                             <td>${list.first_name} ${list.last_name}</td>
 							<td class="align-center"><img class="profile" src="${photoUrl}" alt="Photo of ${list.first_name}"></td>
@@ -208,7 +207,6 @@ data.forEach((list, index) => {
                                 <i class="fas fa-file-pdf" style="color: red;"></i></button></abbr>
                                 <abbr  title="Delete"> <button class="button" onclick="myFunction(${list.id})"><i class='fa-solid fa-trash'></i></button></abbr>
                             </td>
-
                         `
         listBody.appendChild(row);
     });
