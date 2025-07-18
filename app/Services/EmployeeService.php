@@ -47,11 +47,12 @@ class EmployeeService
         return 'TWK-EMP-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
     }
 
-    //Get Employee Data
+    //Get Employee Data For List 
     public function employeeData(){
         $employee = Employees::where('is_deleted','0')->where('status','1')->orderBy('id','desc')->paginate(5);
         return $employee;
     }
+
 
   
     public function searchField($request, $paginate = true)
@@ -91,5 +92,61 @@ class EmployeeService
         } catch (Exception $e) {
             Log::error('employee Search Error' . $e->getMessage());
         }
+
+    
+    //Edit  Employee Data 
+    public function editEmployeeData($id){
+        $employee = Employees::findOrFail($id);
+        return $employee;
+    }
+
+    //Update Employee Data
+    public function updateEmployeeData($id, $data){
+        $employee = Employees::findOrFail($id);
+        $updateData = [
+            'first_name' => $data['first_name'] ?? $employee->first_name,
+            'last_name' => $data['last_name'] ?? $employee->last_name,
+            'gender' => $data['gender'] ?? $employee->gender,
+            'date_of_birth' => $data['date_of_birth'] ?? $employee->date_of_birth,
+            'nationality' => $data['nationality'] ?? $employee->nationality,
+            'marital_status' => $data['marital_status'] ?? $employee->marital_status,
+            'contact_number' => $data['contact_number'] ?? $employee->contact_number,
+            'email' => $data['email'] ?? $employee->email,
+            'permanent_address' => $data['permanent_address'] ?? $employee->permanent_address,
+            'current_address' => $data['current_address'] ?? $employee->current_address,
+        ];
+
+
+        //  Only handle photo if it exists
+        if (isset($data['photo'])) {
+
+            $oldPhoto = $employee->photo;
+            if ($oldPhoto && Storage::disk('public')->exists($oldPhoto)) {
+                Storage::disk('public')->delete($oldPhoto);
+            }
+
+            $employeeId = $employee->employee_id;
+            $empProfile = $data['photo'];
+            $lowerCase = strtolower($employeeId);
+            $profilePic = str_replace(' ', '-', $lowerCase) . '.' . $empProfile->extension();
+            $profilePath = $empProfile->storeAs('employeeProfile', $profilePic, 'public');
+            $updateData['photo'] = $profilePath;
+        }
+        $employee->update($updateData);
+        return $employee;
+    }
+
+    //Show(Separate) Employee Data
+    public function showEmployeeData($id){
+        $employee = Employees::findOrFail($id);
+        return $employee;
+    }
+
+    //delete Employee Data
+    public function deleteEmployeeData($employee_id){
+        $employee = Employees::findOrFail($employee_id);
+        $employee->update(['is_deleted'=>  '1']);
+        return $employee;
+
     }
 }

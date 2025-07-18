@@ -109,6 +109,7 @@ Route::middleware(['auth:api'])->group(function() {
 });
 
     //Employee
+
     Route::middleware(['auth:api'])->group(function() {
 
         //create Employee
@@ -116,3 +117,14 @@ Route::middleware(['auth:api'])->group(function() {
         Route::GET('employeelist',[EmployeesController::class, 'getEmployeeData']);
         Route::get('searchEmployee', [EmployeesController::class, 'searchData']);
      });
+
+ Route::middleware(['auth:api'])->group(function() {
+      
+    Route::post('employee',[EmployeesController::class, 'storeEmployee']); //create Employee
+    Route::GET('employeelist',[EmployeesController::class, 'getEmployeeData']);//get all employee data
+    Route::GET('editemployee/{id}',[EmployeesController::class, 'editEmployeeData']);//edit employee data
+    Route::PUT('updateemployee/{id}',[EmployeesController::class, 'updateEmployeeData']); //update employee
+    Route::GET('showemployee/{id}',[EmployeesController::class, 'showEmployeeData']); //show employee Data
+    Route::DELETE('deleteemployee/{id}',[EmployeesController::class, 'deleteEmployeeData']); //Delete employee Data
+});
+
