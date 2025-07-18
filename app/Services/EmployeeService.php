@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Employees;
+use App\Models\EmployeeJobDetail;
+use App\Models\EmployeeSalary;
 
 use Illuminate\Support\Facades\Log;
 use Exception;
@@ -36,6 +38,36 @@ class EmployeeService
             'current_address' => $data['current_address'],
         ]);
 
+        EmployeeJobDetail::create([
+            'employee_id' => $employee->id,
+            'job_title' => $data['job_title'],
+            'department_id' => $data['department_id'],
+            'reporting_manager' => $data['reporting_manager'] ?? null,
+            'employee_type' => $data['employee_type'],
+            'employment_status' => $data['employment_status'],
+            'joining_date' => $data['joining_date'],
+            'probation_period' => $data['probation_period'],
+            'confirmation_date' => $data['confirmation_date'] ?? null,
+            'work_location' => $data['work_location'],
+            'shift' => $data['shift'] ?? null,
+        ]);
+        
+        EmployeeSalary::create([
+            'employee_id' => $employee->id,
+            'base_salary' => $data['base_salary'],
+            'pay_grade' => $data['pay_grade'] ?? null,
+            'pay_frequency' => $data['pay_frequency'],
+            'bank_account_details' => $data['bank_account_details'] ?? null,
+            'tax_identification_number' => $data['tax_identification_number'] ?? null,
+            'bonuses' => $data['bonuses'] ?? 0,
+            'deductions' => $data['deductions'] ?? 0,
+            'provident_fund_details' => $data['provident_fund_details'] ?? null,
+        ]);
+
+
+
+
+
         return $employee;
     }
 
@@ -49,12 +81,11 @@ class EmployeeService
 
     //Get Employee Data For List 
     public function employeeData(){
-        $employee = Employees::where('is_deleted','0')->where('status','1')->orderBy('id','desc')->paginate(5);
+        $employee = Employees::with(['jobDetails'])->where('is_deleted','0')->where('status','1')->orderBy('id','desc')->paginate(5);
         return $employee;
     }
 
 
-  
     public function searchField($request, $paginate = true)
     {
         try {
@@ -79,10 +110,7 @@ class EmployeeService
                 ->when($email, function ($searchData, $email) {
                     return $searchData->where('email','LIKE', '%' . $email . '%');
                 });
-
-
-
-
+                
             if (!$paginate) {
                 $searchData = $searchData->get();
             } else {
@@ -93,7 +121,7 @@ class EmployeeService
             Log::error('employee Search Error' . $e->getMessage());
         }
 
-    
+    }
     //Edit  Employee Data 
     public function editEmployeeData($id){
         $employee = Employees::findOrFail($id);
@@ -118,8 +146,7 @@ class EmployeeService
 
 
         //  Only handle photo if it exists
-        if (isset($data['photo'])) {
-
+        if (isset($data['photo']) && $data['photo']->isValid()) {
             $oldPhoto = $employee->photo;
             if ($oldPhoto && Storage::disk('public')->exists($oldPhoto)) {
                 Storage::disk('public')->delete($oldPhoto);

@@ -113,20 +113,17 @@ function invoiceTable(data) {
 									</td>
                             <td><div class="mail-status  left-align">${emailStatus}</div></td>
                             <td>
-                           <abbr  title="View">  <a href="/api/show/invoicedata/${list.invoice_id}"><i class="fa-solid fa-eye"></i></a></abbr>
-                          <abbr  title="Edit">   <a href="/api/edit/invoice/${list.invoice_id}"><i class='fa-solid fa-pencil'></i></a></abbr>
-                          <abbr  title="Send Mail">    <button class="mail-send" onclick="sendMail(${list.invoice_id})"><i class="fa-solid fa-paper-plane"></i></button></abbr>
+                           <abbr title="View">  <a href="/api/show/invoicedata/${list.invoice_id}"><i class="fa-solid fa-eye"></i></a></abbr>
+                          <abbr title="Edit">   <a href="/api/edit/invoice/${list.invoice_id}"><i class='fa-solid fa-pencil'></i></a></abbr>
+                          <abbr title="Send Mail">    <button class="mail-send" onclick="sendMail(${list.invoice_id})"><i class="fa-solid fa-paper-plane"></i></button></abbr>
                            <abbr  title="Download Pdf">   <button class="pdf" onclick="pdfDownload('${list.invoice_id}','${list.invoice_no}')">
                                 <i class="fas fa-file-pdf" style="color: red;"></i></button></abbr>
-                                <abbr  title="Delete"> <button class="button" onclick="myFunction(${list.invoice_id})"><i class='fa-solid fa-trash'></i></button></abbr>
+                                <abbr title="Delete"> <button class="button" onclick="myFunction(${list.invoice_id})"><i class='fa-solid fa-trash'></i></button></abbr>
                             </td>
-
                         `
         listBody.appendChild(row);
     });
 }
-
-
 //Pagination
 function pagination(meta) {
     let pagination = document.getElementById('paginateButton');
@@ -356,7 +353,6 @@ document.getElementById('exportBtn').addEventListener('click', function () {
         if (xhr.status === 200) {
             const blob = new Blob([xhr.response], { type: 'application/csv' });
             const downloadUrl = URL.createObjectURL(blob);
-
             const a = document.createElement('a');
             a.href = downloadUrl;
             a.download = 'invoiceData.csv'; // Change to .xlsx if needed

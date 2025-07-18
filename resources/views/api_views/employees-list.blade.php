@@ -14,7 +14,7 @@
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
 	<link rel="stylesheet" type="text/css" href="{{asset('css/invoice-table.css')}}">
     <style>
-		 img {
+		 .profile {
       width: 50px;
       height: 50px;
       object-fit: cover;
@@ -120,8 +120,8 @@
 				<th>profile</th>
 				<th>Email</th>
 				<th>PHONE</th>
-				{{-- <th>JOIN DATE</th>
-				<th>ROLE</th> --}}
+			   {{-- <th>JOIN DATE</th> --}}
+				<th>ROLE</th> 
 				{{-- <th></th>
 				<th></th> --}}
 				<th>Action</th>
@@ -196,9 +196,10 @@ data.forEach((list, index) => {
 
 		                    <td>${list.employee_id}</td>
                             <td>${list.first_name} ${list.last_name}</td>
-							<td class="align-center"><img src="${photoUrl}" alt="Photo of ${list.first_name}"></td>
+							<td class="align-center"><img class="profile" src="${photoUrl}" alt="Photo of ${list.first_name}"></td>
 							<td>${list.email}</td>
                             <td>${list.contact_number}</td>
+							  <td>${list.job_details?.job_title}</td>
                             <td>
                            <abbr  title="View"> <a href="/api/show/employee/${list.id}"><i class="fa-solid fa-eye"></i></a></abbr>
                           <abbr  title="Edit">  <a href="/api/edit/employee/${list.id}"><i class='fa-solid fa-pencil'></i></a></abbr>

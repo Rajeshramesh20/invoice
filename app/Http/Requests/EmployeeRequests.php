@@ -46,7 +46,32 @@ class EmployeeRequests extends FormRequest
             'marital_status' =>'required',
             'photo' => 'required|file|mimes:jpg,jpeg,png|max:5120',
             'permanent_address' => 'required|string',
-            'current_address' => 'required|string'
+            'current_address' => 'required|string',
+        
+
+
+             //  Job Details Table
+            'job_title' => ['required', 'string', 'max:255'],
+            'department_id' => ['required', 'exists:departments,id'],
+            'reporting_manager' => ['nullable', 'string', 'max:255'],
+            'employee_type' => ['required', Rule::in(['full_time', 'part_time', 'contract'])],
+            'employment_status' => ['required', Rule::in(['active', 'terminated', 'on_leave'])],
+            'joining_date' => ['required', 'date'],
+            'probation_period' => ['required', 'integer', 'min:0'],
+            'confirmation_date' => ['nullable', 'date'],
+            'work_location' => ['required', 'string', 'max:255'],
+            'shift' => ['nullable', 'string', 'max:255'],
+
+            //Salary Table
+            'base_salary' => ['required', 'numeric', 'min:0'],
+            'pay_grade' => ['nullable', 'string', 'max:255'],
+            'pay_frequency' => ['required', Rule::in(['Monthly', 'Weekly', 'Bi-Weekly'])],
+            'bank_account_details' => ['nullable', 'string', 'max:255'],
+            'tax_identification_number' => ['nullable', 'string', 'max:255'],
+            'bonuses' => ['nullable', 'numeric', 'min:0'],
+            'deductions' => ['nullable', 'numeric', 'min:0'],
+            'provident_fund_details' => ['nullable', 'string', 'max:255'],
         ];
+
     }
 }
