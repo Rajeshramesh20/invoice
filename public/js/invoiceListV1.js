@@ -27,13 +27,13 @@ function closePaidAlert() {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    flatpickr("#invoice_date", {
+    flatpickr("#startDate", {
         altInput: true,
         altFormat: "d-m-Y",      
         dateFormat: "Y-m-d"      
     });
 
-    flatpickr("#invoice_due_date", {
+    flatpickr("#endDate", {
         altInput: true,
         altFormat: "d-m-Y",
         dateFormat: "Y-m-d"
