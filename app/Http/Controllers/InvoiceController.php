@@ -468,4 +468,25 @@ class InvoiceController extends Controller
             ]);
         }
     }
+
+    //update partially paid amount 
+            public function updatePaidAmount($id, Request $request,InvoiceService $partiallyPaid){
+
+                $paidAmount = $request->input('paid_amount'); 
+                //Log::info("Updating invoice ID: $id with amount: $paidAmount");
+
+                $invoicePartiallyPaid = $partiallyPaid->updatePaidAmount($id, $paidAmount);
+                if($invoicePartiallyPaid){
+                        return response()->json([
+                            'type' => 'success',
+                            'message' => 'Invoice Paid Amount Updated successfully',
+                            'data' => $invoicePartiallyPaid
+                        ]);
+                }else{
+                    return response()->json([
+                        'type' => 'error',
+                        'error'=> 'something Error In Server'
+                        ]);
+                }
+            }
 }

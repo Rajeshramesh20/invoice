@@ -58,7 +58,8 @@ Route::middleware(['auth:api'])->group(
         Route::put('/update/invoice/{id}', [InvoiceControllerV1::class, 'updateInvoiceData']);
         Route::put('delete/invoicedata/{invoice_id}', [InvoiceControllerV1::class, 'destroyInvoice']);
         Route::get('showinvoicedata/{id}', [InvoiceControllerV1::class, 'showInvoiceData']);
-        Route::put('/invoice/payment/{id}', [InvoiceControllerV1::class, 'updatePayment']);
+        // Route::put('/invoice/payment/{id}', [InvoiceControllerV1::class, 'updatePayment']);
+        Route::PUT('/update/paidamount/{id}', [InvoiceControllerV1::class, 'updatePaidAmount']);
     
         //invoice Status
         Route::get('invoicestatus', [InvoiceControllerV1::class, 'invoiceStatus']);
@@ -108,7 +109,6 @@ Route::middleware(['auth:api'])->group(function() {
 
 });
 
-    //Employee
  Route::middleware(['auth:api'])->group(function() {
     
     Route::post('employee',[EmployeesController::class, 'storeEmployee']); //create Employee
@@ -116,7 +116,11 @@ Route::middleware(['auth:api'])->group(function() {
     Route::GET('editemployee/{id}',[EmployeesController::class, 'editEmployeeData']);//edit employee data
     Route::PUT('updateemployee/{id}',[EmployeesController::class, 'updateEmployeeData']); //update employee
     Route::GET('showemployee/{id}',[EmployeesController::class, 'showEmployeeData']); //show employee Data
+
     Route::DELETE('deleteemployee/{id}',[EmployeesController::class, 'deleteEmployeeData']); //Delete employee Data
+
+    Route::PUT('deleteemployee/{id}',[EmployeesController::class, 'deleteEmployeeData']); //Delete employee Data
+
     Route::get('searchEmployee', [EmployeesController::class, 'searchData']);
 });
 

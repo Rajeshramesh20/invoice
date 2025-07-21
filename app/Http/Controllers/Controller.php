@@ -50,4 +50,46 @@ class Controller extends BaseController
         }
      
     }*/
+
+    //Update Employee Data
+    // public function updateEmployeeData($id, $data){
+
+    //     $employee = Employees::findOrFail($id);
+
+    //     $updateData = [
+    //         'first_name' => $data['first_name'] ?? $employee->first_name,
+    //         'last_name' => $data['last_name'] ?? $employee->last_name,
+    //         'gender' => $data['gender'] ?? $employee->gender,
+    //         'date_of_birth' => $data['date_of_birth'] ?? $employee->date_of_birth,
+    //         'nationality' => $data['nationality'] ?? $employee->nationality,
+    //         'marital_status' => $data['marital_status'] ?? $employee->marital_status,
+    //         'contact_number' => $data['contact_number'] ?? $employee->contact_number,
+    //         'email' => $data['email'] ?? $employee->email,
+    //         'permanent_address' => $data['permanent_address'] ?? $employee->permanent_address,
+    //         'current_address' => $data['current_address'] ?? $employee->current_address,
+    //     ];
+
+    //     //Log::info("Incoming photo file: ", ['photo' => $data->file('photo')]);
+    //     Log::info('Photo field content:', ['photo' => $data['photo'] ?? 'NOT SET']);
+
+    //     //  Only handle photo if it exists
+    //     if (isset($data['photo'])&& $data['photo'] instanceof \Illuminate\Http\UploadedFile) {
+
+    //         $oldPhoto = $employee->photo;
+    //         if ($oldPhoto && Storage::disk('public')->exists($oldPhoto)) {
+    //             Storage::disk('public')->delete($oldPhoto);
+    //         }
+    //         Log::error("old photo" , $oldPhoto);
+
+    //         $employeeId = $employee->employee_id;
+    //         $empProfile = $data['photo'];
+    //         $lowerCase = strtolower($employeeId);
+    //         $profilePic = str_replace(' ', '-', $lowerCase) . '.' . $empProfile->extension();
+    //         $profilePath = $empProfile->storeAs('employeeProfile', $profilePic, 'public');
+    //         $updateData['photo'] = $profilePath;
+    //     }
+    //         $employee->update($updateData);
+    //         return $employee;
+    // }
+
 }

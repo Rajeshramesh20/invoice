@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Exception;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 
 class EmployeeService
 {
@@ -88,6 +89,10 @@ class EmployeeService
 
     public function searchField($request, $paginate = true)
     {
+
+    //Search For Employee
+    public function searchField($request, $paginate = true){
+
         try {
             
             $employee_name = $request['employee_name'] ?? '';
@@ -110,8 +115,9 @@ class EmployeeService
                 ->when($email, function ($searchData, $email) {
                     return $searchData->where('email','LIKE', '%' . $email . '%');
                 });
-                
+
             if (!$paginate) {
+ 
                 $searchData = $searchData->get();
             } else {
                 $searchData = $searchData->paginate(5);
@@ -120,6 +126,7 @@ class EmployeeService
         } catch (Exception $e) {
             Log::error('employee Search Error' . $e->getMessage());
         }
+    }
 
     }
     //Edit  Employee Data 
@@ -129,38 +136,44 @@ class EmployeeService
     }
 
     //Update Employee Data
-    public function updateEmployeeData($id, $data){
-        $employee = Employees::findOrFail($id);
-        $updateData = [
-            'first_name' => $data['first_name'] ?? $employee->first_name,
-            'last_name' => $data['last_name'] ?? $employee->last_name,
-            'gender' => $data['gender'] ?? $employee->gender,
-            'date_of_birth' => $data['date_of_birth'] ?? $employee->date_of_birth,
-            'nationality' => $data['nationality'] ?? $employee->nationality,
-            'marital_status' => $data['marital_status'] ?? $employee->marital_status,
-            'contact_number' => $data['contact_number'] ?? $employee->contact_number,
-            'email' => $data['email'] ?? $employee->email,
-            'permanent_address' => $data['permanent_address'] ?? $employee->permanent_address,
-            'current_address' => $data['current_address'] ?? $employee->current_address,
-        ];
+    public function updateEmployeeData($id, Request $request){
 
+        $employee = Employees::findOrFail($id);
+
+         $updateData = [
+        'first_name'        => $request->input('first_name', $employee->first_name),
+        'last_name'         => $request->input('last_name', $employee->last_name),
+        'gender'            => $request->input('gender', $employee->gender),
+        'date_of_birth'     => $request->input('date_of_birth', $employee->date_of_birth),
+        'nationality'       => $request->input('nationality', $employee->nationality),
+        'marital_status'    => $request->input('marital_status', $employee->marital_status),
+        'contact_number'    => $request->input('contact_number', $employee->contact_number),
+        'email'             => $request->input('email', $employee->email),
+        'permanent_address' => $request->input('permanent_address', $employee->permanent_address),
+        'current_address'   => $request->input('current_address', $employee->current_address),
+    ];
 
         //  Only handle photo if it exists
+
         if (isset($data['photo']) && $data['photo']->isValid()) {
+
+        if ($request->hasFile('photo')) {
+
             $oldPhoto = $employee->photo;
             if ($oldPhoto && Storage::disk('public')->exists($oldPhoto)) {
                 Storage::disk('public')->delete($oldPhoto);
             }
+            Log::error("old photo", ['photo' => $oldPhoto]); 
 
             $employeeId = $employee->employee_id;
-            $empProfile = $data['photo'];
+            $empProfile = $request->file('photo');
             $lowerCase = strtolower($employeeId);
             $profilePic = str_replace(' ', '-', $lowerCase) . '.' . $empProfile->extension();
             $profilePath = $empProfile->storeAs('employeeProfile', $profilePic, 'public');
             $updateData['photo'] = $profilePath;
         }
-        $employee->update($updateData);
-        return $employee;
+            $employee->update($updateData);
+            return $employee;
     }
 
     //Show(Separate) Employee Data
@@ -176,4 +189,6 @@ class EmployeeService
         return $employee;
 
     }
+
+    
 }

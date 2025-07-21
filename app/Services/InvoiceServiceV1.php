@@ -87,22 +87,22 @@ class InvoiceServiceV1
         return  $updateinvoicestatus;
     }
 
-    //update paid_amount and balance_amount
-    public function updatePayment($id, $paidAmount)
-    {
-        $invoice = Invoice::findOrFail($id);
+    // //update paid_amount and balance_amount
+    // public function updatePayment($id, $paidAmount)
+    // {
+    //     $invoice = Invoice::findOrFail($id);
 
-        $invoice->paid_amount = $paidAmount;
+    //     $invoice->paid_amount = $paidAmount;
 
 
-        $invoice->balance_amount = $invoice->total_amount - $paidAmount;
+    //     $invoice->balance_amount = $invoice->total_amount - $paidAmount;
 
-        $invoice->is_payment_received = ($invoice->balance_amount == 0) ? 1 : 0;
+    //     $invoice->is_payment_received = ($invoice->balance_amount == 0) ? 1 : 0;
 
-        $invoice->save();
+    //     $invoice->save();
 
-        return $invoice;
-    }
+    //     return $invoice;
+    // }
 
     //generate invoice id month wise
     public function generateInvoiceNumber($invoiceDate)
@@ -603,6 +603,31 @@ class InvoiceServiceV1
             'recent' => $allInvoices->sortByDesc('created_at')->take(5)->values(),
         ];
     }
+
+
+    //Update PaidAmount
+              public function updatePaidAmount($id,$amount){
+                try{
+                    $invoice = invoice::findOrFail($id);
+
+                    // Update Paid Amount
+                    $invoice->paid_amount += $amount;
+
+                    // Update Balance Amount
+                    $invoice->balance_amount -= $amount;
+
+                    //chnage invoice status id after balance 
+                    if($invoice->balance_amount == 0){
+                         $invoice->invoice_status_id = "4";
+                    }
+                    \Log::info('Invoice status before save: ' . $invoice->invoice_status_id);
+
+                    $invoice->save();                
+                    return $invoice;
+                 }catch(Exception $e){
+                    Log::error(' Error in Update Paid Amount:' . $e->getMessage());
+                 }
+                 }   
 }
 
 

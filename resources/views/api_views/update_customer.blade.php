@@ -92,7 +92,7 @@
 
            function editCustomerData(){
                 let token = localStorage.getItem('token');
-            	let id = getId();
+            	 let id = getId();
                 console.log(id);
 
             	let editData = new XMLHttpRequest();

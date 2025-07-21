@@ -86,4 +86,9 @@ class ApiViewController extends Controller
         return view('api_views.employees-list');
     }
 
+    public function editEmployee()
+    {
+        return view('api_views.edit_employee');
+    }
+
 }

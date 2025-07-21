@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiViewController;
+use App\Http\Controllers\EmployeesController;
 
 
 Route::get('/', function () {
@@ -32,8 +33,13 @@ Route::prefix('api')->name('api.')->group(function () {
     Route::get('invoiceChart',[ApiViewController::class, 'invoiceChart']);
 
     Route::get('employeeList', [ApiViewController::class, 'employeesList']);
+
+    // Route::get('editemployee/{id}', [ApiViewController::class, 'editEmployee']);
+
     
 });
 
 
-
+ Route::GET('editemployee/{id}',function(){
+        return view('api_views.edit_employee');
+      });

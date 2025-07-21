@@ -368,4 +368,28 @@ class InvoiceService
         $invoice->update(['email_send_status' => 'send']);
         return true;
     }
+
+    //Update PaidAmount
+              public function updatePaidAmount($id,$amount){
+                try{
+                    $invoice = invoice::findOrFail($id);
+
+                    // Update Paid Amount
+                    $invoice->paid_amount += $amount;
+
+                    // Update Balance Amount
+                    $invoice->balance_amount -= $amount;
+
+                    //chnage invoice status id after balance 
+                    if($invoice->balance_amount == 0){
+                         $invoice->invoice_status_id = "4";
+                    }
+                    \Log::info('Invoice status before save: ' . $invoice->invoice_status_id);
+
+                    $invoice->save();                
+                    return $invoice;
+                 }catch(Exception $e){
+                    Log::error(' Error in Update Paid Amount:' . $e->getMessage());
+                 }   
+    
 }

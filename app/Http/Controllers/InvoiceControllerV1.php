@@ -61,7 +61,7 @@ class InvoiceControllerV1 extends Controller
     }
 
     //update invoice status
-    public function updateStatusTOInvoiceTable(InvoiceServiceV1 $invoiceService, $invoiceId, Request $request)
+    /*public function updateStatusTOInvoiceTable(InvoiceServiceV1 $invoiceService, $invoiceId, Request $request)
     {
         try {
             $validated = $request->validate([
@@ -82,10 +82,10 @@ class InvoiceControllerV1 extends Controller
                 'message' => 'Error to  update invoice: ' . $e->getMessage()
             ], 500);
         }
-    }
+    }*/
 
     //update payment
-    public function updatePayment(Request $request, $id, InvoiceServiceV1 $invoiceService)
+   /* public function updatePayment(Request $request, $id, InvoiceServiceV1 $invoiceService)
     {
         $request->validate([
             'paid_amount' => 'required|numeric|min:0',
@@ -106,7 +106,7 @@ class InvoiceControllerV1 extends Controller
                 'message' => $e->getMessage(),
             ], 422);
         }
-    }
+    }*/
 
     //store customer
     public function storeCustomerData(StoreCustomerRequest $request, InvoiceServiceV1 $invoiceService)
@@ -133,7 +133,7 @@ class InvoiceControllerV1 extends Controller
         }
     }
 
-    //update customer status
+    // //update customer status
     public function updateCustomerStatus($id, InvoiceServiceV1 $invoiceService,  Request $request )
     {
         try{
@@ -739,4 +739,27 @@ class InvoiceControllerV1 extends Controller
             ], 500);
         }
     }
+
+            //update partially paid amount 
+            public function updatePaidAmount($id, Request $request,InvoiceServiceV1 $partiallyPaid){
+
+                $paidAmount = $request->input('paid_amount'); 
+                //Log::info("Updating invoice ID: $id with amount: $paidAmount");
+
+                $invoicePartiallyPaid = $partiallyPaid->updatePaidAmount($id, $paidAmount);
+                if($invoicePartiallyPaid){
+                        return response()->json([
+                            'type' => 'success',
+                            'message' => 'Invoice Paid Amount Updated successfully',
+                            'data' => $invoicePartiallyPaid
+                        ]);
+                }else{
+                    return response()->json([
+                        'type' => 'error',
+                        'error'=> 'something Error In Server'
+                        ]);
+                }
+            }
+
+            
 }

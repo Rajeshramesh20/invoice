@@ -133,17 +133,17 @@ class EmployeesController extends Controller
     }
 
      //Update Employee Data 
-    public function updateEmployeeData($id, UpdateEmployeeRequest $request, EmployeeService $updateEmployee){
+    public function updateEmployeeData($id, Request $request, EmployeeService $updateEmployee){
         try{
-            // dd($request->all(), $request->file('photo'));
-             $validatedEmployee = $request->validated();
-            $updateEmployeeData = $updateEmployee->updateEmployeeData($id, $validatedEmployee);
-            if($updateEmployeeData){
+           
+           // $validatedEmployee = $request->validated();
+            $updateEmployeesData = $updateEmployee->updateEmployeeData($id, $request);
+            if($updateEmployeesData){
                 return response()->json([
                         'status' => 'success',
                         'type'=> 200,
                         'message' => 'Employee Updated Successfully',
-                        'data' => $updateEmployeeData
+                        'data' => $updateEmployeesData
                     ]);
             }else{
                 return response()->json([

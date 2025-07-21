@@ -144,12 +144,12 @@
 </div>
 
 	<!-- Custom alert Box for Partially Paid -->
-	<div id="paidAlert" class="custom-alert paid">
-			<span id="closePopup" onclick="closePaidAlert()">&times;</span>
-			<label for="partiallyPaid">Enter Amount</label>
-		  <input type="number" name="partiallyPaid" id="partiallyPaid" placeholder="Enter Amount">
-		  <button onclick="closeAlert()" class="alertBtn">Enter</button>
-	</div>
+		<div id="paidAlert" class="custom-alert paid">
+				<span id="closePopup" onclick="closePaidAlert()">&times;</span>
+				<label for="partiallyPaid">Enter Amount</label>
+		  	<input type="number" name="partiallyPaid" id="paid_amount" placeholder="Enter Amount">
+		  	<button onclick="updatePaidAmount(selectedInvoiceId)" class="alertBtn">Enter</button>
+		</div>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="/js/invoiceListV1.js"></script>
 

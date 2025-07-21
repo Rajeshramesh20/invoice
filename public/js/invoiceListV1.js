@@ -483,7 +483,6 @@ document.getElementById('statusSubmit').addEventListener('click', function (e) {
 
     if (selectedStatus.value === '3') {
         document.getElementById("paidAlert").style.display = "block";
-        return;
     }
 
     let payload = {
@@ -508,3 +507,35 @@ document.getElementById('statusSubmit').addEventListener('click', function (e) {
 
     xhr.send(JSON.stringify(payload));
 });
+
+//update payAmount
+function updatePaidAmount(selectedInvoiceId){
+            let invoicePaidAmount = parseFloat(document.getElementById('paid_amount').value)
+            let payload = {
+                    paid_amount : invoicePaidAmount
+            };
+
+            let paidAmountRequest = new XMLHttpRequest();
+            paidAmountRequest.open('PUT',`http://127.0.0.1:8000/api/update/paidamount/${selectedInvoiceId}`,true);
+            paidAmountRequest.setRequestHeader('Accept', 'application/json');
+            paidAmountRequest.setRequestHeader('Authorization', 'Bearer ' + token);
+            paidAmountRequest.setRequestHeader('Content-Type', 'application/json');
+
+            paidAmountRequest.onload = function(){
+                if(paidAmountRequest.status === 200){
+                        let paidAmountResponse = JSON.parse(paidAmountRequest.responseText);
+                        const success = paidAmountResponse.type;
+                      const message = paidAmountResponse.message;
+                      const error = paidAmountResponse.error;
+                      showAlert(message,success);   
+                      document.getElementById("paidAlert").style.display = "none"; // Close alert
+                overlay.style.display = "none"; // Close modal
+                getInvoiceList(current_page); // Refresh list
+                }else if(paidAmountRequest.status === 422){
+                    showAlert(error,success);
+                }
+            }
+            console.log(payload);
+            console.log(selectedInvoiceId);
+            paidAmountRequest.send(JSON.stringify(payload));
+     }

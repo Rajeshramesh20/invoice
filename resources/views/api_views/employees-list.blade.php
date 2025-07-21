@@ -193,25 +193,25 @@ data.forEach((list, index) => {
 	  const photoUrl = `${window.location.origin}/storage/${list.photo}`;
         let row = document.createElement('tr');
         row.innerHTML += `
-		                    <td>${list.employee_id}</td>
-                            <td>${list.first_name} ${list.last_name}</td>
-							<td class="align-center"><img class="profile" src="${photoUrl}" alt="Photo of ${list.first_name}"></td>
-							<td>${list.email}</td>
-                            <td>${list.contact_number}</td>
-							  <td>${list.job_details?.job_title}</td>
-                            <td>
-                           <abbr  title="View"> <a href="/api/show/employee/${list.id}"><i class="fa-solid fa-eye"></i></a></abbr>
-                          <abbr  title="Edit">  <a href="/api/edit/employee/${list.id}"><i class='fa-solid fa-pencil'></i></a></abbr>
-                          <abbr  title="Send Mail">    <button class="mail-send" onclick="sendMail(${list.id})"><i class="fa-solid fa-paper-plane"></i></button></abbr>
-                           <abbr  title="Download Pdf">   <button class="pdf" onclick="pdfDownload('${list.id}','${list.employee_id}')">
-                                <i class="fas fa-file-pdf" style="color: red;"></i></button></abbr>
-                                <abbr  title="Delete"> <button class="button" onclick="myFunction(${list.id})"><i class='fa-solid fa-trash'></i></button></abbr>
-                            </td>
-                        `
+		        <td>${list.employee_id}</td>
+                <td>${list.first_name} ${list.last_name}</td>
+				<td class="align-center"><img src="${photoUrl}" class="profile" alt="Photo of ${list.first_name}"></td>
+				<td>${list.email}</td>
+                <td>${list.contact_number}</td>
+                <td>
+                  <abbr  title="View"> <a href="/showemployee/${list.id}"><i class="fa-solid fa-eye"></i></a></abbr>
+
+                   <abbr  title="Edit"><a href="/editemployee/${list.id}"><i class='fa-solid fa-pencil'></i></a></abbr>
+                   <abbr  title="Send Mail">    <button class="mail-send" onclick="sendMail(${list.id})"><i class="fa-solid fa-paper-plane"></i></button></abbr>
+                    <abbr  title="Download Pdf">   <button class="pdf" onclick="pdfDownload('${list.id}','${list.employee_id}')">
+                    <i class="fas fa-file-pdf" style="color: red;"></i></button></abbr>
+                   <abbr  title="Delete"> <button class="button" onclick="myFunction(${list.id})"><i class='fa-solid fa-trash'></i></button></abbr>
+                </td>`
         listBody.appendChild(row);
     });
 }
 
+//Pagination 
 function pagination(meta) {
     let pagination = document.getElementById('paginateButton');
     pagination.innerHTML = "";
@@ -334,6 +334,51 @@ function closeAlert() {
 function closePaidAlert() {
     const paidAlertBox = document.getElementById("paidAlert");
     paidAlertBox.style.display = "none";
+}
+
+//Delete EmployeeData
+function myFunction(id) {
+    let confirmation = confirm("Are You Sure You Want To Delete This Record?");
+    if (confirmation) {
+        deleteEmployeeData(id);
+    }
+    else {
+        window.location.href = './api/employeeList';
+    }
+}
+
+
+//Delete StudentData
+function deleteEmployeeData(id) {
+    let deleteRequest = new XMLHttpRequest();
+    deleteRequest.open('put', `http://127.0.0.1:8000/api/deleteemployee/${id}`, true)
+    deleteRequest.setRequestHeader('Authorization', 'Bearer ' + token);
+    deleteRequest.setRequestHeader('Accept', 'application/json');
+    if (!token) {
+        alert('Token has been Expired! Please Login Again');
+    }
+    deleteRequest.onload = function () {
+        if (deleteRequest.status === 200) {
+            let successResponse = JSON.parse(deleteRequest.responseText);
+            //alert("InvoiceData Deleted Sucessfully");
+
+            let authSuccess = successResponse.message;
+            let type = successResponse.status;
+            // alert("InvoiceData Deleted Sucessfully");
+            showAlert(authSuccess, type);
+            //getInvoiceList(current_page);
+        } else if (deleteRequest.status === 403) {
+            let errResponse = JSON.parse(deleteRequest.responseText);
+            let authErr = errResponse.message
+            alert(authErr);
+        }
+        else if (deleteRequest.status === 422) {
+            let errResponse = JSON.parse(deleteRequest.responseText);
+            //alert(errResponse.errors);
+            console.log(errResponse.errors);
+        }
+    }
+    deleteRequest.send();
 }
 
 </script>
