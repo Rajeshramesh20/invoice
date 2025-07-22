@@ -46,13 +46,13 @@ class Employees extends Model
 
     public function department()
     {
-        return $this->hasOneThrough(
+        return $this->hasOne(
             Department::class,
             EmployeeJobDetail::class,
-            'employee_id', // Foreign key on EmployeeJobDetail
-            'id', // Foreign key on Department
-            'id', // Local key on Employee
-            'department_id' // Local key on EmployeeJobDetail
+            'employee_id', 
+            'id',
+            'id', 
+            'department_id' 
         );
     }
 

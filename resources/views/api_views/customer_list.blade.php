@@ -276,6 +276,30 @@ document.querySelectorAll(".myToggle").forEach(toggle => {
 		  document.getElementById('closebtn').addEventListener('click',function(){
         window.location.href = "/api/invoice/list";
     });
+	
+	//log out
+document.getElementById('logoutBtn').addEventListener('click', function () {
+    if (!confirm("Are you sure you want to logout?")) return;
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "http://127.0.0.1:8000/api/logout", true);
+    xhr.setRequestHeader("Authorization", "Bearer " + token);
+    xhr.setRequestHeader("Accept", "application/json");
+    
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                localStorage.removeItem("token");
+                alert("Logout successful");
+                window.location.href = "/api/login";
+            } else {
+                alert("Logout failed");
+            }
+        }
+    };
+
+    xhr.send();
+});
+
 		</script>
 
 </body>

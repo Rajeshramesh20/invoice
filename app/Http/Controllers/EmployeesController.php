@@ -73,6 +73,34 @@ class EmployeesController extends Controller
         }    
      }
 
+
+    public function getEmployeeDataDropdown(EmployeeService $getEmployeeData)
+    {
+        try {
+            $employee = $getEmployeeData->getEmployeeData();
+            if ($employee) {
+                return response()->json([
+                    'status' => 'success',
+                    'type' => 200,
+                    'message' => 'Successfully Get Employee Data',
+                    'data' => $employee,
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Failed To Get Employee Data.'
+                ]);
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Error Get Employee: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+
     public function searchData(Request $request, EmployeeService $employeeSearchData)
     {
         try {
@@ -234,4 +262,26 @@ class EmployeesController extends Controller
 
         return response()->json($result);
     }
+
+    //get payroll history
+    public function getpayroll_history(EmployeeService $payrollService){
+
+        $getpayroll_history = $payrollService->getpayroll_history();
+
+        return response()->json([
+        "data"=> $getpayroll_history
+        ]);
+
+    }
+
+    public function getpayrollDetails(EmployeeService $payrollService)
+    {
+
+        $payrollDetails = $payrollService->getpayrollDetails();
+
+        return response()->json([
+            "data" => $payrollDetails
+        ]);
+    }
+
 }

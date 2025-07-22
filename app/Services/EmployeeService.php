@@ -112,6 +112,14 @@ class EmployeeService
         return $employee;
     }
 
+    //Get Employee Data For List dropdown
+    public function getEmployeeData(){
+        $employee = Employees::get();
+        return $employee ;
+    }
+
+
+
     //Search For Employee
     public function searchField($request, $paginate = true){
 
@@ -287,6 +295,18 @@ class EmployeeService
         return Employees::with(['salary', 'jobDetails'])->where('status', '1')
             ->whereNotIn('id', $employeeIdsWithPayroll)
             ->get();
+    }
+    // get pay roll history
+
+    public function getpayroll_history(){
+        $payroll_history = payroll_history::all(); 
+        return  $payroll_history;
+
+    }
+    //get payroll details
+    public function getpayrollDetails(){
+        $payrollDetails = PayrollDetail::get();
+        return $payrollDetails;
     }
     
 }

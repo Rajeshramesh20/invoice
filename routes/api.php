@@ -125,5 +125,10 @@ Route::middleware(['auth:api'])->group(function() {
 
     Route::get('/employeesForPayrolle', [EmployeesController::class, 'getEmployeesForPayroll']);
     Route::post('/payrollstore', [EmployeesController::class, 'storepayrollHistory']);
+
+    Route::get('getpayrollHistory',[EmployeesController::class, 'getpayroll_history']);
+
+    Route::get('getpayrolldetails',[EmployeesController::class, 'getpayrollDetails']);
+    Route::get('employeeDataDropDown',[EmployeesController::class, 'getEmployeeDataDropdown']);
 });
 

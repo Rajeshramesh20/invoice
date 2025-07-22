@@ -19,7 +19,7 @@
 	<script>
 		const token = localStorage.getItem('token');
 		if(!token){
-			window.location.replace('./api/login')
+			window.location.replace('/api/login')
 		}else{
 			window.addEventListener('DOMContentLoaded',()=>{
 				document.body.style.display='block';
@@ -38,11 +38,12 @@
 				<a href="" class="group-invoice">Group Invoice</a> -->
 				<a href="/createemployee" class="create">Add Employee</a>
 				{{-- <a href="/api/company/form" class="create">Add Company</a> --}}
-                <button id="openPayrollBtn"  class="create">Show Payroll</button>
-				<a href="/api/customer/list" class="create">view customer</a>
-			<a href="/api/customer/form" class="create">Add Customer</a>
-			<a href="/api/invoice" class="create"><i class="bi bi-plus"></i>Create</a>
+                <button id="openPayrollBtn"  class="create">Generate Payroll</button>
+				{{-- <a href="/api/customer/list" class="create">view customer</a> --}}
+			{{-- <a href="/api/customer/form" class="create">Add Customer</a> --}}
+			{{-- <a href="/api/invoice" class="create"><i class="bi bi-plus"></i>Create</a> --}}
 			<button class='logout btn' id="logoutBtn">Logout</button>
+			<span class="close" id="closebtn">&times;</span>
             
 		</div>
 	</header>
@@ -141,7 +142,7 @@
 {{-- payroll modal --}}
 <div id="payrollModal" class="overlay">
 		<div class="modal">
-			<button id="closePayrollBtn">&times;</button> <!-- ✅ Close Button -->
+			<button id="closePayrollBtn">&times;</button> 
 			<h2>Employees Payroll List</h2>
 			<table id="employeeTable">
 				<thead>
@@ -167,6 +168,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 	getemployeeList(1);
+	getemployeeListDroupdown();
     flatpickr("#startDate", {
         altInput: true,
         altFormat: "d-m-Y",      
@@ -201,7 +203,7 @@ function getemployeeList(page) {
             listBody.innerHTML = '';
             employeeTable(data);
             pagination(meta);
-			populateEmployeeNames(data);
+			// populateEmployeeNames(data);
         }
     }
 
@@ -258,10 +260,27 @@ function pagination(meta) {
         pagination.appendChild(paginateBtn);
     }
 }
+function getemployeeListDroupdown() {
+    let employeeRequest = new XMLHttpRequest();
+    employeeRequest.open('GET', `http://127.0.0.1:8000/api/employeeDataDropDown`, true);
+    employeeRequest.setRequestHeader('Accept', 'application/json');
+    employeeRequest.setRequestHeader('Authorization', 'Bearer ' + token);
+
+    employeeRequest.onload = function () {
+        if (employeeRequest.status === 200) {
+            let employeeData = JSON.parse(employeeRequest.responseText);
+            let data = employeeData.data;
+			populateEmployeeNames(data);
+        }
+    }
+
+    employeeRequest.send();
+};
+
 
 function populateEmployeeNames(data) {
 	const employeeSelect = document.getElementById('employee_name');
-	employeeSelect.innerHTML = '<option value="">Select Employee Name</option>'; // Reset
+	employeeSelect.innerHTML = '<option value="">Select Employee Name</option>'; 
 
 	data.forEach((emp) => {
 		const option = document.createElement('option');
@@ -365,7 +384,7 @@ function myFunction(id) {
         deleteEmployeeData(id);
     }
     else {
-        window.location.href = './api/employeeList';
+        window.location.href = '/api/employeeList';
     }
 }
 
@@ -530,6 +549,34 @@ document.addEventListener('DOMContentLoaded', function () {
     }));
 });
 
+
+		  document.getElementById('closebtn').addEventListener('click',function(){
+        window.location.href = "/api/invoice/list";
+    });
+
+
+	//log out
+document.getElementById('logoutBtn').addEventListener('click', function () {
+    if (!confirm("Are you sure you want to logout?")) return;
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "http://127.0.0.1:8000/api/logout", true);
+    xhr.setRequestHeader("Authorization", "Bearer " + token);
+    xhr.setRequestHeader("Accept", "application/json");
+    
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                localStorage.removeItem("token");
+                alert("Logout successful");
+                window.location.href = "./api/login";
+            } else {
+                alert("Logout failed");
+            }
+        }
+    };
+
+    xhr.send();
+});
 
 </script>
 
