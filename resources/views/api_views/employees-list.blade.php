@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', function () {
 				xhr.onreadystatechange = function () {
 					if (xhr.readyState === 4 && xhr.status === 200) {
 						const response = JSON.parse(xhr.responseText);
-						const employees = response.data.original.data;
+						const employees = response.data;
 						let totalSalary = 0;
 
 						employees.forEach(emp => {

@@ -21,7 +21,7 @@
             padding: 35px;
             width: 600px;
             border-radius: 8px;
-				margin:auto auto;
+			margin:50px auto;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
@@ -29,6 +29,7 @@
 			text-align:center;
             font-size: 35px;
             color: #333;
+			margin-top: 0;
         }
 
         /* Label Styles */
@@ -118,11 +119,13 @@
 	</style>
 </head>
 <body>
-		<h1>Employee Form</h1>
+		
 
 		<!-- employee Information -->
 		<form id="employeeInfo" class="employee">
+				<h1>Employee Form<span class="close" id="closebtn">&times;</span id="closeBtn"></h1>
 			<div class="form-group">
+			
 				<label for="first_name"><span>*</span>FirstName</label>
 				<input type="text" name="first_name" id="first_name">
 			</div>

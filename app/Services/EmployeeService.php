@@ -75,9 +75,6 @@ class EmployeeService
             'provident_fund_details' => $data['provident_fund_details'] ?? null,
         ]);
 
-
-
-        
         return $employee;
     }
 
@@ -158,8 +155,6 @@ class EmployeeService
             'marital_status'    => $request->input('marital_status', $employee->marital_status),
             'contact_number'    => $request->input('contact_number', $employee->contact_number),
             'email'             => $request->input('email', $employee->email),
-            // 'permanent_address' => $request->input('permanent_address', $employee->permanent_address),
-            // 'current_address'   => $request->input('current_address', $employee->current_address),
         ];
 
         //  Only handle photo if it exists
@@ -201,5 +196,79 @@ class EmployeeService
         return $employee;
     }
 
+
+    public function storePayroll(array $employeeIds, $createdBy = null)
+    {
+        $payrollId = strtoupper('PYR-' . Str::random(6));
+        $payDate = Carbon::now()->toDateString();
+
+        $success = 0;
+        $failed = 0;
+
+        foreach ($employeeIds as $empId) {
+            $employee = Employees::with('salary')->find($empId);
+
+            if (!$employee || !$employee->salary) {
+                $failed++;
+                continue;
+            }
+
+            $base = $employee->salary->base_salary ?? 0;
+            $advance = 0;
+            $advanceDeduction = 0;
+            $deduction = 0;
+            $bonus = 0;
+            $pf = 0;
+
+            $gross = $base + $bonus;
+            $net = $gross - ($advanceDeduction + $deduction + $pf);
+
+            PayrollDetail::create([
+                'payroll_id' => $payrollId,
+                'employee_id' => $empId,
+                'payroll_date' => $payDate,
+                'salary' => $base,
+                'advance' => $advance,
+                'advance_deduction' => $advanceDeduction,
+                'deduction' => $deduction,
+                'bonus' => $bonus,
+                'pf' => $pf,
+                'gross_pay' => $gross,
+                'net_pay' => $net,
+            ]);
+
+            $success++;
+        }
+
+        Payroll_history::create([
+            'payroll_id' => $payrollId,
+            'pay_date' => $payDate,
+            'pay_frequency' => 'Monthly', 
+            'status' => 'Completed',
+            'total_count' => count($employeeIds),
+            'success' => $success,
+            'failed' => $failed,
+            'created_by' => $createdBy,
+        ]);
+
+        return [
+            'status' => true,
+            'payroll_id' => $payrollId,
+            'message' => 'Payroll processed without transaction.',
+            'success' => $success,
+            'failed' => $failed,
+        ];
+    }
+    public function getEmployeesWithoutCurrentMonthPayroll()
+    {
+        $employeeIdsWithPayroll = DB::table('payroll_details')
+            ->select('employee_id')
+            ->whereMonth('payroll_date', now()->month)
+            ->whereYear('payroll_date', now()->year);
+
+        return Employees::with(['salary', 'jobDetails'])->where('status', '1')
+            ->whereNotIn('id', $employeeIdsWithPayroll)
+            ->get();
+    }
     
 }

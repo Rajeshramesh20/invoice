@@ -55,4 +55,5 @@ class Employees extends Model
             'department_id' // Local key on EmployeeJobDetail
         );
     }
+    
 }

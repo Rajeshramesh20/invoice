@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function () {
         //Get Id In the Url
         function getId(){                     
             const pathSegments = window.location.pathname.split('/');
-            const id = pathSegments[pathSegments.length - 1]; // "40"
+            const id = pathSegments[pathSegments.length - 1];
             return id;
             console.log(id);
         }
