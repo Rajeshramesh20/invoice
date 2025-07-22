@@ -93,7 +93,7 @@ class EmployeeService
            'employee_job' => $employeeJob,
            'employee_salary' => $employeeSalary,
            'address' => $address
-        ]
+        ];
     }
 
     //generate Employee ID
