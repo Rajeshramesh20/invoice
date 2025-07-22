@@ -178,6 +178,7 @@ class EmployeesController extends Controller
                 return response()->json([
                         'status' => 'error',
                         'message' => 'Failed To Update Employee.'
+                        
                 ]);
             }
         }catch(Exception $e){

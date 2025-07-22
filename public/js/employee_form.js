@@ -10,11 +10,7 @@ function validation(){
 	let department = document.getElementById('department_id').value;
 	let maritalStatus = document.getElementById('nationality').value.trim();
 	const genderRadios = document.getElementsByName("gender");
-	let line1 = document.getElementById('line1').value.trim();
-	let line2 = document.getElementById('line2').value.trim();
-	let line3 = document.getElementById('line3').value.trim();
-	let line4 = document.getElementById('line4').value.trim();
-	let pincode = document.getElementById('pincode').value.trim();	                   
+		                   
 
 	let genderSelected = false;
 	//Error Message
@@ -25,11 +21,7 @@ function validation(){
 	let nationalityErr = document.getElementById('nationality_err');
 	let departmentErr = document.getElementById('department_id_err');
 	let maritalStatusErr = document.getElementById('marital_status_err');
-	let line1_err = document.getElementById('line1_err');
-	let line2_err = document.getElementById('line2_err');
-	let line3_err = document.getElementById('line3_err');
-	let line4_err = document.getElementById('line4_err');
-	let pincode_err = document.getElementById('pincode_err');
+	
 		                    
 	//FirstName Validation
 	if(firstName === ''){
@@ -85,7 +77,47 @@ function validation(){
 		    isValid = false;
 		}
 
-	 // //Address line1
+    //M-Status Validation
+	if(maritalStatus === ''){
+		maritalStatusErr.innerHTML = "Marital Status is Required";
+		isValid = false;
+	}else{
+		maritalStatusErr.innerHTML = "";
+	}
+
+	 for (let i = 0; i < genderRadios.length; i++) {
+		if (genderRadios[i].checked) {
+			genderSelected = true;
+			break;
+		 }
+	}
+
+	if (!genderSelected) {
+		document.getElementById("gender_err").textContent = "Please select a gender.";
+		return; // Stop form submission
+	} else {
+		document.getElementById("gender_err").textContent = ""; // Clear error
+	}
+		return isValid;
+	}
+
+
+	//employee Address
+	function employeesAddress(){
+		let isValid = true;
+		let line1 = document.getElementById('line1').value.trim();
+		let line2 = document.getElementById('line2').value.trim();
+		let line3 = document.getElementById('line3').value.trim();
+		let line4 = document.getElementById('line4').value.trim();
+		let pincode = document.getElementById('pincode').value.trim();
+
+		let line1_err = document.getElementById('line1_err');
+		let line2_err = document.getElementById('line2_err');
+		let line3_err = document.getElementById('line3_err');
+		let line4_err = document.getElementById('line4_err');
+		let pincode_err = document.getElementById('pincode_err');
+
+		// //Address line1
 		if(line1 === ''){
 			line1_err.innerHTML = 'Address Field Is Required';
 			isValid = false;
@@ -115,32 +147,11 @@ function validation(){
 			isValid = false;
 		}else{
 			pincode_err.innerHTML = "";
-		}	
+		}
 
-    //M-Status Validation
-	if(maritalStatus === ''){
-		maritalStatusErr.innerHTML = "Marital Status is Required";
-		isValid = false;
-	}else{
-		maritalStatusErr.innerHTML = "";
-	}
+		return isValid;	
 
-	 for (let i = 0; i < genderRadios.length; i++) {
-		if (genderRadios[i].checked) {
-			genderSelected = true;
-			break;
-		 }
 	}
-
-	if (!genderSelected) {
-		document.getElementById("gender_err").textContent = "Please select a gender.";
-		return; // Stop form submission
-	} else {
-		document.getElementById("gender_err").textContent = ""; // Clear error
-	}
-		return isValid;
-	}
-
 	//employee JobDetais
 	function jobDetailsValidation(){
 		let isValid = true;
@@ -246,17 +257,27 @@ function validation(){
 		return isValid;
 	}
 
-		   const token = localStorage.getItem('token');
+	const token = localStorage.getItem('token');
 				document.addEventListener("DOMContentLoaded", function () {
 				    const employeeInfo = document.getElementById("employeeInfo");
+				    const employeeAddress = document.getElementById("employeeAddress");
 				    const employeeJob = document.getElementById("employeeJob");
 				    const employeeSalary = document.getElementById("employeeSalary");
 
-				    document.getElementById("nextToJob").onclick = () => {
+				    document.getElementById("nextToAddress").onclick = () => {
 				    	if(!validation()){
 				    		return;
 				    	}
 				        employeeInfo.style.display = "none";
+				        employeeAddress.style.display = "block";
+				    };
+
+				    document.getElementById("nextToJob").onclick = () => {
+				    	
+				    	if(!employeesAddress()){
+				    		return;
+				    	}
+				        employeeAddress.style.display = "none";
 				        employeeJob.style.display = "block";
 				    };
 
@@ -264,12 +285,13 @@ function validation(){
 				    	if(!jobDetailsValidation()){
 				    		return;
 				    	}
+				    	
 				        employeeJob.style.display = "none";
 				        employeeSalary.style.display = "block";
 				    };
 
 				    document.getElementById("previousEmployeeInfo").onclick = () => {
-				        employeeJob.style.display = "none";
+				        employeeAddress.style.display = "none";
 				        employeeInfo.style.display = "block";
 				    };
 
@@ -279,6 +301,11 @@ function validation(){
 				    };
 
 
+				    document.getElementById("previousEmployeeAddress").onclick = () => {
+				        employeeJob.style.display = "none";
+				        employeeAddress.style.display = "block";
+				    };
+				    
 
 				    document.getElementById("submitAll").onclick = function () {
 				    	if(!salaryValidation()){
@@ -286,7 +313,7 @@ function validation(){
 				    	}
         				const formData = new FormData();
 
-        				[employeeInfo, employeeJob, employeeSalary].forEach(form => {
+        				[employeeInfo, employeeAddress, employeeJob, employeeSalary].forEach(form => {
 				            new FormData(form).forEach((value, key) => {
 				                formData.append(key, value);
 				            });
@@ -308,7 +335,7 @@ function validation(){
 										for(let keyErr in data.errors){
 										let errValue = document.getElementById(`${keyErr}_err`);
 											if(errValue){
-												errValue.innerHTML = data.errors[keyErr];
+												errValue.innerHTML = data.errors[keyErr].join('<br>');
 											}
 										}
 									}

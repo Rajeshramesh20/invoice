@@ -169,7 +169,7 @@ class EmployeeService
     //Update Employee Data
     public function updateEmployeeData($id, Request $request)
     {
-
+    try{
         $employee = Employees::findOrFail($id);
 
         $updateData = [
@@ -185,10 +185,7 @@ class EmployeeService
 
         //  Only handle photo if it exists
 
-        if (isset($data['photo']) && $data['photo']->isValid()) {
-
-            if ($request->hasFile('photo')) {
-
+        if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
                 $oldPhoto = $employee->photo;
                 if ($oldPhoto && Storage::disk('public')->exists($oldPhoto)) {
                     Storage::disk('public')->delete($oldPhoto);
@@ -201,10 +198,16 @@ class EmployeeService
                 $profilePic = str_replace(' ', '-', $lowerCase) . '.' . $empProfile->extension();
                 $profilePath = $empProfile->storeAs('employeeProfile', $profilePic, 'public');
                 $updateData['photo'] = $profilePath;
-            }
+            
+            
+            
+     }
             $employee->update($updateData);
             return $employee;
-    }
+            
+        }catch(Exception $e){
+            Log::error('employee update Error' . $e->getMessage());
+        }
 
     }
     //Show(Separate) Employee Data

@@ -223,17 +223,16 @@ data.forEach((list, index) => {
                 <td>${list.contact_number}</td>
         		<td>${list.job_details?.job_title}</td>
                 <td>
-                  <abbr  title="View"> <a href="/showemployee/${list.id}"><i class="fa-solid fa-eye"></i></a></abbr>
+                 
 
                    <abbr  title="Edit"><a href="/editemployee/${list.id}"><i class='fa-solid fa-pencil'></i></a></abbr>
-                   <abbr  title="Send Mail">    <button class="mail-send" onclick="sendMail(${list.id})"><i class="fa-solid fa-paper-plane"></i></button></abbr>
-                    <abbr  title="Download Pdf">   <button class="pdf" onclick="pdfDownload('${list.id}','${list.employee_id}')">
-                    <i class="fas fa-file-pdf" style="color: red;"></i></button></abbr>
                    <abbr  title="Delete"> <button class="button" onclick="myFunction(${list.id})"><i class='fa-solid fa-trash'></i></button></abbr>
                 </td>`
         listBody.appendChild(row);
     });
 }
+
+ // <abbr  title="View"> <a href="/showemployee/${list.id}"><i class="fa-solid fa-eye"></i></a></abbr>
 
 //Pagination 
 function pagination(meta) {
