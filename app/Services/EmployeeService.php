@@ -43,11 +43,9 @@ class EmployeeService
             'photo' => $profilePath,
             'contact_number' => $data['contact_number'],
             'email' => $data['email'],
-            'permanent_address' => $data['permanent_address'],
-            'current_address' => $data['current_address'],
         ]);
 
-        $jobDetails = EmployeeJobDetail::create([
+        $employeeJob = EmployeeJobDetail::create([
             'employee_id' => $employee->id,
             'job_title' => $data['job_title'],
             'department_id' => $data['department_id'],
@@ -61,9 +59,9 @@ class EmployeeService
             'shift' => $data['shift'] ?? null,
         ]);
         
-        EmployeeSalary::create([
+        $employeeSalary = EmployeeSalary::create([
             'employee_id' => $employee->id,
-            'employee_job_details_id' => $jobDetails->id,
+            'employee_job_details_id' => $employeeJob->id,
             'base_salary' => $data['base_salary'],
             'pay_grade' => $data['pay_grade'] ?? null,
             'pay_frequency' => $data['pay_frequency'],
@@ -75,7 +73,27 @@ class EmployeeService
             'provident_fund_details' => $data['provident_fund_details'] ?? null,
         ]);
 
-        return $employee;
+        //address table data
+        $address = Addresses::create([
+            'reference_id' => $employee->id,
+            'reference_name' => 'Employee',
+            'line1' => $data['line1'],
+            'line2' => $data['line2'] ?? null,
+            'line3' => $data['line3'] ?? null,
+            'line4' => $data['line4'] ?? null,
+            'pincode' => $data['pincode'],
+            
+        ]);
+        $employee->address_id = $address->address_id;
+        $employee->save();
+
+        
+        return [
+           'employee'=> $employee,
+           'employee_job' => $employeeJob,
+           'employee_salary' => $employeeSalary,
+           'address' => $address
+        ];
     }
 
     //generate Employee ID
