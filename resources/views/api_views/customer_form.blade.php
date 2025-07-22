@@ -93,7 +93,7 @@
 		</form>	
 
 		<script>
-function customerValidation(){
+					function customerValidation(){
 						let isValid = true;
 						let customerName = document.getElementById('customer_name').value.trim();
 						let customerEmail = document.getElementById('customer_email').value.trim();

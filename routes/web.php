@@ -42,3 +42,7 @@ Route::prefix('api')->name('api.')->group(function () {
  Route::GET('editemployee/{id}',function(){
         return view('api_views.edit_employee');
       });
+
+ Route::GET('createemployee',function(){
+        return view('api_views.employee_form');
+      });

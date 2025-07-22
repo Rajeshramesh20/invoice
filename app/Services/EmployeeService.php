@@ -43,24 +43,11 @@ class EmployeeService
             'photo' => $profilePath,
             'contact_number' => $data['contact_number'],
             'email' => $data['email'],
-            // 'permanent_address' => $data['permanent_address'],
-            // 'current_address' => $data['current_address'],
+            'permanent_address' => $data['permanent_address'],
+            'current_address' => $data['current_address'],
         ]);
 
-        $employeeAddress = Addresses::create([
-            'reference_id' => $employee->employeeId,
-            'reference_name' => 'employees',
-            'line1' => $data['line1'],
-            'line2' => $data['line2'] ?? null,
-            'line3' => $data['line3'] ?? null,
-            'line4' => $data['line4'] ?? null,
-            'pincode' => $data['pincode'],
-            'created_by' => $userId,
-        ]);
-        $employee->address_id = $employeeAddress->address_id;
-        $employee->save();
-
-        $employeeJob = EmployeeJobDetail::create([
+      EmployeeJobDetail::create([
             'employee_id' => $employee->id,
             'job_title' => $data['job_title'],
             'department_id' => $data['department_id'],
@@ -73,9 +60,10 @@ class EmployeeService
             'work_location' => $data['work_location'],
             'shift' => $data['shift'] ?? null,
         ]);
-
-        $employeeSalary = EmployeeSalary::create([
+        
+        EmployeeSalary::create([
             'employee_id' => $employee->id,
+            'employee_job_details_id' => $jobDetails->id,
             'base_salary' => $data['base_salary'],
             'pay_grade' => $data['pay_grade'] ?? null,
             'pay_frequency' => $data['pay_frequency'],
@@ -83,33 +71,15 @@ class EmployeeService
             'tax_identification_number' => $data['tax_identification_number'] ?? null,
             'bonuses' => $data['bonuses'] ?? 0,
             'deductions' => $data['deductions'] ?? 0,
+            'advance' => $data['advance'] ?? 0,
             'provident_fund_details' => $data['provident_fund_details'] ?? null,
         ]);
 
-        return [
-            'employee' => $employee,
-            'employeeJob' => $employeeJob,
-            'employeeSalary' => $employeeSalary,
-            'employeeAddress' => $employeeAddress
-        ];
+
+
+        
+        return $employee;
     }
-
-    // public function storeEmployeeJobDetail($data ,){
-    //     EmployeeJobDetail::create([
-    //         'employee_id' => $employee->id,
-    //         'job_title' => $data['job_title'],
-    //         'department_id' => $data['department_id'],
-    //         'reporting_manager' => $data['reporting_manager'] ?? null,
-    //         'employee_type' => $data['employee_type'],
-    //         'employment_status' => $data['employment_status'],
-    //         'joining_date' => $data['joining_date'],
-    //         'probation_period' => $data['probation_period'],
-    //         'confirmation_date' => $data['confirmation_date'] ?? null,
-    //         'work_location' => $data['work_location'],
-    //         'shift' => $data['shift'] ?? null,
-    //     ]); 
-
-    // }
 
     //generate Employee ID
     public function generateEmployeeId()
@@ -128,8 +98,7 @@ class EmployeeService
     }
 
     //Search For Employee
-    public function searchField($request, $paginate = true)
-    {
+    public function searchField($request, $paginate = true){
 
         try {
 
@@ -166,7 +135,7 @@ class EmployeeService
         }
     }
 
-    // }
+    
     //Edit  Employee Data 
     public function editEmployeeData($id)
     {
@@ -213,61 +182,10 @@ class EmployeeService
                 $updateData['photo'] = $profilePath;
             }
             $employee->update($updateData);
-
-            if ($employee->address_id) {
-                $address = Addresses::find($employee->address_id);
-                if ($address) {
-                    $address->update([
-                        'line1' => $request->input('line1', $address->line1),
-                        'line2' => $request->input('line2', $address->line2),
-                        'line3' => $request->input('line3', $address->line3),
-                        'line4' => $request->input('line4', $address->line4),
-                        'pincode' => $request->input('pincode', $address->pincode),
-                    ]);
-                }
-            }
-
-            //  Update Job Details
-            $jobDetails = EmployeeJobDetail::where('employee_id', $employee->id)->first();
-            if ($jobDetails) {
-                $jobDetails->update([
-                    'job_title'         => $request->input('job_title', $jobDetails->job_title),
-                    'department_id'     => $request->input('department_id', $jobDetails->department_id),
-                    'reporting_manager' => $request->input('reporting_manager', $jobDetails->reporting_manager),
-                    'employee_type'     => $request->input('employee_type', $jobDetails->employee_type),
-                    'employment_status' => $request->input('employment_status', $jobDetails->employment_status),
-                    'joining_date'      => $request->input('joining_date', $jobDetails->joining_date),
-                    'probation_period'  => $request->input('probation_period', $jobDetails->probation_period),
-                    'confirmation_date' => $request->input('confirmation_date', $jobDetails->confirmation_date),
-                    'work_location'     => $request->input('work_location', $jobDetails->work_location),
-                    'shift'             => $request->input('shift', $jobDetails->shift),
-                ]);
-            }
-
-            //  Update Salary Details
-            $salaryDetails = EmployeeSalary::where('employee_id', $employee->id)->first();
-            if ($salaryDetails) {
-                $salaryDetails->update([
-                    'base_salary'              => $request->input('base_salary', $salaryDetails->base_salary),
-                    'pay_grade'                => $request->input('pay_grade', $salaryDetails->pay_grade),
-                    'pay_frequency'            => $request->input('pay_frequency', $salaryDetails->pay_frequency),
-                    'bank_account_details'     => $request->input('bank_account_details', $salaryDetails->bank_account_details),
-                    'tax_identification_number' => $request->input('tax_identification_number', $salaryDetails->tax_identification_number),
-                    'bonuses'                  => $request->input('bonuses', $salaryDetails->bonuses),
-                    'deductions'               => $request->input('deductions', $salaryDetails->deductions),
-                    'provident_fund_details'   => $request->input('provident_fund_details', $salaryDetails->provident_fund_details),
-                ]);
-            }
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Employee details updated successfully.',
-                'employee' => $employee,
-            ]);
-            // return $employee;
-        }
+            return $employee;
     }
 
+    }
     //Show(Separate) Employee Data
     public function showEmployeeData($id)
     {
@@ -281,90 +199,8 @@ class EmployeeService
         $employee = Employees::findOrFail($employee_id);
         $employee->update(['is_deleted' =>  '1']);
         return $employee;
+
     }
 
-    public function getEmployeesWithoutCurrentMonthPayroll()
-    {
-        $employeeIdsWithPayroll = DB::table('payroll_details')
-            ->select('employee_id')
-            ->whereMonth('payroll_date', now()->month)
-            ->whereYear('payroll_date', now()->year);
-
-        $employees = Employees::with(['jobDetails', 'salary'])
-            ->where('status', '1')
-            ->whereNotIn('id', $employeeIdsWithPayroll)
-            ->get();
-
-        return response()->json(
-            [
-                'status' => true,
-                'message' => 'Active employees without current month payroll',
-                'data' => $employees
-            ]
-        );
-    }
-
-    //payroll history
-    public function storePayroll(array $employeeIds, $createdBy = null)
-    {
-        $payrollId = strtoupper('PYR-' . Str::random(6));
-        $payDate = Carbon::now()->toDateString();
-
-        $success = 0;
-        $failed = 0;
-
-        foreach ($employeeIds as $empId) {
-            $employee = Employees::with('salary')->find($empId);
-
-            if (!$employee || !$employee->salary) {
-                $failed++;
-                continue;
-            }
-
-            $base = $employee->salary->base_salary ?? 0;
-            $advance = 0;
-            $advanceDeduction = 0;
-            $deduction = 0;
-            $bonus = 0;
-            $pf = 0;
-
-            $gross = $base + $bonus;
-            $net = $gross - ($advanceDeduction + $deduction + $pf);
-
-            PayrollDetail::create([
-                'payroll_id' => $payrollId,
-                'employee_id' => $empId,
-                'payroll_date' => $payDate,
-                'salary' => $base,
-                'advance' => $advance,
-                'advance_deduction' => $advanceDeduction,
-                'deduction' => $deduction,
-                'bonus' => $bonus,
-                'pf' => $pf,
-                'gross_pay' => $gross,
-                'net_pay' => $net,
-            ]);
-
-            $success++;
-        }
-
-        payroll_history::create([
-            'payroll_id' => $payrollId,
-            'pay_date' => $payDate,
-            'pay_frequency' => 'Monthly',
-            'status' => 'Completed',
-            'total_count' => count($employeeIds),
-            'success' => $success,
-            'failed' => $failed,
-            'created_by' => $createdBy,
-        ]);
-
-        return [
-            'status' => true,
-            'payroll_id' => $payrollId,
-            'message' => 'Payroll processed  transaction.',
-            'success' => $success,
-            'failed' => $failed,
-        ];
-    }
+    
 }

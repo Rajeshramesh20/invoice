@@ -13,6 +13,7 @@ class EmployeeSalary extends Model
 
     protected $fillable = [
         'employee_id',
+        'employee_job_details_id',
         'base_salary',
         'pay_grade',
         'pay_frequency',
@@ -20,6 +21,7 @@ class EmployeeSalary extends Model
         'tax_identification_number',
         'bonuses',
         'deductions',
+        'advance',
         'provident_fund_details'
     ];
     public function employee()
