@@ -35,8 +35,6 @@ class EmployeeService
             'photo' => $profilePath,
             'contact_number' => $data['contact_number'],
             'email' => $data['email'],
-            'permanent_address' => $data['permanent_address'] ?? '',
-            'current_address' => $data['current_address'] ?? '',
         ]);
 
         $employeeJob = EmployeeJobDetail::create([
@@ -55,7 +53,7 @@ class EmployeeService
         
         $employeeSalary = EmployeeSalary::create([
             'employee_id' => $employee->id,
-            'employee_job_details_id' => $jobDetails->id,
+            'employee_job_details_id' => $employeeJob->id,
             'base_salary' => $data['base_salary'],
             'pay_grade' => $data['pay_grade'] ?? null,
             'pay_frequency' => $data['pay_frequency'],
