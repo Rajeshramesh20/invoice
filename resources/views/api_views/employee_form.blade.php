@@ -4,8 +4,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Create Employee</title>
-	<style>
-			
+	<style>		
 		body {
             font-family: Arial, sans-serif;
             background-color: #f4f7fc;
@@ -74,7 +73,7 @@
         	display: flex; 
         }
         		
-        .nextToJob, .nextToSalary {
+        .nextToJob, .nextToSalary, .nextToAddress {
         	float: right;
         	background-color:green;
         	color: white;
@@ -107,7 +106,7 @@
         	align-items: center;
         	gap: 10px;
         }
-      .previousEmployeeInfo {
+      .previous {
       	  padding: 10px 20px;
 			  background-color:red;
 			  color: white;
@@ -185,7 +184,12 @@
 				<input type="file" name="photo" id="photo">
 			</div>
 			
-			<label style="font-weight: bold;"><span>*</span>Address</label>
+				<button type="button" id="nextToAddress" class="nextToAddress">Next</button>		
+		</form>
+
+		<!-- employee Address -->
+		<form id="employeeAddress" style="display: none;" class="employee">
+		<label style="font-weight: bold;"><span>*</span>Address</label>
 			<div class="form-group">
 				<label for="line1">Line1</label>
 				<input type="text" name="line1" id="line1">
@@ -215,9 +219,12 @@
 				<input type="number" name="pincode" id="pincode">
 			</div>
 			<p id="pincode_err"></p>
-
-				<button type="button" id="nextToJob" class="nextToJob">Next</button>		
+			<div class="navigateButton">
+				<button type="button" id="previousEmployeeInfo" class="previous">Back</button>
+				<button type="button" id="nextToJob" class="nextToJob">Next</button>	
+			</div>
 		</form>
+
 
 		<!-- employee Job Details -->
 		<form id="employeeJob"  style="display: none;" class="employee">
@@ -230,7 +237,7 @@
 			<div class="form-group">	
 			<label for="department_id">Department</label>
 				<select name="department_id" id="department_id">
-					<!-- <option value="" hidden disabled>Select Department</option> -->
+					<!-- <option value="" disabled selected hidden>Select Department</option> -->
 					<option value="1">Backend Engineering</option>
 					<option value="2">Frontend Engineering</option>
 					<option value="3">Mobile Development</option>
@@ -242,7 +249,7 @@
 			<div class="form-group">
 				<label for="employee_type">Employee Type</label>
 				<select name="employee_type" id="employee_type">
-					<!-- <option value="" hidden disabled>Select Employment Type</option> -->
+					<!-- <option value="" disabled selected hidden>Select Employee Type</option> -->
 					<option value="full_time">FullTime</option>
 					<option value="part_time">PartTime</option>
 					<option value="contract">Contract</option>
@@ -253,7 +260,7 @@
 			<div class="form-group">
 				<label for="employment_status">Employment Status</label>
 					<select name="employment_status" id="employment_status">
-					  <!-- <option value="" hidden disabled>Select Employment Status</option> -->
+					  <!-- <option value="" disabled selected hidden>Select Employment Status</option> -->
 					  <option value="active">Active</option>
 					  <option value="on_leave">OnLeave</option>
 					  <option value="terminated">Terminated</option>
@@ -279,7 +286,7 @@
 			</div>
 			<p id="work_location_err"></p>
 				<div class="navigateButton">
-				<button type="button" id="previousEmployeeInfo" class="previousEmployeeInfo">Back</button>
+				<button type="button" id="previousEmployeeAddress" class="previous">Back</button>
 				<button type="button" id="nextToSalary" class="nextToSalary">Next</button>
 			</div>
 		</form>
@@ -302,7 +309,7 @@
 			<div class="form-group">
 				<label for="pay_frequency">pay_frequency</label>
 				<select name="pay_frequency" id="pay_frequency">
-					<!-- <option value="" disabled selected hidden>Select Department</option> -->
+					<!-- <option value="" disabled selected hidden>Select Pay frequency</option> -->
 					<option value="Monthly">Monthly</option>
 					<option value="Weekly">Weekly</option>
 					<option value="Bi-Weekly">Bi-Weekly</option>
@@ -311,7 +318,7 @@
 			<p id="pay_frequency_err"></p>
 
 			<div class="navigateButton">
-				<button type="button" id="previousJob" class="previousEmployeeInfo">Back</button>
+				<button type="button" id="previousJob" class="previous">Back</button>
 				<button type="button" id="submitAll" class="submit">Submit</button>
 			</div>	
 		</form>
