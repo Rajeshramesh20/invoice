@@ -47,7 +47,7 @@ class EmployeeService
             'current_address' => $data['current_address'],
         ]);
 
-      EmployeeJobDetail::create([
+        $jobDetails = EmployeeJobDetail::create([
             'employee_id' => $employee->id,
             'job_title' => $data['job_title'],
             'department_id' => $data['department_id'],
@@ -199,7 +199,6 @@ class EmployeeService
         $employee = Employees::findOrFail($employee_id);
         $employee->update(['is_deleted' =>  '1']);
         return $employee;
-
     }
 
     
