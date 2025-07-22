@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('department_id')->constrained('departments');
             $table->string('reporting_manager')->nullable();
             $table->enum('employee_type', ['full_time', 'part_time', 'contract']);
-            $table->enum('employment_status', ['active', 'terminated', 'on_leave']);
+            $table->enum('employment_status', ['active', 'terminated', 'on_leave'])->default('active');
             $table->date('joining_date');
             $table->integer('probation_period')->comment('In months');
             $table->date('confirmation_date')->nullable();

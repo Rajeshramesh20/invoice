@@ -384,7 +384,7 @@ class InvoiceService
                     if($invoice->balance_amount == 0){
                          $invoice->invoice_status_id = "4";
                     }
-                    \Log::info('Invoice status before save: ' . $invoice->invoice_status_id);
+                    Log::info('Invoice status before save: ' . $invoice->invoice_status_id);
 
                     $invoice->save();                
                     return $invoice;
@@ -392,4 +392,5 @@ class InvoiceService
                     Log::error(' Error in Update Paid Amount:' . $e->getMessage());
                  }   
     
+}
 }

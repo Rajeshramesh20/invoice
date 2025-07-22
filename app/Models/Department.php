@@ -14,13 +14,13 @@ class Department extends Model
     protected $fillable = ['department_name', 'description'];
     public function employees()
     {
-        return $this->hasManyThrough(
+        return $this->hasMany(
             Employees::class,
             EmployeeJobDetail::class,
-            'department_id', // Foreign key on EmployeeJobDetail
-            'id', // Foreign key on Employee
-            'id', // Local key on Department
-            'employee_id' // Local key on EmployeeJobDetail
+            'department_id',
+            'id', 
+            'id', 
+            'employee_id' 
         );
     }
 }

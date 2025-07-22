@@ -5,23 +5,31 @@ namespace App\Services;
 use App\Models\Employees;
 use App\Models\EmployeeJobDetail;
 use App\Models\EmployeeSalary;
-
+use App\Models\Addresses;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Exception;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
+use App\Models\payroll_history;
+use App\Models\PayrollDetail;
 
 class EmployeeService
 {
     //creae Employee
-    public function storeEmployee($data){
+    public function storeEmployee($data)
+    {
+        $userId = Auth::id();
 
         $employeeId = $this->generateEmployeeId();
 
         $empProfile = $data['photo'];
         $lowerCase = strtolower($employeeId);
-        $profilePic = str_replace(' ','-',$lowerCase). '.' . $empProfile->extension();
+        $profilePic = str_replace(' ', '-', $lowerCase) . '.' . $empProfile->extension();
         $profilePath = $empProfile->storeAs('employeeProfile', $profilePic, 'public');
 
         $employee = Employees::create([
@@ -66,7 +74,7 @@ class EmployeeService
         ]);
 
         //address table data
-        $employeeAddress = Addresses::create([
+        $address = Addresses::create([
             'reference_id' => $employee->id,
             'reference_name' => 'Employee',
             'line1' => $data['line1'],
@@ -76,31 +84,31 @@ class EmployeeService
             'pincode' => $data['pincode'],
             
         ]);
-        $employee->address_id = $employeeAddress->address_id;
+        $employee->address_id = $address->address_id;
         $employee->save();
 
-        return [
-            'employee' => $employee,
-            'job_details' => $employeeJob,
-            'salary_details' => $employeeSalary,
-            'address' => $employeeAddress
-        ];
-
-
         
+        return [
+           'employee'=> $employee,
+           'employee_job' => $employeeJob,
+           'employee_salary' => $employeeSalary,
+           'address' => $address
+        ]
     }
 
     //generate Employee ID
-    public function generateEmployeeId(){
+    public function generateEmployeeId()
+    {
         $lastEmployee = Employees::orderBy('id', 'desc')->first();
         $nextId = $lastEmployee ? $lastEmployee->id + 1 : 1;
- 
+
         return 'TWK-EMP-' . str_pad($nextId, 4, '0', STR_PAD_LEFT);
     }
 
     //Get Employee Data For List 
-    public function employeeData(){
-        $employee = Employees::with(['jobDetails'])->where('is_deleted','0')->where('status','1')->orderBy('id','desc')->paginate(5);
+    public function employeeData()
+    {
+        $employee = Employees::with(['jobDetails'])->where('is_deleted', '0')->where('status', '1')->orderBy('id', 'desc')->paginate(5);
         return $employee;
     }
 
@@ -108,30 +116,30 @@ class EmployeeService
     public function searchField($request, $paginate = true){
 
         try {
-            
+
             $employee_name = $request['employee_name'] ?? '';
 
             $employee_Id = $request['employee_id'] ?? '';
 
             $email = $request['email'] ?? '';
 
-          $searchData = Employees::where('is_deleted', '0')
-            ->where('status', '1')
-        
+            $searchData = Employees::where('is_deleted', '0')
+                ->where('status', '1')
+
                 ->when($employee_name, function ($searchData, $employee_name) {
-                    return $searchData->where('id','LIKE', '%' . $employee_name . '%');
+                    return $searchData->where('id', 'LIKE', '%' . $employee_name . '%');
                 })
 
                 ->when($employee_Id, function ($searchData, $employee_Id) {
-                    return $searchData->where('employee_id','LIKE', '%' . $employee_Id . '%');
+                    return $searchData->where('employee_id', 'LIKE', '%' . $employee_Id . '%');
                 })
-                
+
                 ->when($email, function ($searchData, $email) {
-                    return $searchData->where('email','LIKE', '%' . $email . '%');
+                    return $searchData->where('email', 'LIKE', '%' . $email . '%');
                 });
 
             if (!$paginate) {
- 
+
                 $searchData = $searchData->get();
             } else {
                 $searchData = $searchData->paginate(5);
@@ -142,65 +150,69 @@ class EmployeeService
         }
     }
 
-  
+    
     //Edit  Employee Data 
-    public function editEmployeeData($id){
+    public function editEmployeeData($id)
+    {
         $employee = Employees::findOrFail($id);
         return $employee;
     }
 
     //Update Employee Data
-    public function updateEmployeeData($id, Request $request){
+    public function updateEmployeeData($id, Request $request)
+    {
 
         $employee = Employees::findOrFail($id);
 
-         $updateData = [
-        'first_name'        => $request->input('first_name', $employee->first_name),
-        'last_name'         => $request->input('last_name', $employee->last_name),
-        'gender'            => $request->input('gender', $employee->gender),
-        'date_of_birth'     => $request->input('date_of_birth', $employee->date_of_birth),
-        'nationality'       => $request->input('nationality', $employee->nationality),
-        'marital_status'    => $request->input('marital_status', $employee->marital_status),
-        'contact_number'    => $request->input('contact_number', $employee->contact_number),
-        'email'             => $request->input('email', $employee->email),
-        'permanent_address' => $request->input('permanent_address', $employee->permanent_address),
-        'current_address'   => $request->input('current_address', $employee->current_address),
-    ];
+        $updateData = [
+            'first_name'        => $request->input('first_name', $employee->first_name),
+            'last_name'         => $request->input('last_name', $employee->last_name),
+            'gender'            => $request->input('gender', $employee->gender),
+            'date_of_birth'     => $request->input('date_of_birth', $employee->date_of_birth),
+            'nationality'       => $request->input('nationality', $employee->nationality),
+            'marital_status'    => $request->input('marital_status', $employee->marital_status),
+            'contact_number'    => $request->input('contact_number', $employee->contact_number),
+            'email'             => $request->input('email', $employee->email),
+            // 'permanent_address' => $request->input('permanent_address', $employee->permanent_address),
+            // 'current_address'   => $request->input('current_address', $employee->current_address),
+        ];
 
         //  Only handle photo if it exists
 
         if (isset($data['photo']) && $data['photo']->isValid()) {
 
-        if ($request->hasFile('photo')) {
+            if ($request->hasFile('photo')) {
 
-            $oldPhoto = $employee->photo;
-            if ($oldPhoto && Storage::disk('public')->exists($oldPhoto)) {
-                Storage::disk('public')->delete($oldPhoto);
+                $oldPhoto = $employee->photo;
+                if ($oldPhoto && Storage::disk('public')->exists($oldPhoto)) {
+                    Storage::disk('public')->delete($oldPhoto);
+                }
+                Log::error("old photo", ['photo' => $oldPhoto]);
+
+                $employeeId = $employee->employee_id;
+                $empProfile = $request->file('photo');
+                $lowerCase = strtolower($employeeId);
+                $profilePic = str_replace(' ', '-', $lowerCase) . '.' . $empProfile->extension();
+                $profilePath = $empProfile->storeAs('employeeProfile', $profilePic, 'public');
+                $updateData['photo'] = $profilePath;
             }
-            Log::error("old photo", ['photo' => $oldPhoto]); 
-
-            $employeeId = $employee->employee_id;
-            $empProfile = $request->file('photo');
-            $lowerCase = strtolower($employeeId);
-            $profilePic = str_replace(' ', '-', $lowerCase) . '.' . $empProfile->extension();
-            $profilePath = $empProfile->storeAs('employeeProfile', $profilePic, 'public');
-            $updateData['photo'] = $profilePath;
-        }
             $employee->update($updateData);
             return $employee;
     }
-}
 
+    }
     //Show(Separate) Employee Data
-    public function showEmployeeData($id){
-        $employee = Employees::findOrFail($id);
+    public function showEmployeeData($id)
+    {
+        $employee = Employees::with(['jobDetails', 'salary', 'address'])->findOrFail($id);
         return $employee;
     }
 
     //delete Employee Data
-    public function deleteEmployeeData($employee_id){
+    public function deleteEmployeeData($employee_id)
+    {
         $employee = Employees::findOrFail($employee_id);
-        $employee->update(['is_deleted'=>  '1']);
+        $employee->update(['is_deleted' =>  '1']);
         return $employee;
     }
 

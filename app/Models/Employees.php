@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\EmployeeJobDetail;
 use App\Models\EmployeeSalary;
 use App\Models\Department;
-use App\Models\Addresses;
 
 class Employees extends Model
 {
@@ -41,7 +40,7 @@ class Employees extends Model
 
     public function salary()
     {
-        return $this->hasOne(EmployeeSalary::class);
+        return $this->hasOne(EmployeeSalary::class , 'employee_id', 'id');
     }
 
     public function department()
@@ -58,6 +57,6 @@ class Employees extends Model
 
      public function address()
     {
-        return $this->belongsTo(Addresses::class, 'address_id');
+        return $this->belongsTo(Addresses::class, 'address_id', 'address_id');
     }
 }

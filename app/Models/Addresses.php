@@ -36,8 +36,9 @@ class Addresses extends Model
         return $this->hasMany(Company::class, 'address_id', 'address_id' );
     }
 
-    public function employees()
+     public function employees()
     {
-        return $this->hasMany(Company::class, 'address_id', 'address_id' );
+        return $this->hasMany(Employees::class, 'address_id', 'address_id' );
     }
+
 }

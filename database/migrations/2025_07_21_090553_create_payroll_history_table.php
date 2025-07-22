@@ -20,6 +20,8 @@ return new class extends Migration
             $table->integer('total_count');
             $table->integer('success');
             $table->integer('failed');
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
         });
     }

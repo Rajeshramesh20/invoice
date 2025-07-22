@@ -45,15 +45,15 @@ class EmployeeRequests extends FormRequest
             'nationality'=> 'required',
             'marital_status' =>'required',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+
             'line1' => 'required|string|max:255',
             'line2' => 'required|string|max:255',
             'line3' => 'required|string|max:255',
             'line4' => 'nullable|string|max:255',
             'pincode' => 'required|string|max:10',
-        
 
 
-             //  Job Details Table
+            //  Job Details Table
             'job_title' => ['required', 'string', 'max:255'],
             'department_id' => ['required', 'exists:departments,id'],
             // 'reporting_manager' => ['nullable', 'string', 'max:255'],

@@ -122,5 +122,8 @@ Route::middleware(['auth:api'])->group(function() {
     Route::PUT('deleteemployee/{id}',[EmployeesController::class, 'deleteEmployeeData']); //Delete employee Data
 
     Route::get('searchEmployee', [EmployeesController::class, 'searchData']);
+
+    Route::get('/employeesForPayrolle', [EmployeesController::class, 'getEmployeesForPayroll']);
+    Route::post('/payrollstore', [EmployeesController::class, 'storepayrollHistory']);
 });
 
