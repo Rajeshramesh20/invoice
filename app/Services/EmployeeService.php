@@ -35,11 +35,11 @@ class EmployeeService
             'photo' => $profilePath,
             'contact_number' => $data['contact_number'],
             'email' => $data['email'],
-            'permanent_address' => $data['permanent_address'],
-            'current_address' => $data['current_address'],
+            'permanent_address' => $data['permanent_address'] ?? '',
+            'current_address' => $data['current_address'] ?? '',
         ]);
 
-        EmployeeJobDetail::create([
+        $employeeJob = EmployeeJobDetail::create([
             'employee_id' => $employee->id,
             'job_title' => $data['job_title'],
             'department_id' => $data['department_id'],
@@ -53,8 +53,9 @@ class EmployeeService
             'shift' => $data['shift'] ?? null,
         ]);
         
-        EmployeeSalary::create([
+        $employeeSalary = EmployeeSalary::create([
             'employee_id' => $employee->id,
+            'employee_job_details_id' => $jobDetails->id,
             'base_salary' => $data['base_salary'],
             'pay_grade' => $data['pay_grade'] ?? null,
             'pay_frequency' => $data['pay_frequency'],
@@ -62,14 +63,33 @@ class EmployeeService
             'tax_identification_number' => $data['tax_identification_number'] ?? null,
             'bonuses' => $data['bonuses'] ?? 0,
             'deductions' => $data['deductions'] ?? 0,
+            'advance' => $data['advance'] ?? 0,
             'provident_fund_details' => $data['provident_fund_details'] ?? null,
         ]);
 
+        //address table data
+        $employeeAddress = Addresses::create([
+            'reference_id' => $employee->id,
+            'reference_name' => 'Employee',
+            'line1' => $data['line1'],
+            'line2' => $data['line2'] ?? null,
+            'line3' => $data['line3'] ?? null,
+            'line4' => $data['line4'] ?? null,
+            'pincode' => $data['pincode'],
+            
+        ]);
+        $employee->address_id = $employeeAddress->address_id;
+        $employee->save();
+
+        return [
+            'employee' => $employee,
+            'job_details' => $employeeJob,
+            'salary_details' => $employeeSalary,
+            'address' => $employeeAddress
+        ];
 
 
-
-
-        return $employee;
+        
     }
 
     //generate Employee ID
@@ -85,10 +105,6 @@ class EmployeeService
         $employee = Employees::with(['jobDetails'])->where('is_deleted','0')->where('status','1')->orderBy('id','desc')->paginate(5);
         return $employee;
     }
-
-
-    public function searchField($request, $paginate = true)
-    {
 
     //Search For Employee
     public function searchField($request, $paginate = true){
@@ -128,7 +144,7 @@ class EmployeeService
         }
     }
 
-    }
+  
     //Edit  Employee Data 
     public function editEmployeeData($id){
         $employee = Employees::findOrFail($id);
@@ -175,6 +191,7 @@ class EmployeeService
             $employee->update($updateData);
             return $employee;
     }
+}
 
     //Show(Separate) Employee Data
     public function showEmployeeData($id){
@@ -187,7 +204,6 @@ class EmployeeService
         $employee = Employees::findOrFail($employee_id);
         $employee->update(['is_deleted'=>  '1']);
         return $employee;
-
     }
 
     

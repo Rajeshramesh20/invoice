@@ -45,22 +45,25 @@ class EmployeeRequests extends FormRequest
             'nationality'=> 'required',
             'marital_status' =>'required',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'permanent_address' => 'required|string',
-            'current_address' => 'required|string',
+            'line1' => 'required|string|max:255',
+            'line2' => 'required|string|max:255',
+            'line3' => 'required|string|max:255',
+            'line4' => 'nullable|string|max:255',
+            'pincode' => 'required|string|max:10',
         
 
 
              //  Job Details Table
             'job_title' => ['required', 'string', 'max:255'],
             'department_id' => ['required', 'exists:departments,id'],
-            'reporting_manager' => ['nullable', 'string', 'max:255'],
+            // 'reporting_manager' => ['nullable', 'string', 'max:255'],
             'employee_type' => ['required', Rule::in(['full_time', 'part_time', 'contract'])],
             'employment_status' => ['required', Rule::in(['active', 'terminated', 'on_leave'])],
             'joining_date' => ['required', 'date'],
             'probation_period' => ['required', 'integer', 'min:0'],
-            'confirmation_date' => ['nullable', 'date'],
+            // 'confirmation_date' => ['nullable', 'date'],
             'work_location' => ['required', 'string', 'max:255'],
-            'shift' => ['nullable', 'string', 'max:255'],
+            // 'shift' => ['nullable', 'string', 'max:255'],
 
             //Salary Table
             'base_salary' => ['required', 'numeric', 'min:0'],
@@ -70,6 +73,7 @@ class EmployeeRequests extends FormRequest
             'tax_identification_number' => ['nullable', 'string', 'max:255'],
             'bonuses' => ['nullable', 'numeric', 'min:0'],
             'deductions' => ['nullable', 'numeric', 'min:0'],
+            'advance' => ['nullable', 'numeric', 'min:0'],
             'provident_fund_details' => ['nullable', 'string', 'max:255'],
         ];
 

@@ -41,6 +41,7 @@
 		<div>
 			<!-- <a href="" class="create-note">Credit Note</a>
 				<a href="" class="group-invoice">Group Invoice</a> -->
+				<a href="/createemployee" class="create">Add Employee</a>
 				{{-- <a href="/api/company/form" class="create">Add Company</a> --}}
 				<a href="/api/customer/list" class="create">view customer</a>
 			<a href="/api/customer/form" class="create">Add Customer</a>
@@ -198,6 +199,7 @@ data.forEach((list, index) => {
 				<td class="align-center"><img src="${photoUrl}" class="profile" alt="Photo of ${list.first_name}"></td>
 				<td>${list.email}</td>
                 <td>${list.contact_number}</td>
+        		<td>${list.job_details?.job_title}</td>
                 <td>
                   <abbr  title="View"> <a href="/showemployee/${list.id}"><i class="fa-solid fa-eye"></i></a></abbr>
 

@@ -483,6 +483,7 @@ document.getElementById('statusSubmit').addEventListener('click', function (e) {
 
     if (selectedStatus.value === '3') {
         document.getElementById("paidAlert").style.display = "block";
+        return;
     }
 
     let payload = {

@@ -61,7 +61,7 @@ class InvoiceControllerV1 extends Controller
     }
 
     //update invoice status
-    /*public function updateStatusTOInvoiceTable(InvoiceServiceV1 $invoiceService, $invoiceId, Request $request)
+    public function updateStatusTOInvoiceTable(InvoiceServiceV1 $invoiceService, $invoiceId, Request $request)
     {
         try {
             $validated = $request->validate([
@@ -82,7 +82,7 @@ class InvoiceControllerV1 extends Controller
                 'message' => 'Error to  update invoice: ' . $e->getMessage()
             ], 500);
         }
-    }*/
+    }
 
     //update payment
    /* public function updatePayment(Request $request, $id, InvoiceServiceV1 $invoiceService)
