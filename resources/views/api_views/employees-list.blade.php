@@ -14,12 +14,7 @@
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
 	<link rel="stylesheet" type="text/css" href="{{asset('css/invoice-table.css')}}">
     <style>
-		 .profile {
-      width: 50px;
-      height: 50px;
-      object-fit: cover;
-      border-radius: 50%;
-    }
+	
 	</style>
 	<script>
 		const token = localStorage.getItem('token');
@@ -42,10 +37,12 @@
 			<!-- <a href="" class="create-note">Credit Note</a>
 				<a href="" class="group-invoice">Group Invoice</a> -->
 				{{-- <a href="/api/company/form" class="create">Add Company</a> --}}
+                <button id="openPayrollBtn"  class="create">Show Payroll</button>
 				<a href="/api/customer/list" class="create">view customer</a>
 			<a href="/api/customer/form" class="create">Add Customer</a>
 			<a href="/api/invoice" class="create"><i class="bi bi-plus"></i>Create</a>
 			<button class='logout btn' id="logoutBtn">Logout</button>
+            
 		</div>
 	</header>
 
@@ -140,6 +137,29 @@
 	  <button onclick="closeAlert()" class="alertBtn">OK</button>
 </div>
 
+{{-- payroll modal --}}
+<div id="payrollModal" class="overlay">
+		<div class="modal">
+			<button id="closePayrollBtn">&times;</button> <!-- ✅ Close Button -->
+			<h2>Employees Payroll List</h2>
+			<table id="employeeTable">
+				<thead>
+					<tr>
+						<th><input type="checkbox" id="selectAll" checked> Select All</th>
+						<th>ID</th>
+						<th>Name</th>
+						<th>Role</th>
+						<th>Salary</th>
+						{{-- <th>Status</th> --}}
+					</tr>
+				</thead>
+				<tbody id="employeeBody"></tbody>
+			</table>
+			<div id="totalSalary">Total Salary: ₹0</div>
+             <button type="submit" id="generatePayroll">Generate</button>
+		</div>
+	</div>
+
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 {{-- <script src="/js/invoiceListV1.js"></script> --}}
 
@@ -198,6 +218,7 @@ data.forEach((list, index) => {
 				<td class="align-center"><img src="${photoUrl}" class="profile" alt="Photo of ${list.first_name}"></td>
 				<td>${list.email}</td>
                 <td>${list.contact_number}</td>
+                   <td>${list.job_details?.job_title}</td>
                 <td>
                   <abbr  title="View"> <a href="/showemployee/${list.id}"><i class="fa-solid fa-eye"></i></a></abbr>
 
@@ -380,6 +401,134 @@ function deleteEmployeeData(id) {
     }
     deleteRequest.send();
 }
+
+
+
+// payroll modal and payroll list 
+document.addEventListener('DOMContentLoaded', function () {
+			
+			const openBtn = document.getElementById('openPayrollBtn'); 
+			const closeBtn = document.getElementById('closePayrollBtn'); 
+			const modal = document.getElementById('payrollModal'); 
+			const table = document.getElementById('employeeTable');
+			const tbody = document.getElementById('employeeBody');
+			const selectAll = document.getElementById('selectAll');
+			const totalSalaryDisplay = document.getElementById('totalSalary');
+
+		
+			openBtn.addEventListener('click', () => {
+				modal.style.display = 'flex';
+				loadPayrollData();
+			});
+
+			
+			closeBtn.addEventListener('click', () => {
+				modal.style.display = 'none';
+			});
+
+	
+			window.addEventListener('click', function (e) {
+				if (e.target === modal) {
+					modal.style.display = 'none';
+				}
+			});
+
+			function loadPayrollData() {
+				tbody.innerHTML = ''; 
+				const xhr = new XMLHttpRequest();
+				xhr.open('GET', 'http://127.0.0.1:8000/api/employeesForPayrolle', true);
+				xhr.setRequestHeader('Accept', 'application/json');
+				xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4 && xhr.status === 200) {
+						const response = JSON.parse(xhr.responseText);
+						const employees = response.data.original.data;
+						let totalSalary = 0;
+
+						employees.forEach(emp => {
+							const row = document.createElement('tr');
+							const salary = emp.salary ? parseFloat(emp.salary.base_salary) : 0;
+							totalSalary += salary;
+
+							row.innerHTML = `
+								<td><input type="checkbox" class="empCheck" checked value="${emp.id}"></td>
+								<td>${emp.employee_id}</td>
+								<td>${emp.first_name} ${emp.last_name}</td>
+								<td>${emp.job_details ? emp.job_details.job_title : '-'}</td>
+								<td class="salary">₹${salary.toLocaleString()}</td>
+								
+							`;
+							// <td>${emp.status === 1 ? 'Active' : 'Inactive'}</td>
+							tbody.appendChild(row);
+						});
+
+						totalSalaryDisplay.textContent = `Total Salary: ₹${totalSalary.toLocaleString()}`;
+						table.style.display = '';
+					}
+				};
+				xhr.send();
+			}
+
+			selectAll.addEventListener('change', function () {
+				const allChecks = document.querySelectorAll('.empCheck');
+				allChecks.forEach(chk => chk.checked = selectAll.checked);
+
+
+				updateTotal();
+			});
+
+			
+			document.addEventListener('change', function (e) {
+				if (e.target.classList.contains('empCheck')) {
+					updateTotal();
+				}
+			});
+
+			function updateTotal() {
+				const checkboxes = document.querySelectorAll('.empCheck');
+				let total = 0;
+
+				checkboxes.forEach((checkbox) => {
+					if (checkbox.checked) {
+						const row = checkbox.closest('tr');
+						const salaryText = row.querySelector('.salary').textContent.replace(/[₹,]/g, '');
+						total += parseFloat(salaryText);
+					}
+				});
+
+				totalSalaryDisplay.textContent = `Total Salary: ₹${total.toLocaleString()}`;
+			}
+		});
+
+
+  document.getElementById('generatePayroll').addEventListener('click', function () {
+    const selectedIds = [];
+    document.querySelectorAll('.empCheck:checked').forEach(chk => {
+        selectedIds.push(chk.value);
+    });
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://127.0.0.1:8000/api/payrollstore', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+    xhr.setRequestHeader('Accept', 'application/json');
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            const res = JSON.parse(xhr.responseText);
+            alert(res.message);
+        } else {
+            alert('Payroll submission failed');
+            console.error(xhr.responseText);
+        }
+    };
+
+    xhr.send(JSON.stringify({
+        employee_ids: selectedIds
+    }));
+});
+
 
 </script>
 

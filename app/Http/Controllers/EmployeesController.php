@@ -8,6 +8,7 @@ use App\Services\EmployeeService;
 use App\Http\Requests\EmployeeRequests;
 use Exception;
 use App\Http\Requests\UpdateEmployeeRequest;
+use App\Http\Requests\StorePayrollRequest;
 
 
 
@@ -209,4 +210,28 @@ class EmployeesController extends Controller
         }    
     }
 
+
+    //payroll Details
+    public function getEmployeesForPayroll(EmployeeService $payrollService)
+    {
+      
+        $employees = $payrollService->getEmployeesWithoutCurrentMonthPayroll();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'employees current month payroll',
+            'data' => $employees
+        ]);
+
+}
+
+    public function storepayrollHistory(StorePayrollRequest $request, EmployeeService $payrollService )
+    {
+        $employeeIds = $request->employee_ids;
+        $createdBy = auth()->id(); 
+
+        $result = $payrollService->storePayroll($employeeIds, $createdBy);
+
+        return response()->json($result);
+    }
 }

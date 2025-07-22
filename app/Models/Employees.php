@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\EmployeeJobDetail;
 use App\Models\EmployeeSalary;
 use App\Models\Department;
+use App\Models\payroll_history;
+use App\Models\PayrollDetail;
+
 
 class Employees extends Model
 {
@@ -23,8 +26,6 @@ class Employees extends Model
             'photo',
             'contact_number',
             'email',
-            'permanent_address',
-            'current_address',
             'status',
             'created_by',
             'updated_by',
@@ -41,7 +42,7 @@ class Employees extends Model
 
     public function salary()
     {
-        return $this->hasOne(EmployeeSalary::class);
+        return $this->hasOne(EmployeeSalary::class , 'employee_id', 'id');
     }
 
     public function department()
@@ -54,5 +55,15 @@ class Employees extends Model
             'id', // Local key on Employee
             'department_id' // Local key on EmployeeJobDetail
         );
+    }
+    public function address()
+    {
+        return $this->belongsTo(Addresses::class, 'address_id', 'address_id');
+    }
+
+
+    public function payrollDetails()
+    {
+        return $this->hasMany(PayrollDetail::class, 'employee_id');
     }
 }
