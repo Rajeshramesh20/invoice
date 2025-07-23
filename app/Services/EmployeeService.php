@@ -9,6 +9,7 @@ use App\Models\Addresses;
 use App\Models\Department;
 use App\Models\payroll_history;
 use App\Models\PayrollDetail;
+use App\Models\BankDetail;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
@@ -18,8 +19,12 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+
+
+
 
 
 class EmployeeService
@@ -91,12 +96,27 @@ class EmployeeService
 
         $employee->address_id = $address->address_id;
         $employee->save();
+        
+        $BankDetail = BankDetail::create([
+            'reference_id' => $employee->id,
+            'reference_name' => 'Employee',
+            'bank_name' => $data['bank_name'],
+            'account_holder_name' => $data['account_holder_name'],
+            'account_number' => $data['account_number'],
+            'ifsc_code' => $data['ifsc_code'],
+            'branch_name' => $data['branch_name'] ?? null,
+            'account_type' => $data['account_type'],
+            'created_by' => $userId,
+        ]);
+        $employeeSalary->bank_details_id = $BankDetail->bank_detail_id;
+        $employeeSalary->save();
 
         return [
            'employee'=> $employee,
            'employee_job' => $employeeJob,
            'employee_salary' => $employeeSalary,
-           'address' => $address
+           'address' => $address,
+           'BankDetail'=> $BankDetail
         ];
     }
 
@@ -124,11 +144,13 @@ class EmployeeService
 
     //Search For Employee
     public function searchField($request, $paginate = true){
+
         try {
             $startDate = isset($request['startDate']) && $request['startDate'] !== '' ?
                 Carbon::parse($request['startDate'])->format('Y-m-d') : null;
             $endDate = isset($request['endDate']) && $request['endDate'] !== '' ?
                 Carbon::parse($request['endDate'])->format('Y-m-d') : null;
+
 
             $employee_name = $request['employee_name'] ?? '';
 

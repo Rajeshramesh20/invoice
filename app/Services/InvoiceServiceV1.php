@@ -206,7 +206,7 @@ class InvoiceServiceV1
             'invoice' => $invoice,
             'company' => $company,
             'companyAddress' => $company->address,
-            'bankDetails' => $company->bankDetails->first(),
+            'bankDetails' => $company->bankDetails,
             'gstTotal' => $gstTotal,
             'netTotal' => $netTotal,
             'numberInWords' => $numberInWords,
@@ -220,6 +220,54 @@ class InvoiceServiceV1
         return $pdf->download('invoice-' . $invoice->invoice_no . '.pdf');
     }
 
+    // public function generatePdf($invoiceId)
+    // {
+     
+    //     $invoice = Invoice::with([
+    //         'items',
+    //         'customer.address',
+    //         'company.address',          
+    //         'company.bankDetails'      
+    //     ])->where('invoice_id', $invoiceId)->first();
+
+     
+    //     // if (!$invoice || !$invoice->company) {
+    //     //     return null;
+    //     // }
+
+    //     $company = $invoice->company;             
+    //     $companyAddress = $company->address;      
+    //     $bankDetails = $company->bankDetails;
+
+    //     $gstTotal = 0;
+    //     $netTotal = 0;
+
+    //     foreach ($invoice->items as $item) {
+    //         $gstTotal += $item->gst_amount;
+    //         $netTotal += $item->net_amount;
+    //     }
+
+    //     $numberInWords = Number::spell($invoice->total_amount);
+    //     $formattedInvoiceDate = Carbon::parse($invoice->invoice_date)->format('M j, Y');
+
+    //     $data = [
+    //         'invoice' => $invoice,
+    //         'company' => $company,
+    //         'companyAddress' => $companyAddress,
+    //         'bankDetails' => $bankDetails, 
+    //         'gstTotal' => $gstTotal,
+    //         'netTotal' => $netTotal,
+    //         'numberInWords' => $numberInWords,
+    //         'logo_path' => $company->logo_path,
+    //         'formattedInvoiceDate' => $formattedInvoiceDate,
+    //     ];
+
+    //     $pdf = Pdf::loadView('pdf.invoicePdf', $data);
+
+    //     Log::error($invoice->invoice_no);
+
+    //     return $pdf->download('invoice-' . $invoice->invoice_no . '.pdf');
+    // }
 
 
     //store company
@@ -261,8 +309,10 @@ class InvoiceServiceV1
         $company->address_id = $address->address_id;
         $company->save();
 
-        BankDetail::create([
-            'company_id' => $company->company_id,
+        $BankDetail = BankDetail::create([
+            // 'company_id' => $company->company_id,
+            'reference_id' => $company->company_id,
+            'reference_name' => 'companies',
             'bank_name' => $companyData['bank_name'],
             'account_holder_name' => $companyData['account_holder_name'],
             'account_number' => $companyData['account_number'],
@@ -270,8 +320,10 @@ class InvoiceServiceV1
             'branch_name' => $companyData['branch_name'] ?? null,
             'account_type' => $companyData['account_type'],
             'created_by' => $userId,
-
         ]);
+        $company->bank_details_id = $BankDetail->bank_detail_id;
+        $company->save();
+
 
         return $company;
     }
@@ -369,7 +421,6 @@ class InvoiceServiceV1
             Log::error('Error In Show Role' . $e->getMessage());
         }
     }
-
 
     //mail Send to the customer
     public function sendInvoiceMail($invoice)
@@ -479,7 +530,6 @@ class InvoiceServiceV1
         }
     }
 
-
     //Update customerData  
     public function updateCustomerData($request, string $id)
     {
@@ -516,7 +566,6 @@ class InvoiceServiceV1
             Log::error('Error in edit Customer data:' . $e->getMessage());
         }
     }
-
 
     //update invoice data
     public function updateInvoiceData($request, string $id )

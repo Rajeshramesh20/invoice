@@ -137,7 +137,7 @@
 				<thead>
 					<tr>
 						<th><input type="checkbox" id="selectAll" checked> Select All</th>
-						<th>Employee ID</th>
+						<th> Employee ID</th>
 						<th>Name</th>
 						<th>Role</th>
 						<th>Salary</th>
@@ -332,7 +332,6 @@ function searchData(page = 1) {
                 let message = "Not Found Search Data";
                 showAlert(message, type);
             }
-
             console.log(data);
             //Store Search Data
             listBody.innerHTML = '';
@@ -347,12 +346,9 @@ function searchData(page = 1) {
 function showAlert(message, type) {
     const alertBox = document.getElementById("customAlert");
     const alertMessage = document.getElementById("alertMessage");
-
     alertMessage.textContent = message;
-
     // Remove previous types
     alertBox.className = "custom-alert";
-
     // Add new type
     alertBox.classList.add(type);
 

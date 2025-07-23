@@ -21,7 +21,7 @@
 			  top: 15px;
 			  right: 20px;
 			  font-size: 25px;
-			  font-weight: bolder;
+			  font-weight: 100;
 			  cursor: pointer;
 			  color: black;
 			}
@@ -86,7 +86,7 @@
         	display: flex; 
         }
         		
-        .nextToJob, .nextToSalary, .nextToAddress {
+        .nextToJob, .nextToSalary, .nextToAddress, .nextToBank {
         	background-color:green;
         	color: white;
         	padding: 10px 20px;
@@ -140,8 +140,6 @@
 	</style>
 </head>
 <body>
-		
-
 		<!-- employee Information -->
 		<form id="employeeInfo" class="employee">
 				<h1>Employee Form<span class="close" id="closebtn">&times;</span></h1>

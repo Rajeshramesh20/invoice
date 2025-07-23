@@ -22,6 +22,7 @@ class Company extends Model
         'email',
         'website_url',
         'address_id',
+        'bank_details_id',
         'gstin',
         'status',
         'created_by',
@@ -29,12 +30,18 @@ class Company extends Model
         'is_deleted',
     ];
 
-    public function bankDetails()
-    {
-        return $this->hasMany(BankDetail::class, 'company_id', 'company_id');
-    }
+    // public function bankDetails()
+    // {
+    //     return $this->hasMany(BankDetail::class, 'company_id', 'company_id');
+    // }
+
     public function address()
     {
         return $this->belongsTo(Addresses::class, 'address_id');
+    }
+
+    public function bankDetails()
+    {
+        return $this->belongsTo(BankDetail::class,'bank_details_id');
     }
 }

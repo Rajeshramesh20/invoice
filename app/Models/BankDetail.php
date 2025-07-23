@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Company;
+use App\Models\EmployeeSalary;
 
 class BankDetail extends Model
 {
@@ -13,7 +14,9 @@ class BankDetail extends Model
     protected $primaryKey = 'bank_detail_id'; 
 
     protected $fillable = [
-        'company_id',
+  
+        'reference_id',        
+        'reference_name',
         'bank_name',
         'account_holder_name',
         'account_number',
@@ -25,9 +28,18 @@ class BankDetail extends Model
         'updated_by',
         'is_deleted',
     ];
-    
-    public function company()
+
+    // public function company()
+    // {
+    //     return $this->belongsTo(Company::class, 'company_id', 'company_id');
+    // }
+
+    public function companies()
     {
-        return $this->belongsTo(Company::class, 'company_id', 'company_id');
+        return $this->hasMany(Company::class);
+    }
+    public function employeesSalary()
+    {
+        return $this->hasMany(EmployeeSalary::class);
     }
 }

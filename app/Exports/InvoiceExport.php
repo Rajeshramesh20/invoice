@@ -40,7 +40,6 @@ class InvoiceExport implements FromCollection, WithHeadings, WithMapping
                 $invoice->balance_amount,
                 $invoice->invoiceStatus?->invoice_status ?? '',
                 $invoice->email_send_status
-
            ];
     }
 }

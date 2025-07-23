@@ -17,7 +17,7 @@ class EmployeeSalary extends Model
         'base_salary',
         'pay_grade',
         'pay_frequency',
-        'bank_account_details',
+        'bank_details_id',
         'tax_identification_number',
         'bonuses',
         'deductions',
@@ -27,5 +27,10 @@ class EmployeeSalary extends Model
     public function employee()
     {
         return $this->belongsTo(Employees::class);
+    }
+
+    public function bankDetails()
+    {
+        return $this->belongsTo(BankDetail::class, 'bank_details_id');
     }
 }

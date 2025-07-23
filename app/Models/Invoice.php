@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\InvoiceStatus;
 use App\Models\InvoiceItem;
 use App\Models\Customers;
+use App\Models\Company;
 
 
 class Invoice extends Model
@@ -56,4 +57,5 @@ class Invoice extends Model
     {
         return $this->belongsTo(Customers::class, 'customer_id');
     }
+ 
 }

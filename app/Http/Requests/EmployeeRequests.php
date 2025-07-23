@@ -52,6 +52,13 @@ class EmployeeRequests extends FormRequest
             'line4' => 'nullable|string|max:255',
             'pincode' => 'required|string|max:10',
 
+            'bank_name' => 'required|string',
+            'account_holder_name' => 'required|string',
+            'account_number' => 'required|string',
+            'ifsc_code' => 'required|string',
+            'branch_name' => 'nullable|string',
+            'account_type' => 'required|string',
+
 
             //  Job Details Table
             'job_title' => ['required', 'string', 'max:255'],
