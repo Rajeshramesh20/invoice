@@ -82,21 +82,11 @@
 				</div>
 
 				<div class="form-group">
-					<label for="employee_role">Role</label>
-					<select name="employee_role" id="employee_role">
+					<label for="department_id">Role</label>
+					<select name="department_id" id="department_id">
 						<option value="" disabled selected hidden>Select Role</option>
 					</select>
 				</div>
-				{{-- <div class="form-group">
-					<label for="email_status">Email Status</label>
-					<select name="email_status" id="email_status">
-						<option value="" disabled selected hidden>Select Email Status</option>
-						<option value="send">Send</option>
-						<option value="not_yet_send">Not yet send</option>
-						<option value="failed">Failed</option>
-						<option value="not_applicable">Not applicable</option>
-					</select>
-				</div>	 --}}
 			</div>
 			<hr>
 			<div class="reset">
@@ -299,11 +289,17 @@ function searchParams() {
     let employee_name = document.getElementById('employee_name').value;
     let employee_id = document.getElementById('employee_id').value;
     let email = document.getElementById('email').value;
+    let department_id = document.getElementById('department_id').value;
+    let startDate = document.getElementById('startDate').value;
+    let endDate = document.getElementById('endDate').value;
 
     let searchDatas = new URLSearchParams({
         employee_name: employee_name,
 		employee_id:employee_id,
-		email:email
+		email:email,
+		department_id:department_id,
+		startDate: startDate,
+        endDate: endDate
 		
     });
 
@@ -576,6 +572,39 @@ document.getElementById('logoutBtn').addEventListener('click', function () {
     xhr.send();
 });
 
+
+	//employee Department
+	document.addEventListener('DOMContentLoaded', function () {
+	    let employeeDepartment = document.getElementById('department_id');
+	    const http = new XMLHttpRequest();
+	    http.open('GET', 'http://127.0.0.1:8000/api/employee/department', true);
+	    http.setRequestHeader('Authorization', 'Bearer ' + token);
+	    http.setRequestHeader('Accept', 'application/json');
+	    if (!token) {
+	        alert('Token has been Expired! Please Login Again');
+	        window.location.href = './api/login';
+	        return;
+	    }
+
+	    http.onreadystatechange = function () {
+
+	        if (http.readyState === 4 && http.status === 401) {
+	            window.location.href = './api/login';
+	        }
+	        else if (http.readyState === 4 && http.status === 200) {
+	            const datas = JSON.parse(http.responseText);
+	            const data = datas.data;
+	            data.forEach(employee => {
+	                let option = document.createElement('option');
+	                option.value = employee.id;
+	                option.textContent = employee.department_name;
+
+	                employeeDepartment.appendChild(option);
+	            });
+	        }
+	    };
+	    http.send();
+	});
 </script>
 
 </body>

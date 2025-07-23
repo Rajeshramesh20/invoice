@@ -1,5 +1,5 @@
-//employee Information
-function validation(){
+	//employee Information
+	function validation(){
 
 	let isValid = true;
     let firstName = document.getElementById('first_name').value.trim();
@@ -101,7 +101,6 @@ function validation(){
 		return isValid;
 	}
 
-
 	//employee Address
 	function employeesAddress(){
 		let isValid = true;
@@ -151,6 +150,74 @@ function validation(){
 
 		return isValid;	
 
+	}
+
+	//employee bank validation
+	function employeeBandDetail(){
+		let isValid = true;
+		let bank_name = document.getElementById('bank_name').value.trim();
+		let account_holder_name = document.getElementById('account_holder_name').value.trim();
+		let account_number = document.getElementById('account_number').value.trim();
+		let ifsc_code = document.getElementById('ifsc_code').value.trim();
+		let branch_name = document.getElementById('branch_name').value.trim();
+		let account_type = document.getElementById('account_type').value.trim();
+
+		let bank_name_err = document.getElementById('bank_name_err');
+		let account_holder_name_err = document.getElementById('account_holder_name_err');
+		let account_number_err = document.getElementById('account_number_err');
+		let ifsc_code_err = document.getElementById('ifsc_code_err');
+		let branch_name_err = document.getElementById('branch_name_err');
+		let account_type_err = document.getElementById('account_type_err');
+
+		 //Bank Name
+		if(bank_name === ''){
+			bank_name_err.innerHTML = 'Bank Name Field Is Required';
+			isValid = false;
+		}else{
+			bank_name_err.innerHTML = '';
+		}
+
+		//Account Holder Name
+		if(account_holder_name === ''){
+			account_holder_name_err.innerHTML = 'Account Holder Name Is Required';
+			isValid = false;
+		}else{
+			account_holder_name_err.innerHTML = '';
+		}
+
+		//Account Number
+		if(account_number === ''){
+			account_number_err.innerHTML = 'Account Name Is Required';
+			isValid = false;
+		}else{
+			account_number_err.innerHTML = '';
+		}
+
+		//IFSC Code
+		if(ifsc_code === ''){
+			ifsc_code_err.innerHTML = 'IFSC Code is required';
+			isValid = false;
+		}else{
+			ifsc_code_err.innerHTML = "";
+		}
+
+		//branch_name
+		if(branch_name === ''){
+			branch_name_err.innerHTML = 'Branch Name is required';
+			isValid = false;
+		}else{
+			branch_name_err.innerHTML = "";
+		}
+
+		//ifsc_code
+		if(account_type === ''){
+			account_type_err.innerHTML = 'Account Type is required';
+			isValid = false;
+		}else{
+			account_type_err.innerHTML = "";
+		}
+
+		return isValid;	
 	}
 	//employee JobDetais
 	function jobDetailsValidation(){
@@ -261,6 +328,7 @@ function validation(){
 				document.addEventListener("DOMContentLoaded", function () {
 				    const employeeInfo = document.getElementById("employeeInfo");
 				    const employeeAddress = document.getElementById("employeeAddress");
+				    const employeeBank = document.getElementById("employeeBank");			    
 				    const employeeJob = document.getElementById("employeeJob");
 				    const employeeSalary = document.getElementById("employeeSalary");
 
@@ -272,12 +340,21 @@ function validation(){
 				        employeeAddress.style.display = "block";
 				    };
 
-				    document.getElementById("nextToJob").onclick = () => {
-				    	
+				    document.getElementById("nextToBank").onclick = () => {
 				    	if(!employeesAddress()){
 				    		return;
 				    	}
+				    	
 				        employeeAddress.style.display = "none";
+				        employeeBank.style.display = "block";
+				    };
+
+
+				    document.getElementById("nextToJob").onclick = () => {				    	
+				    	if(!employeeBandDetail()){
+				    		return;
+				    	}
+				        employeeBank.style.display = "none";
 				        employeeJob.style.display = "block";
 				    };
 
@@ -290,22 +367,31 @@ function validation(){
 				        employeeSalary.style.display = "block";
 				    };
 
-				    document.getElementById("previousEmployeeInfo").onclick = () => {
-				        employeeAddress.style.display = "none";
-				        employeeInfo.style.display = "block";
-				    };
 
-				    document.getElementById("previousJob").onclick = () => {
+				    //previous navigate
+				    //salary to job
+				     document.getElementById("previousJob").onclick = () => {
 				        employeeSalary.style.display = "none";
 				        employeeJob.style.display = "block";
 				    };
 
-
-				    document.getElementById("previousEmployeeAddress").onclick = () => {
+				    //job to Bank
+				    document.getElementById("previousEmployeeBank").onclick = () => {
 				        employeeJob.style.display = "none";
+				        employeeBank.style.display = "block";
+				    };
+
+				     //Bank to Address
+				    document.getElementById("previousEmployeeAddress").onclick = () => {
+				        employeeBank.style.display = "none";
 				        employeeAddress.style.display = "block";
 				    };
-				    
+
+				    //Address to employee
+				    document.getElementById("previousEmployeeInfo").onclick = () => {
+				        employeeAddress.style.display = "none";
+				        employeeInfo.style.display = "block";
+				    };								    
 
 				    document.getElementById("submitAll").onclick = function () {
 				    	if(!salaryValidation()){
@@ -313,7 +399,7 @@ function validation(){
 				    	}
         				const formData = new FormData();
 
-        				[employeeInfo, employeeAddress, employeeJob, employeeSalary].forEach(form => {
+        				[employeeInfo, employeeAddress, employeeBank, employeeJob, employeeSalary].forEach(form => {
 				            new FormData(form).forEach((value, key) => {
 				                formData.append(key, value);
 				            });
@@ -347,7 +433,41 @@ function validation(){
         			};
 				});
 
-
+		//this is for Close Employee Form
 		document.getElementById('closebtn').addEventListener('click',function(){
             window.location.href = "/api/employeeList";
         });
+
+
+        //employee Department
+	document.addEventListener('DOMContentLoaded', function () {
+	    let employeeDepartment = document.getElementById('department_id');
+	    const http = new XMLHttpRequest();
+	    http.open('GET', 'http://127.0.0.1:8000/api/employee/department', true);
+	    http.setRequestHeader('Authorization', 'Bearer ' + token);
+	    http.setRequestHeader('Accept', 'application/json');
+	    if (!token) {
+	        alert('Token has been Expired! Please Login Again');
+	        window.location.href = './api/login';
+	        return;
+	    }
+
+	    http.onreadystatechange = function () {
+
+	        if (http.readyState === 4 && http.status === 401) {
+	            window.location.href = './api/login';
+	        }
+	        else if (http.readyState === 4 && http.status === 200) {
+	            const datas = JSON.parse(http.responseText);
+	            const data = datas.data;
+	            data.forEach(employee => {
+	                let option = document.createElement('option');
+	                option.value = employee.id;
+	                option.textContent = employee.department_name;
+
+	                employeeDepartment.appendChild(option);
+	            });
+	        }
+	    };
+	    http.send();
+	});

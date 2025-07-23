@@ -295,4 +295,20 @@ class EmployeesController extends Controller
         ]);
     }
 
+
+    public function getEmployeeDepartment(EmployeeService $employeeDepart){
+        $employeeDepartment = $employeeDepart->employeeDepartment();
+        if($employeeDepartment){
+            return response()->json([
+                'status' => 'true',
+                'message' => 'Successfully Get Employee Department For Show',
+                'data' => $employeeDepartment
+            ]);
+        }else{
+            return response()->json([
+                'status' => 'false',
+                'message' => 'Not Found In Department Data'
+            ]);
+        }
+    }
 }

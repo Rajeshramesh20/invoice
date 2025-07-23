@@ -40,7 +40,7 @@
 			<tr>
 				<th>PayRoll ID</th>
 				<th>Employee Name</th>
-				<!-- <th>PayPayrollDate</th> -->
+				<th>PayPayrollDate</th>
 				<th>salary</th>
 				<th>gross_pay</th>
 				<th>net_pay</th>
@@ -83,10 +83,19 @@
 //Invoice List table
 function payRollTable(data) {
     data.forEach(list => {
+
+        let payroll_date = list.payroll_date;
+        function formatDate(payroll_date) {
+            const date = new Date(payroll_date);
+            return date.toLocaleDateString('en-GB').replace(/\//g, '-');
+        }
+        let payDate = formatDate(payroll_date);
+        
         let row = document.createElement('tr');
         row.innerHTML += `                           
             <td>${list.payroll_id}</td>
-            <td>${list.employee?.first_name} ${list.employee?.last_name}</td>           
+            <td>${list.employee?.first_name} ${list.employee?.last_name}</td>
+            <td>${payDate}</td>          
             <td>${list.salary}</td>
             <td>${list.gross_pay}</td>  
             <td>${list.net_pay}</td> 
@@ -96,8 +105,10 @@ function payRollTable(data) {
         `
         listBody.appendChild(row);
     });
+
+        
 }
-// <td>${list.payroll_date}</td>
+
 //Pagination
 function pagination(meta) {
     let pagination = document.getElementById('paginateButton');

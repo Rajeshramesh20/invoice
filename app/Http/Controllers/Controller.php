@@ -92,4 +92,17 @@ class Controller extends BaseController
     //         return $employee;
     // }
 
+
+    // ->when($startDate && $endDate, function ($query) use($startDate, $endDate) {
+                //   return $query->whereHas('jobDetails', function ($q) use ($startDate, $endDate) {
+                //         $q->whereBetween('joining_date', [$startDate, $endDate]);
+                //     });
+                // })
+
+                // ->when($startDate && !$endDate, function ($query, $startDate) {
+                //   return $query->whereHas('jobDetails', function ($q) use ($startDate) {
+                //         $q->whereDate('joining_date', $startDate);
+                //     });
+                // })
+
 }

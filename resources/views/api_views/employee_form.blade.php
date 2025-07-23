@@ -23,7 +23,7 @@
 			  font-size: 25px;
 			  font-weight: bolder;
 			  cursor: pointer;
-			  
+			  color: black;
 			}
 
         /* Form Container */
@@ -87,7 +87,6 @@
         }
         		
         .nextToJob, .nextToSalary, .nextToAddress {
-        	float: right;
         	background-color:green;
         	color: white;
         	padding: 10px 20px;
@@ -97,7 +96,6 @@
 
         .submit {
         	 display: block;
-/*			  margin: 20px auto;*/
 			  padding: 10px 20px;
 			  background-color: #4CAF50;
 			  color: white;
@@ -105,6 +103,16 @@
 			  border-radius: 5px;
 			  cursor: pointer;
         }
+
+        .Reset {
+        		padding: 10px 20px;
+			  background-color:red;
+			  color: white;
+			  border: none;
+			  border-radius: 5px;
+			  cursor: pointer;
+        }
+
         span {
         	color: red;
         }
@@ -112,6 +120,7 @@
         	color: red;
         	margin-left: 200px;
         }
+
 
         .navigateButton {
         	display: flex;
@@ -196,8 +205,11 @@
 				<label for="photo"><span>*</span>Profile</label>
 				<input type="file" name="photo" id="photo">
 			</div>
-			
-				<button type="button" id="nextToAddress" class="nextToAddress">Next</button>		
+
+			<div class="navigateButton">
+				<input type="reset" name="Reset" value="Reset" class="Reset">
+				<button type="button" id="nextToAddress" class="nextToAddress">Next</button>
+			</div>		
 		</form>
 
 		<!-- employee Address -->
@@ -232,12 +244,57 @@
 				<input type="number" name="pincode" id="pincode">
 			</div>
 			<p id="pincode_err"></p>
+
 			<div class="navigateButton">
 				<button type="button" id="previousEmployeeInfo" class="previous">Back</button>
-				<button type="button" id="nextToJob" class="nextToJob">Next</button>	
+				<button type="button" id="nextToBank" class="nextToBank">Next</button>	
 			</div>
 		</form>
 
+		<!-- employee Bank Details -->
+		<form id="employeeBank" class="employee" style="display: none;">
+			<div class="form-group">
+					<label for="bank_name"><span>*</span>Bank Name </label>
+					<input type="text" name="bank_name" id="bank_name" placeholder="Enter Bank Name">				
+			</div>
+			<p id="bank_name_err"></p>
+
+			<div class="form-group">
+					<label for="account_holder_name"><span>*</span>Account Holder Name </label>
+					<input type="text" name="account_holder_name" id="account_holder_name" placeholder="Enter Account Holder Name">					
+			</div>
+			<p id="account_holder_name_err"></p>
+
+			<div class="form-group">
+				<label for="account_number">Account Number <span class="required">*</span></label>
+				<input type="number" name="account_number" id="account_number" placeholder="Enter Account Number">
+			</div>
+			<p id="account_number_err"></p>
+
+			<div class="form-group">
+					<label for="ifsc_code">IFSC Code <span class="required">*</span></label>
+					<input type="text" name="ifsc_code" id="ifsc_code" placeholder="Enter IFSC Code">				
+			</div>
+			<p id="ifsc_code_err"></p>
+
+			<div class="form-group">
+					<label for="branch_name">Branch Name</label>
+					<input type="text" name="branch_name" id="branch_name" placeholder="Enter Branch Name">			
+			</div>
+			<p id="branch_name_err"></p>
+
+			<div class="form-group">
+				<label for="account_type">Account Type <span class="required">*</span></label>
+				<input type="text" name="account_type" id="account_type" placeholder="Enter Account Type">
+			</div>
+			<p id="account_type_err"></p>
+
+			<div class="navigateButton">
+				<button type="button" id="previousEmployeeAddress" class="previous">Back</button>
+				<button type="button" id="nextToJob" class="nextToJob">Next</button>	
+			</div>
+
+		</form>
 
 		<!-- employee Job Details -->
 		<form id="employeeJob"  style="display: none;" class="employee">
@@ -251,10 +308,6 @@
 			<label for="department_id">Department</label>
 				<select name="department_id" id="department_id">
 					<!-- <option value="" disabled selected hidden>Select Department</option> -->
-					<option value="1">Backend Engineering</option>
-					<option value="2">Frontend Engineering</option>
-					<option value="3">Mobile Development</option>
-					<option value="4">Testing</option>
 				</select>
 			</div>
 			<p id="department_id_err"></p>
@@ -299,7 +352,7 @@
 			</div>
 			<p id="work_location_err"></p>
 				<div class="navigateButton">
-				<button type="button" id="previousEmployeeAddress" class="previous">Back</button>
+				<button type="button" id="previousEmployeeBank" class="previous">Back</button>
 				<button type="button" id="nextToSalary" class="nextToSalary">Next</button>
 			</div>
 		</form>

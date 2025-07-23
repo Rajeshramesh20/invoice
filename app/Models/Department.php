@@ -23,4 +23,13 @@ class Department extends Model
             'employee_id' 
         );
     }
+
+     public function jobDetails()
+    {
+        return $this->hasOne(EmployeeJobDetail::class, 'employee_id', 'id');
+    }
+
+
+
+    
 }

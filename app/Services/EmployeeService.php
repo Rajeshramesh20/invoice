@@ -6,17 +6,21 @@ use App\Models\Employees;
 use App\Models\EmployeeJobDetail;
 use App\Models\EmployeeSalary;
 use App\Models\Addresses;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Exception;
+use App\Models\Department;
+use App\Models\payroll_history;
+use App\Models\PayrollDetail;
+
 use Barryvdh\DomPDF\Facade\Pdf;
+use Exception;
+use Carbon\Carbon;
+
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
-use App\Models\payroll_history;
-use App\Models\PayrollDetail;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
 
 class EmployeeService
 {
@@ -82,13 +86,12 @@ class EmployeeService
             'line3' => $data['line3'] ?? null,
             'line4' => $data['line4'] ?? null,
             'pincode' => $data['pincode'],
-            'created_by' => $userId
-            
+            'created_by' => $userId           
         ]);
+
         $employee->address_id = $address->address_id;
         $employee->save();
 
-        
         return [
            'employee'=> $employee,
            'employee_job' => $employeeJob,
@@ -119,12 +122,13 @@ class EmployeeService
         return $employee ;
     }
 
-
-
     //Search For Employee
     public function searchField($request, $paginate = true){
-
         try {
+            $startDate = isset($request['startDate']) && $request['startDate'] !== '' ?
+                Carbon::parse($request['startDate'])->format('Y-m-d') : null;
+            $endDate = isset($request['endDate']) && $request['endDate'] !== '' ?
+                Carbon::parse($request['endDate'])->format('Y-m-d') : null;
 
             $employee_name = $request['employee_name'] ?? '';
 
@@ -132,7 +136,11 @@ class EmployeeService
 
             $email = $request['email'] ?? '';
 
-            $searchData = Employees::where('is_deleted', '0')
+            $department_id = $request['department_id'] ?? '';
+
+            Log::error('employee Search Error' . $startDate);
+
+            $searchData = Employees::with('jobDetails.department')->where('is_deleted', '0')
                 ->where('status', '1')
 
                 ->when($employee_name, function ($searchData, $employee_name) {
@@ -145,7 +153,24 @@ class EmployeeService
 
                 ->when($email, function ($searchData, $email) {
                     return $searchData->where('email', 'LIKE', '%' . $email . '%');
+                })               
+
+                ->when($startDate, function ($query) use ($startDate, $endDate) {
+                    return $query->whereHas('jobDetails', function ($q) use ($startDate, $endDate) {
+                        if ($endDate) {
+                            return $q->whereBetween('joining_date', [$startDate, $endDate]);
+                        } else {
+                            return $q->whereDate('joining_date', $startDate);
+                        }
+                    });
+                })
+
+                ->when($department_id, function ($searchData, $department_id) {
+                    return $searchData->whereHas('jobDetails', function ($q) use ($department_id) {
+                        $q->where('department_id', $department_id);
+                    });
                 });
+
 
             if (!$paginate) {
 
@@ -309,7 +334,12 @@ class EmployeeService
     //get payroll details
     public function getpayrollDetails(){
         $payrollDetails = PayrollDetail::with('employee')->paginate(2);
-        return $payrollDetails;
+        return $payrollDetails;      
     }
     
+    //Get Employee Department
+    public function employeeDepartment(){
+        $department = Department::get();
+        return $department;
+    }
 }
