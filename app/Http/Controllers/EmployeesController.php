@@ -270,7 +270,12 @@ class EmployeesController extends Controller
         $getpayroll_history = $payrollService->getpayroll_history();
 
         return response()->json([
-        "data"=> $getpayroll_history
+            "data"=> $getpayroll_history,
+            'meta' => [
+                'current_page' => $getpayroll_history->currentPage(),
+                 'last_page' => $getpayroll_history->lastPage(),
+                 'per_page' => $getpayroll_history->perPage()
+             ],
         ]);
 
     }
@@ -281,7 +286,12 @@ class EmployeesController extends Controller
         $payrollDetails = $payrollService->getpayrollDetails();
 
         return response()->json([
-            "data" => $payrollDetails
+            "data" => $payrollDetails,
+            'meta' => [
+                'current_page' => $payrollDetails->currentPage(),
+                 'last_page' => $payrollDetails->lastPage(),
+                 'per_page' => $payrollDetails->perPage()
+             ],
         ]);
     }
 

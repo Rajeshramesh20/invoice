@@ -82,6 +82,7 @@ class EmployeeService
             'line3' => $data['line3'] ?? null,
             'line4' => $data['line4'] ?? null,
             'pincode' => $data['pincode'],
+            'created_by' => $userId
             
         ]);
         $employee->address_id = $address->address_id;
@@ -302,13 +303,12 @@ class EmployeeService
     // get pay roll history
 
     public function getpayroll_history(){
-        $payroll_history = payroll_history::all(); 
+        $payroll_history = payroll_history::paginate(2); 
         return  $payroll_history;
-
     }
     //get payroll details
     public function getpayrollDetails(){
-        $payrollDetails = PayrollDetail::get();
+        $payrollDetails = PayrollDetail::with('employee')->paginate(2);
         return $payrollDetails;
     }
     

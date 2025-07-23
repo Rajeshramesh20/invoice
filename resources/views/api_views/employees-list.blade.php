@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -148,7 +147,7 @@
 				<thead>
 					<tr>
 						<th><input type="checkbox" id="selectAll" checked> Select All</th>
-						<th>ID</th>
+						<th>Employee ID</th>
 						<th>Name</th>
 						<th>Role</th>
 						<th>Salary</th>

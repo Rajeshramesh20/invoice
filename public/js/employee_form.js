@@ -347,3 +347,7 @@ function validation(){
         			};
 				});
 
+
+		document.getElementById('closebtn').addEventListener('click',function(){
+            window.location.href = "/api/employeeList";
+        });
