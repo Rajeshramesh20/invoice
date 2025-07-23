@@ -206,7 +206,7 @@ class InvoiceServiceV1
             'invoice' => $invoice,
             'company' => $company,
             'companyAddress' => $company->address,
-            'bankDetails' => $company->bankDetails->first(),
+            'bankDetails' => $company->bankDetails,
             'gstTotal' => $gstTotal,
             'netTotal' => $netTotal,
             'numberInWords' => $numberInWords,
@@ -220,6 +220,54 @@ class InvoiceServiceV1
         return $pdf->download('invoice-' . $invoice->invoice_no . '.pdf');
     }
 
+    // public function generatePdf($invoiceId)
+    // {
+     
+    //     $invoice = Invoice::with([
+    //         'items',
+    //         'customer.address',
+    //         'company.address',          
+    //         'company.bankDetails'      
+    //     ])->where('invoice_id', $invoiceId)->first();
+
+     
+    //     // if (!$invoice || !$invoice->company) {
+    //     //     return null;
+    //     // }
+
+    //     $company = $invoice->company;             
+    //     $companyAddress = $company->address;      
+    //     $bankDetails = $company->bankDetails;
+
+    //     $gstTotal = 0;
+    //     $netTotal = 0;
+
+    //     foreach ($invoice->items as $item) {
+    //         $gstTotal += $item->gst_amount;
+    //         $netTotal += $item->net_amount;
+    //     }
+
+    //     $numberInWords = Number::spell($invoice->total_amount);
+    //     $formattedInvoiceDate = Carbon::parse($invoice->invoice_date)->format('M j, Y');
+
+    //     $data = [
+    //         'invoice' => $invoice,
+    //         'company' => $company,
+    //         'companyAddress' => $companyAddress,
+    //         'bankDetails' => $bankDetails, 
+    //         'gstTotal' => $gstTotal,
+    //         'netTotal' => $netTotal,
+    //         'numberInWords' => $numberInWords,
+    //         'logo_path' => $company->logo_path,
+    //         'formattedInvoiceDate' => $formattedInvoiceDate,
+    //     ];
+
+    //     $pdf = Pdf::loadView('pdf.invoicePdf', $data);
+
+    //     Log::error($invoice->invoice_no);
+
+    //     return $pdf->download('invoice-' . $invoice->invoice_no . '.pdf');
+    // }
 
 
     //store company

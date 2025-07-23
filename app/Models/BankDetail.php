@@ -36,10 +36,10 @@ class BankDetail extends Model
 
     public function companies()
     {
-        return $this->hasMany(Company::class, 'bank_detail_id');
+        return $this->hasMany(Company::class);
     }
     public function employeesSalary()
     {
-        return $this->hasMany(EmployeeSalary::class, 'bank_detail_id');
+        return $this->hasMany(EmployeeSalary::class);
     }
 }
