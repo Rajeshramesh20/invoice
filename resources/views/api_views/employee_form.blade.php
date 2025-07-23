@@ -14,14 +14,27 @@
             height: 100vh;
         }
 
+
+        .close {
+			  text-align: left;
+			  position: absolute;
+			  top: 15px;
+			  right: 20px;
+			  font-size: 25px;
+			  font-weight: bolder;
+			  cursor: pointer;
+			  
+			}
+
         /* Form Container */
         .employee {
             background-color: #fff;
             padding: 35px;
             width: 600px;
             border-radius: 8px;
-			margin:50px auto;
+				margin:50px auto;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
          h1 {
@@ -122,7 +135,7 @@
 
 		<!-- employee Information -->
 		<form id="employeeInfo" class="employee">
-				<h1>Employee Form<span class="close" id="closebtn">&times;</span id="closeBtn"></h1>
+				<h1>Employee Form<span class="close" id="closebtn">&times;</span></h1>
 			<div class="form-group">
 			
 				<label for="first_name"><span>*</span>FirstName</label>

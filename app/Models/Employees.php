@@ -61,4 +61,8 @@ class Employees extends Model
         return $this->belongsTo(Addresses::class, 'address_id', 'address_id');
     }
 
+    public function payrollDeatils(){
+        return $this->hasMany(PayrollDetail::class);
+    }
+
 }

@@ -46,3 +46,11 @@ Route::prefix('api')->name('api.')->group(function () {
  Route::GET('createemployee',function(){
         return view('api_views.employee_form');
       });
+
+ Route::GET('payrolllist',function(){
+        return view('api_views.payroll_history');
+    });
+
+  Route::GET('payrolldetails',function(){
+        return view('api_views.payroll_details');
+    });
