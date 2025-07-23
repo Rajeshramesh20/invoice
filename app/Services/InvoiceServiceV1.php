@@ -261,8 +261,10 @@ class InvoiceServiceV1
         $company->address_id = $address->address_id;
         $company->save();
 
-        BankDetail::create([
-            'company_id' => $company->company_id,
+        $BankDetail = BankDetail::create([
+            // 'company_id' => $company->company_id,
+            'reference_id' => $company->company_id,
+            'reference_name' => 'companies',
             'bank_name' => $companyData['bank_name'],
             'account_holder_name' => $companyData['account_holder_name'],
             'account_number' => $companyData['account_number'],
@@ -270,8 +272,10 @@ class InvoiceServiceV1
             'branch_name' => $companyData['branch_name'] ?? null,
             'account_type' => $companyData['account_type'],
             'created_by' => $userId,
-
         ]);
+        $company->bank_details_id = $BankDetail->bank_detail_id;
+        $company->save();
+
 
         return $company;
     }
@@ -369,7 +373,6 @@ class InvoiceServiceV1
             Log::error('Error In Show Role' . $e->getMessage());
         }
     }
-
 
     //mail Send to the customer
     public function sendInvoiceMail($invoice)
@@ -479,7 +482,6 @@ class InvoiceServiceV1
         }
     }
 
-
     //Update customerData  
     public function updateCustomerData($request, string $id)
     {
@@ -516,7 +518,6 @@ class InvoiceServiceV1
             Log::error('Error in edit Customer data:' . $e->getMessage());
         }
     }
-
 
     //update invoice data
     public function updateInvoiceData($request, string $id )

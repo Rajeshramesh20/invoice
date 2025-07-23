@@ -21,8 +21,9 @@
 			  top: 15px;
 			  right: 20px;
 			  font-size: 25px;
-			  font-weight: bolder;
+			  font-weight: 100;
 			  cursor: pointer;
+			  color: black;
 			  
 			}
 
@@ -131,8 +132,6 @@
 	</style>
 </head>
 <body>
-		
-
 		<!-- employee Information -->
 		<form id="employeeInfo" class="employee">
 				<h1>Employee Form<span class="close" id="closebtn">&times;</span></h1>

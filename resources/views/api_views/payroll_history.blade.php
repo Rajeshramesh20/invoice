@@ -10,7 +10,7 @@
     <script>
         const token = localStorage.getItem('token');
         if(!token){
-            window.location.replace('./api/login')
+            window.location.replace('/api/login')
         }else{
             window.addEventListener('DOMContentLoaded',()=>{
                 document.body.style.display='block';

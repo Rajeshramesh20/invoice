@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Models\payroll_history;
 use App\Models\PayrollDetail;
-
+use App\Models\BankDetail;
 class EmployeeService
 {
     //creae Employee
@@ -88,12 +88,28 @@ class EmployeeService
         $employee->address_id = $address->address_id;
         $employee->save();
 
+
+        $BankDetail = BankDetail::create([
+            'reference_id' => $employee->id,
+            'reference_name' => 'Employee',
+            'bank_name' => $data['bank_name'],
+            'account_holder_name' => $data['account_holder_name'],
+            'account_number' => $data['account_number'],
+            'ifsc_code' => $data['ifsc_code'],
+            'branch_name' => $data['branch_name'] ?? null,
+            'account_type' => $data['account_type'],
+            'created_by' => $userId,
+        ]);
+        $employee->bank_details_id = $BankDetail->bank_detail_id;
+        $employee->save();
+
         
         return [
            'employee'=> $employee,
            'employee_job' => $employeeJob,
            'employee_salary' => $employeeSalary,
-           'address' => $address
+           'address' => $address,
+           'BankDetail'=> $BankDetail
         ];
     }
 
@@ -124,7 +140,7 @@ class EmployeeService
     //Search For Employee
     public function searchField($request, $paginate = true){
 
-        try {
+        try { 
 
             $employee_name = $request['employee_name'] ?? '';
 
