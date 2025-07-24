@@ -34,15 +34,6 @@
 	<body>
 		<header>
 			<img src="{{ asset('/images/twigik.png') }}" class="twigikImage" alt="Twigik Logo">
-			<div>
-				<a href="/api/createemployee" class="create">Add Employee</a>
-				<button id="openPayrollBtn" class="create">Generate Payroll</button>
-				<button class='logout btn' id="logoutBtn">Logout</button>
-				<span class="close" id="closebtn">&times;</span>
-
-			</div>
-		</header>
-
 		<div>
 
 			<a href="/payrolllist" class="create">PayRoll List</a>
@@ -222,7 +213,7 @@ data.forEach((list, index) => {
                 <td>
                  
 
-                   <abbr  title="Edit"><a href="/editemployee/${list.id}"><i class='fa-solid fa-pencil'></i></a></abbr>
+                   <abbr  title="Edit"><a href="/api/edit/employee/${list.id}"><i class='fa-solid fa-pencil'></i></a></abbr>
                    <abbr  title="Delete"> <button class="button" onclick="myFunction(${list.id})"><i class='fa-solid fa-trash'></i></button></abbr>
                 </td>`
         listBody.appendChild(row);

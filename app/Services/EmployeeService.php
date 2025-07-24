@@ -5,11 +5,11 @@ namespace App\Services;
 use App\Models\Employees;
 use App\Models\EmployeeJobDetail;
 use App\Models\EmployeeSalary;
-// use App\Models\Addresses;
+use App\Models\Addresses;
 use App\Models\Department;
 use App\Models\payroll_history;
 use App\Models\PayrollDetail;
-// use App\Models\BankDetail;
+use App\Models\BankDetail;
 
 
 use App\Services\CommonServices;
@@ -200,6 +200,7 @@ class EmployeeService
     public function updateEmployeeData($id, Request $request){
         try{
             $employee = Employees::with(['jobDetails.department', 'address', 'salary.bankDetails'])->findOrFail($id);
+            $commonServices = new CommonServices();
 
             Log::info('Updating Job Title', [$request->input('job_title')]);
             Log::info('Updating Branch Name', [$request->input('branch_name')]);
@@ -216,6 +217,7 @@ class EmployeeService
                 'marital_status'    => $request->input('marital_status', $employee->marital_status),
                 'contact_number'    => $request->input('contact_number', $employee->contact_number),
                 'email'             => $request->input('email', $employee->email),
+                'updated_by' => $commonServices->getUserID()
             ];
 
             //  Only handle photo if it exists
@@ -245,6 +247,7 @@ class EmployeeService
                 'line3' => $request->input('line3', $employee->line3),
                 'line4' => $request->input('line4', $employee->line4),
                 'pincode' => $request->input('pincode', $employee->pincode),
+                'updated_by' => $commonServices->getUserID()
             ]);
         }
 
@@ -257,6 +260,7 @@ class EmployeeService
               'ifsc_code' => $request->input('ifsc_code', $employee->salary->bankDetails->ifsc_code),
               'branch_name' => $request->input('branch_name', $employee->salary->bankDetails->branch_name),
               'account_type' => $request->input('account_type', $employee->salary->bankDetails->account_type),
+              'updated_by' => $commonServices->getUserID()
             ]);
         }
 
@@ -279,6 +283,7 @@ class EmployeeService
               'joining_date' => $request->input('joining_date', $employee->jobDetails->joining_date),
               'probation_period' => $request->input('probation_period', $employee->jobDetails->probation_period),
                'work_location' => $request->input('work_location', $employee->jobDetails->work_location),
+               'updated_by' => $commonServices->getUserID()
             ]);
         }
 
@@ -385,13 +390,9 @@ class EmployeeService
     }
     //get payroll details
 
-    public function getpayrollDetails(){
-        $payrollDetails = PayrollDetail::with('employee')->paginate(5);
-        return $payrollDetails;      
-
     public function getpayrollDetails()
     {
-        $payrollDetails = PayrollDetail::with('employee')->paginate(2);
+        $payrollDetails = PayrollDetail::with('employee')->paginate(5);
         return $payrollDetails;
 
     }
