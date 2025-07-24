@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Employees List</title> 
-	
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-		/>
-		<!-- Include Flatpickr -->
+	<title>Employees List</title>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+	<!-- Include Flatpickr -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-	<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
 	<link rel="stylesheet" type="text/css" href="{{asset('css/invoice-table.css')}}">
-    <style>
-	
+	<style>
+
 	</style>
 	<script>
 		const token = localStorage.getItem('token');
@@ -28,134 +27,131 @@
 	</script>
 </head>
 
-{{-- <body onload="getInvoiceList(1)"> --}}
-<body>
-	<header>
-		<img src="{{ asset('/images/twigik.png') }}" class="twigikImage" alt="Twigik Logo">
+{{--
+
+<body onload="getInvoiceList(1)"> --}}
+
+	<body>
+		<header>
+			<img src="{{ asset('/images/twigik.png') }}" class="twigikImage" alt="Twigik Logo">
+			<div>
+				<a href="/api/createemployee" class="create">Add Employee</a>
+				<button id="openPayrollBtn" class="create">Generate Payroll</button>
+				<button class='logout btn' id="logoutBtn">Logout</button>
+				<span class="close" id="closebtn">&times;</span>
+
+			</div>
+		</header>
+
 		<div>
-			<!-- <a href="" class="create-note">Credit Note</a>
-				<a href="" class="group-invoice">Group Invoice</a> -->
-				<a href="/createemployee" class="create">Add Employee</a>
-				{{-- <a href="/api/company/form" class="create">Add Company</a> --}}
-                <button id="openPayrollBtn"  class="create">Generate Payroll</button>
-				{{-- <a href="/api/customer/list" class="create">view customer</a> --}}
-			{{-- <a href="/api/customer/form" class="create">Add Customer</a> --}}
-			{{-- <a href="/api/invoice" class="create"><i class="bi bi-plus"></i>Create</a> --}}
-			<button class='logout btn' id="logoutBtn">Logout</button>
-			<span class="close" id="closebtn">&times;</span>
-            
-		</div>
-	</header>
+			<div class="invoice-search">
+				<p>Employees List</p>
+				<i class="fa-solid fa-magnifying-glass"></i>
+			</div>
 
-	<div>
-		<div class="invoice-search">
-			<p>Employees List</p>
-			<i class="fa-solid fa-magnifying-glass"></i>
-		</div>
-
-		<form id="formSubmit">
-			<div class="form-row">
-				<div class="form-group">
-					<label for="startDate">Joining date from</label>
-					<input type="text" id="startDate" name="startDate" placeholder="DD-MM-YYYY"/>
-				</div>
-
-				<div class="form-group">
-					<label for="endDate">To</label>
-					<input type="text" name="endDate" id="endDate" placeholder="DD-MM-YYYY">
-				</div>
-
-				<div class="form-group">
-					<label for="employee_name">Employee Name</label>
-					<select name="employee_name" id="employee_name">
-						<option value="" disabled selected hidden>Select Employee Name</option>
-					</select>
-				</div>
-
-				<div class="form-group">
-					<label for="employee_id">Employee Id</label>
-					<input type="text" name="employee_id" id="employee_id" placeholder="Enter employee id ">
-				</div>
+			<form id="formSubmit">
+				<div class="form-row">
 					<div class="form-group">
-					<label for="email">Employee Email</label>
-					<input type="email" name="email" id="email" placeholder="search email">
-				</div>
+						<label for="startDate">Joining date from</label>
+						<input type="text" id="startDate" name="startDate" placeholder="DD-MM-YYYY" />
+					</div>
 
-				<div class="form-group">
-					<label for="department_id">Role</label>
-					<select name="department_id" id="department_id">
-						<option value="" disabled selected hidden>Select Role</option>
-					</select>
+					<div class="form-group">
+						<label for="endDate">To</label>
+						<input type="text" name="endDate" id="endDate" placeholder="DD-MM-YYYY">
+					</div>
+
+					<div class="form-group">
+						<label for="employee_name">Employee Name</label>
+						<select name="employee_name" id="employee_name">
+							<option value="" disabled selected hidden>Select Employee Name</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="employee_id">Employee Id</label>
+						<input type="text" name="employee_id" id="employee_id" placeholder="Enter employee id ">
+					</div>
+					<div class="form-group">
+						<label for="email">Employee Email</label>
+						<input type="email" name="email" id="email" placeholder="search email">
+					</div>
+
+					<div class="form-group">
+						<label for="department_id">Role</label>
+						<select name="department_id" id="department_id">
+							<option value="" disabled selected hidden>Select Role</option>
+						</select>
+					</div>
 				</div>
-			</div>
-			<hr>
-			<div class="reset">
-				<!-- <input type="reset" name="reset" value="Reset"> -->
-				<a href="/api/employeeList" class="clear">Reset</a>
-				<input type="submit" name="search" value="Search" class="search">
-			</div>
-	</div>
-	</form>
+				<hr>
+				<div class="reset">
+					<!-- <input type="reset" name="reset" value="Reset"> -->
+					<a href="/api/employeeList" class="clear">Reset</a>
+					<input type="submit" name="search" value="Search" class="search">
+				</div>
+		</div>
+		</form>
 		<div class="theader" style="text-align:right;border-radius:10px">
 			<button class="export" id="exportBtn">Export</button>
 		</div>
 
-	<table>
-		<thead>
-			<tr>
-				<th>Employee ID</th>
-				<th>NAME</th>
-				<th>profile</th>
-				<th>Email</th>
-				<th>PHONE</th>
-			   {{-- <th>JOIN DATE</th> --}}
-				<th>ROLE</th> 
-				{{-- <th></th>
-				<th></th> --}}
-				<th>Action</th>
-			</tr>
-		</thead>
-		<tbody id="employeelist"></tbody>
-	</table>
-	<!-- Pagination -->
-	<div id="paginateButton" class="pagination"></div>
+		<table>
+			<thead>
+				<tr>
+					<th>Employee ID</th>
+					<th>NAME</th>
+					<th>profile</th>
+					<th>Email</th>
+					<th>PHONE</th>
+					{{-- <th>JOIN DATE</th> --}}
+					<th>ROLE</th>
+					{{-- <th></th>
+					<th></th> --}}
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tbody id="employeelist"></tbody>
+		</table>
+		<!-- Pagination -->
+		<div id="paginateButton" class="pagination"></div>
 
-        {{-- modal --}}
-    </div>
-	<!-- Custom alert Box -->
-	<div id="customAlert" class="custom-alert">
-	  <p id="alertMessage"></p>
-	  <button onclick="closeAlert()" class="alertBtn">OK</button>
-</div>
-
-{{-- payroll modal --}}
-<div id="payrollModal" class="overlay">
-		<div class="modal">
-			<button id="closePayrollBtn">&times;</button> 
-			<h2>Employees Payroll List</h2>
-			<table id="employeeTable">
-				<thead>
-					<tr>
-						<th><input type="checkbox" id="selectAll" checked> Select All</th>
-						<th> Employee ID</th>
-						<th>Name</th>
-						<th>Role</th>
-						<th>Salary</th>
-						{{-- <th>Status</th> --}}
-					</tr>
-				</thead>
-				<tbody id="employeeBody"></tbody>
-			</table>
-			<div id="totalSalary">Total Salary: ₹0</div>
-             <button type="submit" id="generatePayroll">Generate</button>
+		{{-- modal --}}
 		</div>
-	</div>
+		<!-- Custom alert Box -->
+		<div id="customAlert" class="custom-alert">
+			<p id="alertMessage"></p>
+			<button onclick="closeAlert()" class="alertBtn">OK</button>
+		</div>
 
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-{{-- <script src="/js/invoiceListV1.js"></script> --}}
+		{{-- payroll modal --}}
+		<div id="payrollModal" class="overlay">
+			<div class="modal">
+				<button id="closePayrollBtn">&times;</button>
+				<h2>Employees Payroll List</h2>
+				<table id="employeeTable">
+					<thead>
+						<tr>
+							<th><input type="checkbox" id="selectAll" checked> Select All</th>
+							<th> Employee ID</th>
+							<th>Name</th>
+							<th>Role</th>
+							<th>Salary</th>
+							{{-- <th>Status</th> --}}
+						</tr>
+					</thead>
+					<tbody id="employeeBody"></tbody>
+				</table>
+				<div id="totalSalary">Total Salary: ₹0</div>
+				<button type="submit" id="generatePayroll">Generate</button>
+			</div>
+		</div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+		{{-- <script src="/js/invoiceListV1.js"></script> --}}
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
 	getemployeeList(1);
 	getemployeeListDroupdown();
     flatpickr("#startDate", {
@@ -558,7 +554,7 @@ document.getElementById('logoutBtn').addEventListener('click', function () {
             if (xhr.status === 200) {
                 localStorage.removeItem("token");
                 alert("Logout successful");
-                window.location.href = "./api/login";
+                window.location.href = "/api/login";
             } else {
                 alert("Logout failed");
             }
@@ -578,7 +574,7 @@ document.getElementById('logoutBtn').addEventListener('click', function () {
 	    http.setRequestHeader('Accept', 'application/json');
 	    if (!token) {
 	        alert('Token has been Expired! Please Login Again');
-	        window.location.href = './api/login';
+	        window.location.href = '/api/login';
 	        return;
 	    }
 
@@ -601,8 +597,8 @@ document.getElementById('logoutBtn').addEventListener('click', function () {
 	    };
 	    http.send();
 	});
-</script>
+		</script>
 
-</body>
+	</body>
 
 </html>

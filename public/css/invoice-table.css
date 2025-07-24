@@ -293,7 +293,9 @@
   .fa-paper-plane {
     color: #45c061;
   }
-
+.twigikImage{
+  margin: 10px;
+}
   .logout {
     background-color: #007dff;
     margin-right: 35px;

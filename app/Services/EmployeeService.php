@@ -5,21 +5,21 @@ namespace App\Services;
 use App\Models\Employees;
 use App\Models\EmployeeJobDetail;
 use App\Models\EmployeeSalary;
-use App\Models\Addresses;
+// use App\Models\Addresses;
 use App\Models\Department;
 use App\Models\payroll_history;
 use App\Models\PayrollDetail;
-use App\Models\BankDetail;
+// use App\Models\BankDetail;
 
-use Barryvdh\DomPDF\Facade\Pdf;
+
+use App\Services\CommonServices;
 use Exception;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -33,6 +33,8 @@ class EmployeeService
     public function storeEmployee($data)
     {
         $userId = Auth::id();
+
+        $commonServices = new CommonServices();
 
         $employeeId = $this->generateEmployeeId();
 
@@ -52,6 +54,7 @@ class EmployeeService
             'photo' => $profilePath,
             'contact_number' => $data['contact_number'],
             'email' => $data['email'],
+            'created_by'=>  $userId
         ]);
 
         $employeeJob = EmployeeJobDetail::create([
@@ -66,8 +69,9 @@ class EmployeeService
             'confirmation_date' => $data['confirmation_date'] ?? null,
             'work_location' => $data['work_location'],
             'shift' => $data['shift'] ?? null,
+            'created_by' =>  $userId
         ]);
-        
+
         $employeeSalary = EmployeeSalary::create([
             'employee_id' => $employee->id,
             'employee_job_details_id' => $employeeJob->id,
@@ -83,40 +87,20 @@ class EmployeeService
         ]);
 
         //address table data
-        $address = Addresses::create([
-            'reference_id' => $employee->id,
-            'reference_name' => 'Employee',
-            'line1' => $data['line1'],
-            'line2' => $data['line2'] ?? null,
-            'line3' => $data['line3'] ?? null,
-            'line4' => $data['line4'] ?? null,
-            'pincode' => $data['pincode'],
-            'created_by' => $userId           
-        ]);
-
+        $address = $commonServices->storeAddress($data, $employee->id, 'Employee');
         $employee->address_id = $address->address_id;
         $employee->save();
-        
-        $BankDetail = BankDetail::create([
-            'reference_id' => $employee->id,
-            'reference_name' => 'Employee',
-            'bank_name' => $data['bank_name'],
-            'account_holder_name' => $data['account_holder_name'],
-            'account_number' => $data['account_number'],
-            'ifsc_code' => $data['ifsc_code'],
-            'branch_name' => $data['branch_name'] ?? null,
-            'account_type' => $data['account_type'],
-            'created_by' => $userId,
-        ]);
+
+        $BankDetail = $commonServices->storeBankDetails($data, $employee->id, 'Employee');
         $employeeSalary->bank_details_id = $BankDetail->bank_detail_id;
         $employeeSalary->save();
 
         return [
-           'employee'=> $employee,
-           'employee_job' => $employeeJob,
-           'employee_salary' => $employeeSalary,
-           'address' => $address,
-           'BankDetail'=> $BankDetail
+            'employee' => $employee,
+            'employee_job' => $employeeJob,
+            'employee_salary' => $employeeSalary,
+            'address' => $address,
+            'BankDetail' => $BankDetail
         ];
     }
 
@@ -137,13 +121,15 @@ class EmployeeService
     }
 
     //Get Employee Data For List dropdown
-    public function getEmployeeData(){
+    public function getEmployeeData()
+    {
         $employee = Employees::get();
-        return $employee ;
+        return $employee;
     }
 
     //Search For Employee
-    public function searchField($request, $paginate = true){
+    public function searchField($request, $paginate = true)
+    {
 
         try {
             $startDate = isset($request['startDate']) && $request['startDate'] !== '' ?
@@ -175,7 +161,7 @@ class EmployeeService
 
                 ->when($email, function ($searchData, $email) {
                     return $searchData->where('email', 'LIKE', '%' . $email . '%');
-                })               
+                })
 
                 ->when($startDate, function ($query) use ($startDate, $endDate) {
                     return $query->whereHas('jobDetails', function ($q) use ($startDate, $endDate) {
@@ -206,7 +192,7 @@ class EmployeeService
         }
     }
 
-    
+
     //Edit  Employee Data 
     public function editEmployeeData($id)
     {
@@ -217,23 +203,23 @@ class EmployeeService
     //Update Employee Data
     public function updateEmployeeData($id, Request $request)
     {
-    try{
-        $employee = Employees::findOrFail($id);
+        try {
+            $employee = Employees::findOrFail($id);
 
-        $updateData = [
-            'first_name'        => $request->input('first_name', $employee->first_name),
-            'last_name'         => $request->input('last_name', $employee->last_name),
-            'gender'            => $request->input('gender', $employee->gender),
-            'date_of_birth'     => $request->input('date_of_birth', $employee->date_of_birth),
-            'nationality'       => $request->input('nationality', $employee->nationality),
-            'marital_status'    => $request->input('marital_status', $employee->marital_status),
-            'contact_number'    => $request->input('contact_number', $employee->contact_number),
-            'email'             => $request->input('email', $employee->email),
-        ];
+            $updateData = [
+                'first_name'        => $request->input('first_name', $employee->first_name),
+                'last_name'         => $request->input('last_name', $employee->last_name),
+                'gender'            => $request->input('gender', $employee->gender),
+                'date_of_birth'     => $request->input('date_of_birth', $employee->date_of_birth),
+                'nationality'       => $request->input('nationality', $employee->nationality),
+                'marital_status'    => $request->input('marital_status', $employee->marital_status),
+                'contact_number'    => $request->input('contact_number', $employee->contact_number),
+                'email'             => $request->input('email', $employee->email),
+            ];
 
-        //  Only handle photo if it exists
+            //  Only handle photo if it exists
 
-        if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+            if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
                 $oldPhoto = $employee->photo;
                 if ($oldPhoto && Storage::disk('public')->exists($oldPhoto)) {
                     Storage::disk('public')->delete($oldPhoto);
@@ -246,17 +232,12 @@ class EmployeeService
                 $profilePic = str_replace(' ', '-', $lowerCase) . '.' . $empProfile->extension();
                 $profilePath = $empProfile->storeAs('employeeProfile', $profilePic, 'public');
                 $updateData['photo'] = $profilePath;
-            
-            
-            
-     }
+            }
             $employee->update($updateData);
             return $employee;
-            
-        }catch(Exception $e){
+        } catch (Exception $e) {
             Log::error('employee update Error' . $e->getMessage());
         }
-
     }
     //Show(Separate) Employee Data
     public function showEmployeeData($id)
@@ -320,7 +301,7 @@ class EmployeeService
         Payroll_history::create([
             'payroll_id' => $payrollId,
             'pay_date' => $payDate,
-            'pay_frequency' => 'Monthly', 
+            'pay_frequency' => 'Monthly',
             'status' => 'Completed',
             'total_count' => count($employeeIds),
             'success' => $success,
@@ -349,18 +330,21 @@ class EmployeeService
     }
     // get pay roll history
 
-    public function getpayroll_history(){
-        $payroll_history = payroll_history::paginate(2); 
+    public function getpayroll_history()
+    {
+        $payroll_history = payroll_history::paginate(2);
         return  $payroll_history;
     }
     //get payroll details
-    public function getpayrollDetails(){
+    public function getpayrollDetails()
+    {
         $payrollDetails = PayrollDetail::with('employee')->paginate(2);
-        return $payrollDetails;      
+        return $payrollDetails;
     }
-    
+
     //Get Employee Department
-    public function employeeDepartment(){
+    public function employeeDepartment()
+    {
         $department = Department::get();
         return $department;
     }

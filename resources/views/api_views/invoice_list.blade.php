@@ -26,19 +26,15 @@
 
 	</script>
 </head>
-
-{{-- <body onload="getInvoiceList(1)"> --}}
 <body>
 	<header>
 		<img src="{{ asset('/images/twigik.png') }}" class="twigikImage" alt="Twigik Logo">
 		<div>
 			<!-- <a href="" class="create-note">Credit Note</a>
 				<a href="" class="group-invoice">Group Invoice</a> -->
-
 				<a href="/api/company/form" class="create">Add Company</a> 
-				<a href="/api/employeeList" class="create">view Employee</a>
+				<a href="/api/employeeList" class="create">Employee</a>
 				<a href="/api/customer/list" class="create">view customer</a>
-			{{-- <a href="/api/customer/form" class="create">Add Customer</a> --}}
 			<a href="/api/invoice" class="create"><i class="bi bi-plus"></i>Create</a>
 			<button class='logout btn' id="logoutBtn">Logout</button>
 		</div>
@@ -93,7 +89,6 @@
 			</div>
 			<hr>
 			<div class="reset">
-				<!-- <input type="reset" name="reset" value="Reset"> -->
 				<a href="/api/invoice/list" class="clear">Reset</a>
 				<input type="submit" name="search" value="Search" class="search">
 			</div>
