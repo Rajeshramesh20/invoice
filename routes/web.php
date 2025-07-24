@@ -49,7 +49,7 @@ Route::prefix('api')->name('api')->group(function () {
     //employees
     Route::get('employeeList', [ApiViewController::class, 'employeesList']);
 
-    Route::get('editemployee/{id}', [ApiViewController::class, 'editEmployee']);
+    Route::get('edit/employee/{id}', [ApiViewController::class, 'editEmployee']);
     
     Route::get('createemployee', [ApiViewController::class, 'employeeForm']);
 

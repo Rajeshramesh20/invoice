@@ -332,68 +332,7 @@
 				    const employeeJob = document.getElementById("employeeJob");
 				    const employeeSalary = document.getElementById("employeeSalary");
 
-				    document.getElementById("nextToAddress").onclick = () => {
-				    	if(!validation()){
-				    		return;
-				    	}
-				        employeeInfo.style.display = "none";
-				        employeeAddress.style.display = "block";
-				    };
-
-				    document.getElementById("nextToBank").onclick = () => {
-				    	if(!employeesAddress()){
-				    		return;
-				    	}
-				    	
-				        employeeAddress.style.display = "none";
-				        employeeBank.style.display = "block";
-				    };
-
-
-				    document.getElementById("nextToJob").onclick = () => {				    	
-				    	if(!employeeBandDetail()){
-				    		return;
-				    	}
-				        employeeBank.style.display = "none";
-				        employeeJob.style.display = "block";
-				    };
-
-				    document.getElementById("nextToSalary").onclick = () => {
-				    	if(!jobDetailsValidation()){
-				    		return;
-				    	}
-				    	
-				        employeeJob.style.display = "none";
-				        employeeSalary.style.display = "block";
-				    };
-
-
-				    //previous navigate
-				    //salary to job
-				     document.getElementById("previousJob").onclick = () => {
-				        employeeSalary.style.display = "none";
-				        employeeJob.style.display = "block";
-				    };
-
-				    //job to Bank
-				    document.getElementById("previousEmployeeBank").onclick = () => {
-				        employeeJob.style.display = "none";
-				        employeeBank.style.display = "block";
-				    };
-
-				     //Bank to Address
-				    document.getElementById("previousEmployeeAddress").onclick = () => {
-				        employeeBank.style.display = "none";
-				        employeeAddress.style.display = "block";
-				    };
-
-				    //Address to employee
-				    document.getElementById("previousEmployeeInfo").onclick = () => {
-				        employeeAddress.style.display = "none";
-				        employeeInfo.style.display = "block";
-				    };								    
-
-				    document.getElementById("submitAll").onclick = function () {
+				    document.getElementById("submitAll").onclick = function () {                     
 				    	if(!salaryValidation()){
 				    		return;
 				    	}
