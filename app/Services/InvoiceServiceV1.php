@@ -6,8 +6,6 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\InvoiceStatus;
 use App\Models\Customers;
-use App\Models\Addresses;
-use App\Models\BankDetail;
 use App\Models\Company;
 use App\Models\MailHistory;
 
@@ -87,22 +85,6 @@ class InvoiceServiceV1
         return  $updateinvoicestatus;
     }
 
-    // //update paid_amount and balance_amount
-    // public function updatePayment($id, $paidAmount)
-    // {
-    //     $invoice = Invoice::findOrFail($id);
-
-    //     $invoice->paid_amount = $paidAmount;
-
-
-    //     $invoice->balance_amount = $invoice->total_amount - $paidAmount;
-
-    //     $invoice->is_payment_received = ($invoice->balance_amount == 0) ? 1 : 0;
-
-    //     $invoice->save();
-
-    //     return $invoice;
-    // }
 
     //generate invoice id month wise
     public function generateInvoiceNumber($invoiceDate)
@@ -121,6 +103,8 @@ class InvoiceServiceV1
     //store customer 
     public function storeCustomerWithAddress($customerData, $userId)
     {
+
+        $commonServices = new CommonServices();
         //customer table data
         $customer = Customers::create([
             'customer_name' => $customerData['customer_name'],
@@ -130,17 +114,9 @@ class InvoiceServiceV1
             'created_by' => $userId,
         ]);
 
+
         //address table data
-        $address = Addresses::create([
-            'reference_id' => $customer->customer_id,
-            'reference_name' => 'Customer',
-            'line1' => $customerData['line1'],
-            'line2' => $customerData['line2'] ?? null,
-            'line3' => $customerData['line3'] ?? null,
-            'line4' => $customerData['line4'] ?? null,
-            'pincode' => $customerData['pincode'],
-            'created_by' => $userId,
-        ]);
+        $address = $commonServices->storeAddress($customerData, $customer->customer_id, 'Customer');
         $customer->address_id = $address->address_id;
         $customer->save();
         return $customer;
@@ -157,8 +133,6 @@ class InvoiceServiceV1
         return $customer;
     }
 
-
-
     //get customer data
     public function getAllCostomer()
     {
@@ -166,14 +140,12 @@ class InvoiceServiceV1
         return $coustomer;
     }
 
-
     //get all company
     public function getAllCompany()
     {
         $company = Company::all();
         return  $company;
     }
-
 
     //generate pdf
     public function generatePdf($invoiceId)
@@ -220,59 +192,11 @@ class InvoiceServiceV1
         return $pdf->download('invoice-' . $invoice->invoice_no . '.pdf');
     }
 
-    // public function generatePdf($invoiceId)
-    // {
-     
-    //     $invoice = Invoice::with([
-    //         'items',
-    //         'customer.address',
-    //         'company.address',          
-    //         'company.bankDetails'      
-    //     ])->where('invoice_id', $invoiceId)->first();
-
-     
-    //     // if (!$invoice || !$invoice->company) {
-    //     //     return null;
-    //     // }
-
-    //     $company = $invoice->company;             
-    //     $companyAddress = $company->address;      
-    //     $bankDetails = $company->bankDetails;
-
-    //     $gstTotal = 0;
-    //     $netTotal = 0;
-
-    //     foreach ($invoice->items as $item) {
-    //         $gstTotal += $item->gst_amount;
-    //         $netTotal += $item->net_amount;
-    //     }
-
-    //     $numberInWords = Number::spell($invoice->total_amount);
-    //     $formattedInvoiceDate = Carbon::parse($invoice->invoice_date)->format('M j, Y');
-
-    //     $data = [
-    //         'invoice' => $invoice,
-    //         'company' => $company,
-    //         'companyAddress' => $companyAddress,
-    //         'bankDetails' => $bankDetails, 
-    //         'gstTotal' => $gstTotal,
-    //         'netTotal' => $netTotal,
-    //         'numberInWords' => $numberInWords,
-    //         'logo_path' => $company->logo_path,
-    //         'formattedInvoiceDate' => $formattedInvoiceDate,
-    //     ];
-
-    //     $pdf = Pdf::loadView('pdf.invoicePdf', $data);
-
-    //     Log::error($invoice->invoice_no);
-
-    //     return $pdf->download('invoice-' . $invoice->invoice_no . '.pdf');
-    // }
-
-
     //store company
     public function storeCompanyWithAddressAndBankdetails($companyData, $userId)
     {
+        $commonServices = new CommonServices();
+
         $logo = $companyData['logo'];
 
         $lowercase = strtolower($companyData['company_name']);
@@ -295,36 +219,17 @@ class InvoiceServiceV1
             'logo_path' => $logoPath,
             'created_by' => $userId,
         ]);
+          
 
-        $address = Addresses::create([
-            'reference_id' => $company->company_id,
-            'reference_name' => 'companies',
-            'line1' => $companyData['line1'],
-            'line2' => $companyData['line2'] ?? null,
-            'line3' => $companyData['line3'] ?? null,
-            'line4' => $companyData['line4'] ?? null,
-            'pincode' => $companyData['pincode'],
-            'created_by' => $userId,
-        ]);
+
+        $address = $commonServices->storeAddress($companyData, $company->company_id, 'companies');
         $company->address_id = $address->address_id;
         $company->save();
 
-        $BankDetail = BankDetail::create([
-            // 'company_id' => $company->company_id,
-            'reference_id' => $company->company_id,
-            'reference_name' => 'companies',
-            'bank_name' => $companyData['bank_name'],
-            'account_holder_name' => $companyData['account_holder_name'],
-            'account_number' => $companyData['account_number'],
-            'ifsc_code' => $companyData['ifsc_code'],
-            'branch_name' => $companyData['branch_name'] ?? null,
-            'account_type' => $companyData['account_type'],
-            'created_by' => $userId,
-        ]);
+  
+        $BankDetail = $commonServices->storeBankDetails($companyData, $company->company_id, 'companies');
         $company->bank_details_id = $BankDetail->bank_detail_id;
         $company->save();
-
-
         return $company;
     }
 
@@ -337,7 +242,6 @@ class InvoiceServiceV1
         return $invoiceData;
     }
 
-    
     //Invoice Search
     public function searchField($request, $paginate = true)
     {
@@ -375,12 +279,6 @@ class InvoiceServiceV1
                 ->when($emailStatus, function ($searchData, $emailStatus) {
                     return $searchData->where('email_send_status', $emailStatus);
                 });
-
-            /*Log::error($startDate);
-               Log::error($searchData->toSql());   
-               Log::error('SQL: ' . $searchData->getQuery()->toSql());
-               Log::error('SQL: ' . $searchData->getQuery()->toSql());
-               Log::error('Bindings: ' . json_encode($searchData->getQuery()->getBindings()))*/
 
 
             if (!$paginate) {
@@ -456,11 +354,11 @@ class InvoiceServiceV1
             'formattedInvoiceDate' => $formattedInvoiceDate,
         ];
 
-        $pdf = Pdf::loadView('pdf.invoicePdf', $data);
+            $pdf = Pdf::loadView('pdf.invoicePdf', $data);
 
 
-        // Send Email with PDF attached from memory
-        Mail::send('mail.invoice_customer_mail', ['invoiceCustomer' => $invoice], function ($message) use ($invoiceMail, $pdf, $invoice, $company) {
+            // Send Email with PDF attached from memory
+            Mail::send('mail.invoice_customer_mail', ['invoiceCustomer' => $invoice], function ($message) use ($invoiceMail, $pdf, $invoice, $company) {
             $message->to($invoiceMail);
             // $message->subject('Your Invoice from ' . config('app.name'));
             $message->subject('Your Invoice from ' . $company->company_name);
@@ -542,6 +440,7 @@ class InvoiceServiceV1
                 'contact_number' => $request['contact_number']
             ]);
             $address = $customerData->address;
+
             $address->update([
                 'line1' => $request['line1'],
                 'line2' => $request['line2'],

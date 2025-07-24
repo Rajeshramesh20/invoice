@@ -19,8 +19,6 @@ class ApiViewController extends Controller
         return view('auth.login');
     }
 
-
-
     public function showForgotPasswordForm()
     {
         return view('auth.Forgotpassword_api');
@@ -49,7 +47,7 @@ class ApiViewController extends Controller
     public function invoiceList()
     {
  
-            return view('api_views.invoice_list');
+      return view('api_views.invoice_list');
    
     }
 
@@ -91,4 +89,17 @@ class ApiViewController extends Controller
         return view('api_views.edit_employee');
     }
 
+
+    public function employeeForm()
+    {
+        return view('api_views.employee_form');
+    }
+    public function payrollHistory()
+    {
+        return view('api_views.payroll_history');
+    }
+    public function payrollDetails()
+    {
+        return view('api_views.payroll_details');
+    }
 }

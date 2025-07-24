@@ -68,27 +68,19 @@ Route::middleware(['auth:api'])->group(
         //show invoice table data
         Route::get('invoicedata', [InvoiceControllerV1::class, 'invoiceDataList']);
         Route::get('searchinvoice', [InvoiceControllerV1::class, 'searchData']);
+        //export in invoice data
+        Route::get('invoice/export', [InvoiceControllerV1::class, 'exportInvoiceData']);
 
-        //customer data
-        Route::post('customer', [InvoiceControllerV1::class, 'storeCustomerData']);
-        Route::get('getCustomer', [InvoiceControllerV1::class, 'getAllCoustomer']);
-        Route::get('customer/list', [InvoiceControllerV1::class, 'getAllCoustomer']);
-        Route::get('searchcustomer', [InvoiceControllerV1::class, 'customerSearch']);
+        //mail sent to the customer
+        Route::post('invoicemail/{id}', [InvoiceControllerV1::class, 'sendInvoiceMail']);
 
-        Route::get('edit/customer/{id}', [InvoiceControllerV1::class, 'getCustomerData']);
+        //pdf download
+        Route::get('invoice/download/{id}', [InvoiceControllerV1::class, 'downloadInvoice']);
 
-        Route::put('update/customer/{id}', [InvoiceControllerV1::class, 'updateCustomerData']);
-
-        Route::get('customer', [InvoiceControllerV1::class, 'customerList']);
-        Route::put('/customer/{id}/status', [InvoiceControllerV1::class, 'updateCustomerStatus']);
-        //company data 
-        Route::post('company', [InvoiceControllerV1::class, 'storeCompanyWithAddressAndBankdetails']);
-        Route::get('company', [InvoiceControllerV1::class, 'getAllCompany']);
+        Route::get('/invoicechart', [InvoiceControllerV1::class, 'invoiceChart']);
 
         //logout
         Route::get('logout', [InvoiceControllerV1::class, 'logout'])->name('logout');
-
-
 
     }
 );
@@ -96,17 +88,21 @@ Route::middleware(['auth:api'])->group(
 
 Route::middleware(['auth:api'])->group(function() {
 
-    //export in invoice data
-    Route::get('invoice/export', [InvoiceControllerV1::class, 'exportInvoiceData']);
+    //customer data
+    Route::post('customer', [InvoiceControllerV1::class, 'storeCustomerData']);
+    Route::get('getCustomer', [InvoiceControllerV1::class, 'getAllCoustomer']);
+    Route::get('customer/list', [InvoiceControllerV1::class, 'getAllCoustomer']);
+    Route::get('searchcustomer', [InvoiceControllerV1::class, 'customerSearch']);
 
-    //mail sent to the customer
-    Route::post('invoicemail/{id}', [InvoiceControllerV1::class, 'sendInvoiceMail']);
+    Route::get('edit/customer/{id}', [InvoiceControllerV1::class, 'getCustomerData']);
 
-    //pdf download
-    Route::get('invoice/download/{id}', [InvoiceControllerV1::class, 'downloadInvoice']);
+    Route::put('update/customer/{id}', [InvoiceControllerV1::class, 'updateCustomerData']);
 
-    Route::get('/invoicechart',[InvoiceControllerV1::class, 'invoiceChart']);    
-
+    Route::get('customer', [InvoiceControllerV1::class, 'customerList']);
+    Route::put('/customer/{id}/status', [InvoiceControllerV1::class, 'updateCustomerStatus']);
+    //company data 
+    Route::post('company', [InvoiceControllerV1::class, 'storeCompanyWithAddressAndBankdetails']);
+    Route::get('company', [InvoiceControllerV1::class, 'getAllCompany']);
 });
 
  Route::middleware(['auth:api'])->group(function() {
