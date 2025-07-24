@@ -384,16 +384,16 @@ class EmployeeService
         return  $payroll_history;
     }
     //get payroll details
-<<<<<<< HEAD
+
     public function getpayrollDetails(){
         $payrollDetails = PayrollDetail::with('employee')->paginate(5);
         return $payrollDetails;      
-=======
+
     public function getpayrollDetails()
     {
         $payrollDetails = PayrollDetail::with('employee')->paginate(2);
         return $payrollDetails;
->>>>>>> 686ca3a44ca9ef80266ab51164ab40d70881d7fb
+
     }
 
     //Get Employee Department
