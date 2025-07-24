@@ -346,7 +346,7 @@ class InvoiceServiceV1
             'invoice' => $invoice,
             'company' => $company,
             'companyAddress' => $company->address,
-            'bankDetails' => $company->bankDetails->first(),
+            'bankDetails' => $company->bankDetails,
             'gstTotal' => $gstTotal,
             'netTotal' => $netTotal,
             'numberInWords' => ucfirst($numberInWords),
@@ -378,7 +378,7 @@ class InvoiceServiceV1
         $invoice->update(['email_send_status' => 'send']);
 
         return true;
-    }
+      }
 
 
     //Customer list For Show Details
@@ -403,7 +403,6 @@ class InvoiceServiceV1
                 ->when($customerName, function ($searchData, $customerName) {
                     $searchData->where('customer_name', $customerName);
                 });
-
 
             if (!$paginate) {
                 $searchData = $searchData->get();
@@ -557,7 +556,6 @@ class InvoiceServiceV1
               public function updatePaidAmount($id,$amount){
                 try{
                     $invoice = invoice::findOrFail($id);
-
                     // Update Paid Amount
                     $invoice->paid_amount += $amount;
 

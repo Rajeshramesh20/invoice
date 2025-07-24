@@ -5,6 +5,11 @@ namespace App\Services;
 use App\Models\BankDetail;
 use App\Models\Addresses;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Company;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Number;
+use Illuminate\Support\Carbon;
 
 class CommonServices
 {
@@ -43,4 +48,45 @@ class CommonServices
         return  $BankDetail;
     }
 
-}
+    public function generateInvoicePdfData($invoice)  {
+
+        $company = Company::with(['address', 'bankDetails'])->latest()->first();
+
+        if (!$invoice || !$company) {
+            return null;
+        }
+
+        $gstTotal = 0;
+        $netTotal = 0;
+
+        foreach ($invoice->items as $item) {
+            $gstTotal += $item->gst_amount;
+            $netTotal += $item->net_amount;
+        }
+
+        $numberInWords = Number::spell($invoice->total_amount);
+
+        $formattedInvoiceDate = Carbon::parse($invoice->invoice_date)->format('M j, Y');
+
+        $logopath = $company->logo_path;
+
+        // Log::error('pdf_path' . $logopath);
+        $data = [
+            'invoice' => $invoice,
+            'company' => $company,
+            'companyAddress' => $company->address,
+            'bankDetails' => $company->bankDetails,
+            'gstTotal' => $gstTotal,
+            'netTotal' => $netTotal,
+            'numberInWords' => $numberInWords,
+            'logo_path' => $logopath,
+            'formattedInvoiceDate' => $formattedInvoiceDate,
+        ];
+
+         return $data ;
+    }
+
+ 
+        
+    }
+

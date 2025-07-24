@@ -10,7 +10,7 @@ Route::get('/', function () {
 })->Middleware('guest'); 
 
 // Api viewes
-Route::prefix('api')->name('api.')->group(function () {
+Route::prefix('api')->name('api')->group(function () {
     
   Route::get('/register', [ApiViewController::class, 'showRegisterForm'])->name('signuppage');
     
