@@ -78,4 +78,6 @@ class Employees extends Model
         return $this->hasMany(PayrollDetail::class);
     }
 
+    
+
 }
