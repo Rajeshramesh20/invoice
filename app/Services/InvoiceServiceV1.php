@@ -441,14 +441,11 @@ class InvoiceServiceV1
             ]);
             $address = $customerData->address;
 
-            $address->update([
-                'line1' => $request['line1'],
-                'line2' => $request['line2'],
-                'line3' => $request['line3'],
-                'line4' => $request['line4'],
-                'pincode' => $request['pincode'],
+            //update Address
+            $commonServices = new CommonServices();
+            $address = $commonServices->updateAddress($address, $request);
 
-            ]);
+            
             return $customerData;
         } catch (Exception $e) {
             Log::error('UpdateCustomer Data Error:' . $e->getMessage());

@@ -43,4 +43,29 @@ class CommonServices
         return  $BankDetail;
     }
 
+    public function updateAddress($address, $request){
+        $address = $address->update([
+            'line1' => $request['line1'],
+            'line2' => $request['line2'],
+            'line3' => $request['line3'],
+            'line4' => $request['line4'],
+            'pincode' => $request['pincode'],
+            'updated_by' => $this->getUserID()
+        ]);
+
+        return $address;
+    }
+
+    public function updateBankDetails($bankDetails, $request){
+        $bank = $bankDetails->update([
+              'bank_name' => $request['bank_name'],
+              'account_holder_name' => $request['account_holder_name'], 
+              'account_number' => $request['account_number'], 
+              'ifsc_code' => $request['ifsc_code'],
+              'branch_name' => $request['branch_name'], 
+              'account_type' => $request['account_type'],
+              'updated_by' =>  $this->getUserID()
+        ]);
+        return $bank;
+    }
 }

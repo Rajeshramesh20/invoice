@@ -171,4 +171,30 @@ class Controller extends BaseController
                         // if (data.photo) {
                         //   document.getElementById('profilePreview').src = 'http://127.0.0.1:8000/storage/' + data.photo;
                         // }
+
+
+            // //Employee Bankdetails
+        // if($employee->salary->bankDetails){
+        //     $employee->salary->bankDetails->update([
+        //       'bank_name' => $request->input('bank_name', $employee->salary->bankDetails->bank_name),
+        //       'account_holder_name' => $request->input('account_holder_name', $employee->salary->bankDetails->account_holder_name),
+        //       'account_number' => $request->input('account_number', $employee->salary->bankDetails->account_number),
+        //       'ifsc_code' => $request->input('ifsc_code', $employee->salary->bankDetails->ifsc_code),
+        //       'branch_name' => $request->input('branch_name', $employee->salary->bankDetails->branch_name),
+        //       'account_type' => $request->input('account_type', $employee->salary->bankDetails->account_type),
+        //       'updated_by' => $commonServices->getUserID()
+        //     ]);
+        // }
+
+        //employee Address 
+        // if($employee->address){
+        //     $employee->address->update([
+        //         'line1' => $request->input('line1', $employee->line1),
+        //         'line2' => $request->input('line2', $employee->line2),
+        //         'line3' => $request->input('line3', $employee->line3),
+        //         'line4' => $request->input('line4', $employee->line4),
+        //         'pincode' => $request->input('pincode', $employee->pincode),
+        //         'updated_by' => $commonServices->getUserID()
+        //     ]);
+        // }
 }

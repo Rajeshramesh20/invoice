@@ -38,7 +38,7 @@
 
 			<a href="/payrolllist" class="create">PayRoll List</a>
 			<a href="/payrolldetails" class="create">PayRoll Details</a>
-			<a href="/createemployee" class="create">Add Employee</a>				
+			<a href="/api/createemployee" class="create">Add Employee</a>				
             <button id="openPayrollBtn"  class="create">Generate Payroll</button>
 			<button class='logout btn' id="logoutBtn">Logout</button>
 			<span class="close" id="closebtn">&times;</span>
