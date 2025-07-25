@@ -140,7 +140,7 @@ class InvoiceService
         $company = Company::all();
         return  $company;
     }
-
+ 
     //generate pdf
     public function generatePdf($invoiceId)
     {

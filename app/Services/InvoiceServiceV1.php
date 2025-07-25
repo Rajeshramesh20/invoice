@@ -12,7 +12,6 @@ use App\Models\MailHistory;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Number;
 use Exception;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -153,38 +152,12 @@ class InvoiceServiceV1
         $invoice = Invoice::with(['items', 'customer.address'])
             ->where('invoice_id', $invoiceId)->first();
 
-        $company = Company::with(['address', 'bankDetails'])->latest()->first();
+        $common = new CommonServices();
+        $data = $common->generateInvoicePdfData($invoice);
 
-        if (!$invoice || !$company) {
+        if (!$data) {
             return null;
         }
-
-        $gstTotal = 0;
-        $netTotal = 0;
-
-        foreach ($invoice->items as $item) {
-            $gstTotal += $item->gst_amount;
-            $netTotal += $item->net_amount;
-        }
-
-        $numberInWords = Number::spell($invoice->total_amount);
-
-        $formattedInvoiceDate = Carbon::parse($invoice->invoice_date)->format('M j, Y');
-
-        $logopath = $company->logo_path;
-
-        // Log::error('pdf_path' . $logopath);
-        $data = [
-            'invoice' => $invoice,
-            'company' => $company,
-            'companyAddress' => $company->address,
-            'bankDetails' => $company->bankDetails,
-            'gstTotal' => $gstTotal,
-            'netTotal' => $netTotal,
-            'numberInWords' => $numberInWords,
-            'logo_path' => $logopath,
-            'formattedInvoiceDate' => $formattedInvoiceDate,
-        ];
 
         $pdf = Pdf::loadView('pdf.invoicePdf', $data);
 
@@ -325,44 +298,20 @@ class InvoiceServiceV1
     {
         $invoiceMail = $invoice->customer->customer_email;
 
-        $company = Company::with(['address', 'bankDetails'])->latest()->first();
+        $common = new CommonServices();
+        $data = $common->generateInvoicePdfData($invoice);
 
-        $gstTotal = 0;
-        $netTotal = 0;
-
-        foreach ($invoice->items as $item) {
-            $gstTotal += $item->gst_amount;
-            $netTotal += $item->net_amount;
+        if (!$data) {
+            return null;
         }
 
-        $numberInWords = Number::spell($invoice->total_amount);
-
-        $formattedInvoiceDate = Carbon::parse($invoice->invoice_date)->format('M j, Y');
-
-        $logopath = $company->logo_path;
-
-        // Log::error('pdf_path' . $logopath);
-        $data = [
-            'invoice' => $invoice,
-            'company' => $company,
-            'companyAddress' => $company->address,
-            'bankDetails' => $company->bankDetails->first(),
-            'gstTotal' => $gstTotal,
-            'netTotal' => $netTotal,
-            'numberInWords' => ucfirst($numberInWords),
-            'logo_path' => $logopath,
-            'formattedInvoiceDate' => $formattedInvoiceDate,
-        ];
-
-            $pdf = Pdf::loadView('pdf.invoicePdf', $data);
-
+        $pdf = Pdf::loadView('pdf.invoicePdf', $data);
 
             // Send Email with PDF attached from memory
-            Mail::send('mail.invoice_customer_mail', ['invoiceCustomer' => $invoice], function ($message) use ($invoiceMail, $pdf, $invoice, $company) {
-            $message->to($invoiceMail);
-            // $message->subject('Your Invoice from ' . config('app.name'));
-            $message->subject('Your Invoice from ' . $company->company_name);
-            $message->attachData($pdf->output(), 'Invoice-' . $invoice->invoice_no . '.pdf', [
+            Mail::send('mail.invoice_customer_mail', ['invoiceCustomer' => $invoice], function ($message) use ($invoiceMail, $pdf, $invoice, $data) {
+                $message->to($invoiceMail);
+                $message->subject('Your Invoice from ' . $data['company']->company_name);
+                $message->attachData($pdf->output(), 'Invoice-' . $invoice->invoice_no . '.pdf', [
                 'mime' => 'application/pdf',
             ]);
         });
@@ -378,7 +327,7 @@ class InvoiceServiceV1
         $invoice->update(['email_send_status' => 'send']);
 
         return true;
-    }
+      }
 
 
     //Customer list For Show Details
@@ -403,7 +352,6 @@ class InvoiceServiceV1
                 ->when($customerName, function ($searchData, $customerName) {
                     $searchData->where('customer_name', $customerName);
                 });
-
 
             if (!$paginate) {
                 $searchData = $searchData->get();
@@ -554,7 +502,6 @@ class InvoiceServiceV1
               public function updatePaidAmount($id,$amount){
                 try{
                     $invoice = invoice::findOrFail($id);
-
                     // Update Paid Amount
                     $invoice->paid_amount += $amount;
 

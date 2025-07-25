@@ -81,7 +81,7 @@
 					</div>
 
 					<div class="form-group">
-						<label for="department_id">Role</label>
+						<label for="department_id">Department</label>
 						<select name="department_id" id="department_id">
 							<option value="" disabled selected hidden>Select Role</option>
 						</select>
