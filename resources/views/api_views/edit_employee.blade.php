@@ -534,9 +534,6 @@
 
 
 
-
-
-
 	            // Preview selected image
 		    // document.getElementById('photo').addEventListener('change', function (e) {
 		    //   const [file] = e.target.files;
@@ -544,8 +541,6 @@
 		    //     document.getElementById('profilePreview').src = URL.createObjectURL(file);
 		    //   }
 		    // });
-
-
 
 	            //employee Department
 			document.addEventListener('DOMContentLoaded', function () {
@@ -576,6 +571,11 @@
 	    		};
 	   	 http.send();
 		});
+
+			//this is for Close Employee Form
+		document.getElementById('closebtn').addEventListener('click',function(){
+            window.location.href = "/api/employeeList";
+        });
 		</script>
 </body>
 </html>

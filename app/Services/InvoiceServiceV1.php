@@ -151,40 +151,6 @@ class InvoiceServiceV1
         $invoice = Invoice::with(['items', 'customer.address'])
             ->where('invoice_id', $invoiceId)->first();
 
-        // $company = Company::with(['address', 'bankDetails'])->latest()->first();
-
-        // if (!$invoice || !$company) {
-        //     return null;
-        // }
-
-        // $gstTotal = 0;
-        // $netTotal = 0;
-
-        // foreach ($invoice->items as $item) {
-        //     $gstTotal += $item->gst_amount;
-        //     $netTotal += $item->net_amount;
-        // }
-
-        // $numberInWords = Number::spell($invoice->total_amount);
-
-        // $formattedInvoiceDate = Carbon::parse($invoice->invoice_date)->format('M j, Y');
-
-        // $logopath = $company->logo_path;
-
-        // // Log::error('pdf_path' . $logopath);
-        // $data = [
-        //     'invoice' => $invoice,
-        //     'company' => $company,
-        //     'companyAddress' => $company->address,
-        //     'bankDetails' => $company->bankDetails,
-        //     'gstTotal' => $gstTotal,
-        //     'netTotal' => $netTotal,
-        //     'numberInWords' => $numberInWords,
-        //     'logo_path' => $logopath,
-        //     'formattedInvoiceDate' => $formattedInvoiceDate,
-        // ];
-
-
         $common = new CommonServices();
         $data = $common->generateInvoicePdfData($invoice);
 
@@ -331,37 +297,6 @@ class InvoiceServiceV1
     {
         $invoiceMail = $invoice->customer->customer_email;
 
-        // $company = Company::with(['address', 'bankDetails'])->latest()->first();
-
-        // $gstTotal = 0;
-        // $netTotal = 0;
-
-        // foreach ($invoice->items as $item) {
-        //     $gstTotal += $item->gst_amount;
-        //     $netTotal += $item->net_amount;
-        // }
-
-        // $numberInWords = Number::spell($invoice->total_amount);
-
-        // $formattedInvoiceDate = Carbon::parse($invoice->invoice_date)->format('M j, Y');
-
-        // $logopath = $company->logo_path;
-
-        // // Log::error('pdf_path' . $logopath);
-        // $data = [
-        //     'invoice' => $invoice,
-        //     'company' => $company,
-        //     'companyAddress' => $company->address,
-        //     'bankDetails' => $company->bankDetails,
-        //     'gstTotal' => $gstTotal,
-        //     'netTotal' => $netTotal,
-        //     'numberInWords' => ucfirst($numberInWords),
-        //     'logo_path' => $logopath,
-        //     'formattedInvoiceDate' => $formattedInvoiceDate,
-        // ];
-
-
-
         $common = new CommonServices();
         $data = $common->generateInvoicePdfData($invoice);
 
@@ -373,10 +308,9 @@ class InvoiceServiceV1
 
             // Send Email with PDF attached from memory
             Mail::send('mail.invoice_customer_mail', ['invoiceCustomer' => $invoice], function ($message) use ($invoiceMail, $pdf, $invoice, $data) {
-            $message->to($invoiceMail);
-            // $message->subject('Your Invoice from ' . config('app.name'));
-            $message->subject('Your Invoice from ' . $data['company']->company_name);
-            $message->attachData($pdf->output(), 'Invoice-' . $invoice->invoice_no . '.pdf', [
+                $message->to($invoiceMail);
+                $message->subject('Your Invoice from ' . $data['company']->company_name);
+                $message->attachData($pdf->output(), 'Invoice-' . $invoice->invoice_no . '.pdf', [
                 'mime' => 'application/pdf',
             ]);
         });
@@ -454,14 +388,11 @@ class InvoiceServiceV1
             ]);
             $address = $customerData->address;
 
-            $address->update([
-                'line1' => $request['line1'],
-                'line2' => $request['line2'],
-                'line3' => $request['line3'],
-                'line4' => $request['line4'],
-                'pincode' => $request['pincode'],
+            //update Address
+            $commonServices = new CommonServices();
+            $address = $commonServices->updateAddress($address, $request);
 
-            ]);
+            
             return $customerData;
         } catch (Exception $e) {
             Log::error('UpdateCustomer Data Error:' . $e->getMessage());

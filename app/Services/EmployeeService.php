@@ -24,9 +24,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 
-
-
-
 class EmployeeService
 {
     //creae Employee
@@ -118,15 +115,13 @@ class EmployeeService
     }
 
     //Get Employee Data For List dropdown
-    public function getEmployeeData()
-    {
+    public function getEmployeeData(){
         $employee = Employees::get();
         return $employee;
     }
 
     //Search For Employee
-    public function searchField($request, $paginate = true)
-    {
+    public function searchField($request, $paginate = true){
 
         try {
             $startDate = isset($request['startDate']) && $request['startDate'] !== '' ?
@@ -221,7 +216,6 @@ class EmployeeService
             ];
 
             //  Only handle photo if it exists
-
             if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
                 $oldPhoto = $employee->photo;
                 if ($oldPhoto && Storage::disk('public')->exists($oldPhoto)) {
@@ -234,44 +228,26 @@ class EmployeeService
                 $lowerCase = strtolower($employeeId);
                 $profilePic = str_replace(' ', '-', $lowerCase) . '.' . $empProfile->extension();
                 $profilePath = $empProfile->storeAs('employeeProfile', $profilePic, 'public');
-
                 $updateData['photo'] = $profilePath;           
-        }
+            }
                 $employee->update($updateData);
 
-        //employee Address 
-        if($employee->address){
-            $employee->address->update([
-                'line1' => $request->input('line1', $employee->line1),
-                'line2' => $request->input('line2', $employee->line2),
-                'line3' => $request->input('line3', $employee->line3),
-                'line4' => $request->input('line4', $employee->line4),
-                'pincode' => $request->input('pincode', $employee->pincode),
-                'updated_by' => $commonServices->getUserID()
-            ]);
-        }
+                //employee Address 
+                $employeeAddress = $employee->address;
+                $address = $commonServices->updateAddress($employeeAddress, $request);
 
-        //Employee Bankdetails
-        if($employee->salary->bankDetails){
-            $employee->salary->bankDetails->update([
-              'bank_name' => $request->input('bank_name', $employee->salary->bankDetails->bank_name),
-              'account_holder_name' => $request->input('account_holder_name', $employee->salary->bankDetails->account_holder_name),
-              'account_number' => $request->input('account_number', $employee->salary->bankDetails->account_number),
-              'ifsc_code' => $request->input('ifsc_code', $employee->salary->bankDetails->ifsc_code),
-              'branch_name' => $request->input('branch_name', $employee->salary->bankDetails->branch_name),
-              'account_type' => $request->input('account_type', $employee->salary->bankDetails->account_type),
-              'updated_by' => $commonServices->getUserID()
-            ]);
-        }
+                //Employee Bankdetails
+                $employeeBank = $employee->salary->bankDetails;
+                $bank = $commonServices->updateBankDetails($employeeBank, $request);
 
-        //Employee Salary
-        if($employee->salary){
-            $employee->salary->update([
-              'base_salary' => $request->input('base_salary', $employee->salary->base_salary),
-              'pay_grade' => $request->input('pay_grade', $employee->salary->pay_grade),
-              'pay_frequency' => $request->input('pay_frequency', $employee->salary->pay_frequency)
-            ]);
-        }
+            //Employee Salary
+            if($employee->salary){
+                $employee->salary->update([
+                  'base_salary' => $request->input('base_salary', $employee->salary->base_salary),
+                  'pay_grade' => $request->input('pay_grade', $employee->salary->pay_grade),
+                  'pay_frequency' => $request->input('pay_frequency', $employee->salary->pay_frequency)
+                ]);
+            }
 
         //Employee JobDetails
         if($employee->jobDetails){
@@ -292,24 +268,22 @@ class EmployeeService
             Log::error('employee update Error' . $e->getMessage());
         }
     }
+
     //Show(Separate) Employee Data
-    public function showEmployeeData($id)
-    {
+    public function showEmployeeData($id){
         $employee = Employees::with(['jobDetails', 'salary', 'address'])->findOrFail($id);
         return $employee;
     }
 
     //delete Employee Data
-    public function deleteEmployeeData($employee_id)
-    {
+    public function deleteEmployeeData($employee_id){
         $employee = Employees::findOrFail($employee_id);
         $employee->update(['is_deleted' =>  '1']);
         return $employee;
     }
 
 
-    public function storePayroll(array $employeeIds, $createdBy = null)
-    {
+    public function storePayroll(array $employeeIds, $createdBy = null) {
         $payrollId = strtoupper('PYR-' . Str::random(6));
         $payDate = Carbon::now()->toDateString();
 
@@ -370,8 +344,8 @@ class EmployeeService
             'failed' => $failed,
         ];
     }
-    public function getEmployeesWithoutCurrentMonthPayroll()
-    {
+
+    public function getEmployeesWithoutCurrentMonthPayroll(){
         $employeeIdsWithPayroll = DB::table('payroll_details')
             ->select('employee_id')
             ->whereMonth('payroll_date', now()->month)
@@ -381,25 +355,21 @@ class EmployeeService
             ->whereNotIn('id', $employeeIdsWithPayroll)
             ->get();
     }
-    // get pay roll history
 
-    public function getpayroll_history()
-    {
+    // get pay roll history
+    public function getpayroll_history() {
         $payroll_history = payroll_history::paginate(2);
         return  $payroll_history;
     }
-    //get payroll details
 
-    public function getpayrollDetails()
-    {
+    //get payroll details
+    public function getpayrollDetails() {
         $payrollDetails = PayrollDetail::with('employee')->paginate(5);
         return $payrollDetails;
-
     }
 
     //Get Employee Department
-    public function employeeDepartment()
-    {
+    public function employeeDepartment(){
         $department = Department::get();
         return $department;
     }

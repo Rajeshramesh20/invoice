@@ -38,7 +38,7 @@
 
 			<a href="/payrolllist" class="create">PayRoll List</a>
 			<a href="/payrolldetails" class="create">PayRoll Details</a>
-			<a href="/createemployee" class="create">Add Employee</a>				
+			<a href="/api/createemployee" class="create">Add Employee</a>				
             <button id="openPayrollBtn"  class="create">Generate Payroll</button>
 			<button class='logout btn' id="logoutBtn">Logout</button>
 			<span class="close" id="closebtn">&times;</span>
@@ -81,7 +81,7 @@
 					</div>
 
 					<div class="form-group">
-						<label for="department_id">Role</label>
+						<label for="department_id">Department</label>
 						<select name="department_id" id="department_id">
 							<option value="" disabled selected hidden>Select Role</option>
 						</select>
