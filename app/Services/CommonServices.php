@@ -6,8 +6,6 @@ use App\Models\BankDetail;
 use App\Models\Addresses;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Company;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Number;
 use Illuminate\Support\Carbon;
 
@@ -86,7 +84,5 @@ class CommonServices
          return $data ;
     }
 
- 
-        
     }
 

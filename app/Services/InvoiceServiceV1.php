@@ -12,7 +12,6 @@ use App\Models\MailHistory;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Number;
 use Exception;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -153,38 +152,46 @@ class InvoiceServiceV1
         $invoice = Invoice::with(['items', 'customer.address'])
             ->where('invoice_id', $invoiceId)->first();
 
-        $company = Company::with(['address', 'bankDetails'])->latest()->first();
+        // $company = Company::with(['address', 'bankDetails'])->latest()->first();
 
-        if (!$invoice || !$company) {
+        // if (!$invoice || !$company) {
+        //     return null;
+        // }
+
+        // $gstTotal = 0;
+        // $netTotal = 0;
+
+        // foreach ($invoice->items as $item) {
+        //     $gstTotal += $item->gst_amount;
+        //     $netTotal += $item->net_amount;
+        // }
+
+        // $numberInWords = Number::spell($invoice->total_amount);
+
+        // $formattedInvoiceDate = Carbon::parse($invoice->invoice_date)->format('M j, Y');
+
+        // $logopath = $company->logo_path;
+
+        // // Log::error('pdf_path' . $logopath);
+        // $data = [
+        //     'invoice' => $invoice,
+        //     'company' => $company,
+        //     'companyAddress' => $company->address,
+        //     'bankDetails' => $company->bankDetails,
+        //     'gstTotal' => $gstTotal,
+        //     'netTotal' => $netTotal,
+        //     'numberInWords' => $numberInWords,
+        //     'logo_path' => $logopath,
+        //     'formattedInvoiceDate' => $formattedInvoiceDate,
+        // ];
+
+
+        $common = new CommonServices();
+        $data = $common->generateInvoicePdfData($invoice);
+
+        if (!$data) {
             return null;
         }
-
-        $gstTotal = 0;
-        $netTotal = 0;
-
-        foreach ($invoice->items as $item) {
-            $gstTotal += $item->gst_amount;
-            $netTotal += $item->net_amount;
-        }
-
-        $numberInWords = Number::spell($invoice->total_amount);
-
-        $formattedInvoiceDate = Carbon::parse($invoice->invoice_date)->format('M j, Y');
-
-        $logopath = $company->logo_path;
-
-        // Log::error('pdf_path' . $logopath);
-        $data = [
-            'invoice' => $invoice,
-            'company' => $company,
-            'companyAddress' => $company->address,
-            'bankDetails' => $company->bankDetails,
-            'gstTotal' => $gstTotal,
-            'netTotal' => $netTotal,
-            'numberInWords' => $numberInWords,
-            'logo_path' => $logopath,
-            'formattedInvoiceDate' => $formattedInvoiceDate,
-        ];
 
         $pdf = Pdf::loadView('pdf.invoicePdf', $data);
 
@@ -325,43 +332,51 @@ class InvoiceServiceV1
     {
         $invoiceMail = $invoice->customer->customer_email;
 
-        $company = Company::with(['address', 'bankDetails'])->latest()->first();
+        // $company = Company::with(['address', 'bankDetails'])->latest()->first();
 
-        $gstTotal = 0;
-        $netTotal = 0;
+        // $gstTotal = 0;
+        // $netTotal = 0;
 
-        foreach ($invoice->items as $item) {
-            $gstTotal += $item->gst_amount;
-            $netTotal += $item->net_amount;
+        // foreach ($invoice->items as $item) {
+        //     $gstTotal += $item->gst_amount;
+        //     $netTotal += $item->net_amount;
+        // }
+
+        // $numberInWords = Number::spell($invoice->total_amount);
+
+        // $formattedInvoiceDate = Carbon::parse($invoice->invoice_date)->format('M j, Y');
+
+        // $logopath = $company->logo_path;
+
+        // // Log::error('pdf_path' . $logopath);
+        // $data = [
+        //     'invoice' => $invoice,
+        //     'company' => $company,
+        //     'companyAddress' => $company->address,
+        //     'bankDetails' => $company->bankDetails,
+        //     'gstTotal' => $gstTotal,
+        //     'netTotal' => $netTotal,
+        //     'numberInWords' => ucfirst($numberInWords),
+        //     'logo_path' => $logopath,
+        //     'formattedInvoiceDate' => $formattedInvoiceDate,
+        // ];
+
+
+
+        $common = new CommonServices();
+        $data = $common->generateInvoicePdfData($invoice);
+
+        if (!$data) {
+            return null;
         }
 
-        $numberInWords = Number::spell($invoice->total_amount);
-
-        $formattedInvoiceDate = Carbon::parse($invoice->invoice_date)->format('M j, Y');
-
-        $logopath = $company->logo_path;
-
-        // Log::error('pdf_path' . $logopath);
-        $data = [
-            'invoice' => $invoice,
-            'company' => $company,
-            'companyAddress' => $company->address,
-            'bankDetails' => $company->bankDetails,
-            'gstTotal' => $gstTotal,
-            'netTotal' => $netTotal,
-            'numberInWords' => ucfirst($numberInWords),
-            'logo_path' => $logopath,
-            'formattedInvoiceDate' => $formattedInvoiceDate,
-        ];
-
-            $pdf = Pdf::loadView('pdf.invoicePdf', $data);
-
+        $pdf = Pdf::loadView('pdf.invoicePdf', $data);
 
             // Send Email with PDF attached from memory
-            Mail::send('mail.invoice_customer_mail', ['invoiceCustomer' => $invoice], function ($message) use ($invoiceMail, $pdf, $invoice, $company) {
+            Mail::send('mail.invoice_customer_mail', ['invoiceCustomer' => $invoice], function ($message) use ($invoiceMail, $pdf, $invoice, $data) {
             $message->to($invoiceMail);
             // $message->subject('Your Invoice from ' . config('app.name'));
-            $message->subject('Your Invoice from ' . $company->company_name);
+            $message->subject('Your Invoice from ' . $data['company']->company_name);
             $message->attachData($pdf->output(), 'Invoice-' . $invoice->invoice_no . '.pdf', [
                 'mime' => 'application/pdf',
             ]);
