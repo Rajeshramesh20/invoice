@@ -121,7 +121,7 @@ class EmployeeService
 
     //Get Employee Data For List dropdown
     public function getEmployeeData(){
-        $employee = Employees::get();
+        $employee = Employees::where('status', '1')->where('is_deleted','0')->get();
         return $employee;
     }
 
@@ -407,7 +407,7 @@ class EmployeeService
         }
     }
 
-    
+    //downloadPdf
     public function generateplyslipPdf($employeeId) {
         $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])
             ->where('id', $employeeId)->first();
@@ -417,7 +417,5 @@ class EmployeeService
 
         $pdf = Pdf::loadView('pdf.payslip', $data);
         return   $pdf->download('payslip-'.$employee->id.'.pdf');
-
-
     }
 }

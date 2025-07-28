@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Salary Slip - July 2025</title>
+    <title>Salary Slip </title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,7 +15,7 @@
             width: 600px;
             margin: 20px auto;
             border: 1px solid #000;
-            padding: 20px;
+            padding: 20px;  
         }
 
         .logo {
@@ -84,9 +84,10 @@
             Email: {{ $company->email }} | Website: {{ $company->website_url }}
         </div>
 
-        <h3>Salary Slip for July 2025</h3>
+        <h3>Salary Slip for {{$employee->latestPayrollDetail->payroll_date->format('F Y')}}</h3>
 
         <!-- Employee Information -->
+
         <table class="noborder">
             <tr>
                 <td><strong>Name:</strong> {{ ucfirst($employee->first_name)}} {{ ucfirst($employee->last_name)}}</td>
@@ -100,6 +101,28 @@
                 <td><strong>Account No:</strong>  {{ $employee->salary->bankDetails->account_number ?? '-' }}</td>
             </tr>
         </table>
+
+
+         <table class="noborder">
+         <tr>
+            <td><strong>Name:</strong></td>
+            <td> {{ ucfirst($employee->first_name) }} {{ ucfirst($employee->last_name) }}</td>
+            <td><strong>Department:</strong> </td>
+            <td>{{ $employee->jobDetails->department->department_name ?? '-' }}</td>
+          </tr>
+          <tr>
+            <td><strong>Employee ID:</strong> </td>
+            <td>{{ $employee->employee_id }}</td>
+            <td><strong>Bank:</strong></td>
+            <td> {{ $employee->salary->bankDetails->bank_name ?? '-' }}</td>
+          </tr>
+          <tr>
+            <td><strong>Designation:</strong> </td>
+            <td>{{ $employee->jobDetails->job_title ?? '-' }}</td>
+            <td><strong>Account No:</strong></td>
+            <td> {{ $employee->salary->bankDetails->account_number ?? '-' }}</td>
+           </tr>
+         </table>
 
         <!-- Salary Breakdown -->
         <table>
@@ -140,7 +163,7 @@
                 <td>Gross Salary</td>
                 <td class="right">{{number_format($calculated['gross'],2)}}</td>
                 <td>Total Deductions</td>
-                <td class="right">{{number_format($calculated['totalDeduction'],2)}}</td>
+                <td class="right">{{number_format($calculated['totalDeduction'],2)}}</td>               
             </tr>
             <tr class="bold">
                 <td colspan="2">Net Pay</td>
