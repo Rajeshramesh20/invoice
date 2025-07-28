@@ -4,10 +4,11 @@ namespace App\Services;
 
 use App\Models\BankDetail;
 use App\Models\Addresses;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Company;
+
 use Illuminate\Support\Number;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class CommonServices
 {

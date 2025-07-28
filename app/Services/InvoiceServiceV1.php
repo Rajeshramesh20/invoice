@@ -84,7 +84,6 @@ class InvoiceServiceV1
         return  $updateinvoicestatus;
     }
 
-
     //generate invoice id month wise
     public function generateInvoiceNumber($invoiceDate)
     {

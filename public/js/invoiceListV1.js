@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
     http.onreadystatechange = function () {
 
         if (http.readyState === 4 && http.status === 401) {
-            window.location.href = './api/login';
+            window.location.href = '/api/login';
         }
         else if (http.readyState === 4 && http.status === 200) {
             const datas = JSON.parse(http.responseText);

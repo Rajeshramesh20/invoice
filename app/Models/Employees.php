@@ -63,7 +63,7 @@ class Employees extends Model
 
     public function payrollDeatils(){
         return $this->hasMany(PayrollDetail::class, 'employee_id');
-    }
+}
 
     public function lastPayrollDeatil(){
         return $this->hasOne(PayrollDetail::class, 'employee_id', 'id')->latestOfMany();

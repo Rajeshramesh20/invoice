@@ -153,7 +153,7 @@ document.querySelectorAll(".myToggle").forEach(toggle => {
 					alert("Failed to update status.");
 				
 					toggle.checked = !toggle.checked;
-					statusText.textContent = toggle.checked ? "ON" : "OFF";
+					
 				}
 			}
 		};
