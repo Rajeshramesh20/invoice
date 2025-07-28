@@ -197,4 +197,11 @@ class Controller extends BaseController
         //         'updated_by' => $commonServices->getUserID()
         //     ]);
         // }
+
+
+        /* Log::info('Updating Job Title', [$request->input('job_title')]);
+            Log::info('Updating Branch Name', [$request->input('branch_name')]);
+            Log::info('Has job details?', [$employee->job_details]);
+            Log::info('Has salary?', [$employee->salary]);
+            Log::info('Has bank details?', [$employee->salary?->bank_details]);*/
 }

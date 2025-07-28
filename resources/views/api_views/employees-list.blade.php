@@ -36,8 +36,8 @@
 			<img src="{{ asset('/images/twigik.png') }}" class="twigikImage" alt="Twigik Logo">
 		<div>
 
-			<a href="/payrolllist" class="create">PayRoll List</a>
-			<a href="/payrolldetails" class="create">PayRoll Details</a>
+			<a href="/api/payrolllist" class="create">PayRoll List</a>
+			<a href="/api/payrolldetails" class="create">PayRoll Details</a>
 			<a href="/api/createemployee" class="create">Add Employee</a>				
             <button id="openPayrollBtn"  class="create">Generate Payroll</button>
 			<button class='logout btn' id="logoutBtn">Logout</button>

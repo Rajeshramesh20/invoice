@@ -122,7 +122,7 @@
 	<div id="customAlert" class="custom-alert">
 	  <p id="alertMessage"></p>
 	  <button onclick="closeAlert()" class="alertBtn">OK</button>
-</div>
+	</div>
 
 	<!-- change status use Popup -->
 	<!-- Modal Overlay -->

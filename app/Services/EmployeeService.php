@@ -10,19 +10,21 @@ use App\Models\Department;
 use App\Models\payroll_history;
 use App\Models\PayrollDetail;
 use App\Models\BankDetail;
+use App\Models\Company;
 
 
 use App\Services\CommonServices;
 use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Mail;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EmployeeService
 {
@@ -87,6 +89,7 @@ class EmployeeService
         $employee->address_id = $address->address_id;
         $employee->save();
 
+        //bank Details
         $BankDetail = $commonServices->storeBankDetails($data, $employee->id, 'Employee');
         $employeeSalary->bank_details_id = $BankDetail->bank_detail_id;
         $employeeSalary->save();
@@ -197,12 +200,6 @@ class EmployeeService
             $employee = Employees::with(['jobDetails.department', 'address', 'salary.bankDetails'])->findOrFail($id);
             $commonServices = new CommonServices();
 
-            Log::info('Updating Job Title', [$request->input('job_title')]);
-            Log::info('Updating Branch Name', [$request->input('branch_name')]);
-            Log::info('Has job details?', [$employee->job_details]);
-            Log::info('Has salary?', [$employee->salary]);
-            Log::info('Has bank details?', [$employee->salary?->bank_details]);
-
             $updateData = [
                 'first_name'        => $request->input('first_name', $employee->first_name),
                 'last_name'         => $request->input('last_name', $employee->last_name),
@@ -215,6 +212,7 @@ class EmployeeService
                 'updated_by' => $commonServices->getUserID()
             ];
 
+        
             //  Only handle photo if it exists
             if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
                 $oldPhoto = $employee->photo;
@@ -282,7 +280,7 @@ class EmployeeService
         return $employee;
     }
 
-
+    //store payroll month
     public function storePayroll(array $employeeIds, $createdBy = null) {
         $payrollId = strtoupper('PYR-' . Str::random(6));
         $payDate = Carbon::now()->toDateString();
@@ -345,6 +343,7 @@ class EmployeeService
         ];
     }
 
+    //employee month paroll
     public function getEmployeesWithoutCurrentMonthPayroll(){
         $employeeIdsWithPayroll = DB::table('payroll_details')
             ->select('employee_id')
@@ -372,5 +371,27 @@ class EmployeeService
     public function employeeDepartment(){
         $department = Department::get();
         return $department;
+    }
+
+    //SendMail with payroll PDF
+    public function payRollMail($id){
+        try{
+         $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'lastPayrollDeatil'])->findOrFail($id);
+         $company = Company::latest()->first();
+         $employeeMail = $employee->email;
+         $pdf = Pdf::loadView('pdf.employees_payroll', ['employee' => $employee]);
+
+         Mail::send('mail.employee_payroll_mail', ['employee' => $employee, 'company' => $company], function($message) use($employee, $employeeMail, $pdf, $company) {
+                $message->to($employeeMail);
+                $message->subject('Your Payroll From '. $company->company_name);
+                $message->attachData($pdf->output(), 'Employee-' . $employee->employee_id . '.pdf', [
+                    'mime' => 'application/pdf',
+                ]);
+         });
+
+            return true;
+        }catch(Exception $e){
+            Log::error('error in send mail' . $e->getMessage());
+        }
     }
 }

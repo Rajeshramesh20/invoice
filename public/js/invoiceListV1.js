@@ -13,6 +13,7 @@ function showAlert(message, type) {
     alertBox.style.display = "block";
 }
 
+//close alert message
 function closeAlert() {
     const alertBox = document.getElementById("customAlert");
     alertBox.style.display = "none";
@@ -232,14 +233,14 @@ document.addEventListener('DOMContentLoaded', function () {
     http.setRequestHeader('Accept', 'application/json');
     if (!token) {
         alert('Token has been Expired! Please Login Again');
-        window.location.href = './api/login';
+        window.location.href = '/api/login';
         return;
     }
 
     http.onreadystatechange = function () {
 
         if (http.readyState === 4 && http.status === 401) {
-            window.location.href = './api/login';
+            window.location.href = '/api/login';
         }
         else if (http.readyState === 4 && http.status === 200) {
             const datas = JSON.parse(http.responseText);
@@ -267,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function () {
     http.setRequestHeader('Accept', 'application/json');
     if (!token) {
         alert('Token has been Expired! Please Login Again');
-        window.location.href = './api/login';
+        window.location.href = '/api/login';
         return;
     }
 
@@ -300,7 +301,7 @@ function myFunction(id) {
         deleteInvoiceData(id);
     }
     else {
-        window.location.href = './api/invoice/list';
+        window.location.href = '/api/invoice/list';
     }
 }
 
@@ -417,7 +418,7 @@ document.getElementById('logoutBtn').addEventListener('click', function () {
             if (xhr.status === 200) {
                 localStorage.removeItem("token");
                 alert("Logout successful");
-                window.location.href = "./api/login";
+                window.location.href = "/api/login";
             } else {
                 alert("Logout failed");
             }

@@ -82,7 +82,7 @@ class EmployeesController extends Controller
                     'message' => 'Successfully Get Employee Data',
                     'data' => $employee,
                 ]);
-            } else {
+            }else {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Failed To Get Employee Data.'
@@ -310,6 +310,26 @@ class EmployeesController extends Controller
                 'status' => 'false',
                 'message' => 'Not Found In Department Data'
             ]);
+        }
+    }
+
+    public function sendPayRollMail($id, EmployeeService $payRollMail){
+        try{
+            $employee = $payRollMail->payRollMail($id);
+            if($employee){
+                return response()->json([
+                    'status' => 'success',
+                    'data' => $employee,
+                    'message' => 'mail send Successfully to the Employee Mail'
+                ]);
+            }else{
+                return response()->json([
+                    'status' => 'false',
+                    'message' => 'mail does not send'
+                ]);
+            }
+        }catch(Exception $e){
+            Log::error('error in send payroll mail', $e->getMessage());
         }
     }
 }

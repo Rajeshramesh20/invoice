@@ -128,5 +128,7 @@ Route::middleware(['auth:api'])->group(function() {
     Route::get('employeeDataDropDown',[EmployeesController::class, 'getEmployeeDataDropdown']);
 
     Route::get('employee/department',[EmployeesController::class, 'getEmployeeDepartment']);//get employee department
+
+    Route::POST('payroll/mail/{id}', [EmployeesController::class, 'sendPayRollMail']);
 });
 

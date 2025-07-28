@@ -22,16 +22,13 @@ class AuthServices{
           'email' => $data['email'],
           'user_phone_num' => $data['user_phone_num'],
           'password' => Hash::make($data['password']),
-          'role_id'=>$data['role_id'],
-          
+          'role_id'=>$data['role_id'],         
       ]);
-
       return $user;
   }
 
   
   //login athenticate user
-
   public function authenticate($request)
   {
       $userData = [
@@ -78,9 +75,9 @@ class AuthServices{
         User::where('email', $data['email'])
           ->update(['password' => Hash::make($data['password'])]);
 
-      DB::table('password_reset_tokens')
-          ->where('email', $data['email'])
-          ->delete();
+        DB::table('password_reset_tokens')
+            ->where('email', $data['email'])
+            ->delete();
   }
 
 

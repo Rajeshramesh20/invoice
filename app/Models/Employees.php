@@ -56,28 +56,17 @@ class Employees extends Model
         );
     }
 
-    // public function department()
-    // {
-    //     return $this->belongsToMany(
-    //         Department::class,
-    //         EmployeeJobDetail::class,
-    //         'employee_id', 
-    //         'id',
-    //         'id', 
-    //         'department_id' 
-    //     );
-    // }
-
-
      public function address()
     {
         return $this->belongsTo(Addresses::class, 'address_id', 'address_id');
     }
 
     public function payrollDeatils(){
-        return $this->hasMany(PayrollDetail::class);
+        return $this->hasMany(PayrollDetail::class, 'employee_id');
     }
 
-    
+    public function lastPayrollDeatil(){
+        return $this->hasOne(PayrollDetail::class, 'employee_id', 'id')->latestOfMany();
+    }
 
 }

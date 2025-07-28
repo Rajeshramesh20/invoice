@@ -26,7 +26,7 @@ class AuthController extends Controller
 
             $user = $request->validated();
 
-         $AuthService->register($user);
+            $AuthService->register($user);
              
 
             // Auth::login($user);
