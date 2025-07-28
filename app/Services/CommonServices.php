@@ -46,8 +46,7 @@ class CommonServices
         ]);
         return  $BankDetail;
     }
-
-
+    //update address
     public function updateAddress($address, $request){
         $address = $address->update([
             'line1' => $request['line1'],
@@ -60,7 +59,7 @@ class CommonServices
 
         return $address;
     }
-
+  //uppdate Bank Details
     public function updateBankDetails($bankDetails, $request){
         $bank = $bankDetails->update([
               'bank_name' => $request['bank_name'],
@@ -74,7 +73,7 @@ class CommonServices
         return $bank;
     }
 
-
+   //generate Invoice Pdf
     public function generateInvoicePdfData($invoice)  {
 
         $company = Company::with(['address', 'bankDetails'])->latest()->first();
@@ -112,7 +111,8 @@ class CommonServices
 
          return $data ;
     }
-
+ 
+    //generate Payslip Pdf
     public function generatePayslipPdf($employee){
         $latestPayroll = $employee->latestPayrollDetail;
 
@@ -127,8 +127,9 @@ class CommonServices
         $advanceDeduction = 0.00;
         $pf = round($base * 0.10, 2);
         $gross = $base + $bonus;
-        $net = $gross - ($deduction + $advanceDeduction + $pf);
-
+        $totaldeduction = $deduction + $advanceDeduction + $pf;
+        $net = $gross - $totaldeduction;
+        $numberInWords = Number::spell($net);
         $data = [
             'employee' => $employee,
             'company' => $company,
@@ -138,10 +139,12 @@ class CommonServices
                 'pf' => $pf,
                 'bonus' => $bonus,  
                 'deduction' => $deduction,
+                'totaldeduction'=> $totaldeduction,
                 'advance_deduction' => $advanceDeduction,
                 'gross' => $gross,
                 'net' => $net,
-            ]
+            ],
+            'numberInWords' => $numberInWords,
         ];
 
         return $data;

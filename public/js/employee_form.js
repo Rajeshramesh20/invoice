@@ -8,7 +8,7 @@
 	let phone = document.getElementById('contact_number').value.trim();
     let nationality = document.getElementById('nationality').value.trim();
 	let department = document.getElementById('department_id').value;
-	let maritalStatus = document.getElementById('nationality').value.trim();
+	let maritalStatus = document.getElementById('marital_status').value.trim();
 	const genderRadios = document.getElementsByName("gender");
 		                   
 
@@ -323,8 +323,7 @@
 		}   
 		return isValid;
 	}
-
-	const token = localStorage.getItem('token');
+const token = localStorage.getItem('token');
 				document.addEventListener("DOMContentLoaded", function () {
 				    const employeeInfo = document.getElementById("employeeInfo");
 				    const employeeAddress = document.getElementById("employeeAddress");
