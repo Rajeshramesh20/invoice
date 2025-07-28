@@ -522,10 +522,22 @@
 			          alert("✅ " + res.message);
 			          console.log(res);
 			           window.location.href ='/api/employeeList'
-			        } else {
+			        } else if(xhr.status === 422) {
+					    let data = JSON.parse(xhr.responseText);
+							if(data.errors){
+								for(let keyErr in data.errors){
+								let errValue = document.getElementById(`${keyErr}_err`);
+									if(errValue){
+										alert(errValue);
+										errValue.innerHTML = data.errors[keyErr].join('<br>');
+									}
+								}
+							}
+					}
+			        else {
 			        	let res = JSON.parse(xhr.responseText);
 			          alert("❌ Failed to update employee");
-			          console.error(res.errors);
+			          
 			        }
 			      };
 

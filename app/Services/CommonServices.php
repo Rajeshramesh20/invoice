@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Auth;
 
 class CommonServices
 {
-
     public function getUserID(){
         $userId = Auth::id();
         return $userId;
@@ -126,8 +125,10 @@ class CommonServices
         $deduction = 0.00;
         $advanceDeduction = 0.00;
         $pf = round($base * 0.10, 2);
-        $gross = $base + $bonus;
-        $net = $gross - ($deduction + $advanceDeduction + $pf);
+        $gross = $base + $bonus;       
+        $totalDeduction = $deduction + $advanceDeduction + $pf;
+        $net = $gross - $totalDeduction;
+        $numberInWords = Number::spell($net);
 
         $data = [
             'employee' => $employee,
@@ -139,11 +140,13 @@ class CommonServices
                 'bonus' => $bonus,  
                 'deduction' => $deduction,
                 'advance_deduction' => $advanceDeduction,
+                'totalDeduction' => $totalDeduction,
                 'gross' => $gross,
                 'net' => $net,
-            ]
-        ];
 
+            ],
+            'numberInWords' => $numberInWords
+        ];
         return $data;
     }
 }

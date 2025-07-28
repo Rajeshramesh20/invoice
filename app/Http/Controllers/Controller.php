@@ -204,4 +204,46 @@ class Controller extends BaseController
             Log::info('Has job details?', [$employee->job_details]);
             Log::info('Has salary?', [$employee->salary]);
             Log::info('Has bank details?', [$employee->salary?->bank_details]);*/
+
+
+            // 'job_title' => $request->input('job_title', $employee->jobDetails->job_title),
+              // 'department_id' => $request->input('department_id', $employee->jobDetails->department_id),
+              // 'employee_type' => $request->input('employee_type', $employee->jobDetails->employee_type),
+              // 'employment_status' => $request->input('employment_status', $employee->jobDetails->employment_status),
+              // 'joining_date' => $request->input('joining_date', $employee->jobDetails->joining_date),
+              // 'probation_period' => $request->input('probation_period', $employee->jobDetails->probation_period),
+              //  'work_location' => $request->input('work_location', $employee->jobDetails->work_location),
+              //  'updated_by' => $commonServices->getUserID()
+
+            // 'base_salary' => $request->input('base_salary', $employee->salary->base_salary),
+                  // 'pay_grade' => $request->input('pay_grade', $employee->salary->pay_grade),
+                  // 'pay_frequency' => $request->input('pay_frequency', $employee->salary->pay_frequency)
+
+                // 'first_name'        => $request->input('first_name', $employee->first_name),
+                // 'last_name'         => $request->input('last_name', $employee->last_name),
+                // 'gender'            => $request->input('gender', $employee->gender),
+                // 'date_of_birth'     => $request->input('date_of_birth', $employee->date_of_birth),
+                // 'nationality'       => $request->input('nationality', $employee->nationality),
+                // 'marital_status'    => $request->input('marital_status', $employee->marital_status),
+                // 'contact_number'    => $request->input('contact_number', $employee->contact_number),
+                // 'email'             => $request->input('email', $employee->email),
+                // 'updated_by' => $commonServices->getUserID()
+
+
+    //     document.getElementById("submitAll").addEventListener("click", function () {
+    //     if (
+    //         validatePersonalInfo() &&
+    //         validateAddress() &&
+    //         validateBank() &&
+    //         validateJob() &&
+    //         validateSalary()
+    //     ) {
+    //         alert("Form is valid! Submitting...");
+    //         // Submit your form data via AJAX or standard POST
+    //     } else {
+    //         alert("Please fill all required fields correctly.");
+    //     }
+    // });
+
+
 }

@@ -79,7 +79,7 @@
             <!-- <strong>TWIGIK TECHNOLOGIES PRIVATE LIMITED</strong><br> -->
             {{$company->address->line1}}, {{$company->address->line2}},<br>
             {{$company->address->line3}}, <br>
-            {{$company->address->line4}}, {{$company->address->pincode}}<br>,<br>
+            {{$company->address->line4}}, {{$company->address->pincode}}<br><br>
             Phone: +91- {{$company->contact_number}} | GSTIN:{{$company->gstin}}<br>
             Email: {{ $company->email }} | Website: {{ $company->website_url }}
         </div>
@@ -89,7 +89,7 @@
         <!-- Employee Information -->
         <table class="noborder">
             <tr>
-                <td><strong>Name:</strong> {{ $employee->first_name }} {{ $employee->last_name }}</td>
+                <td><strong>Name:</strong> {{ ucfirst($employee->first_name)}} {{ ucfirst($employee->last_name)}}</td>
                 <td><strong>Employee ID:</strong> {{ $employee->employee_id }}</td>
                 <td><strong>Department:</strong> {{ $employee->jobDetails->department->department_name ?? '-' }}</td>
                 <td><strong>Bank:</strong>  {{ $employee->salary->bankDetails->bank_name ?? '-' }}</td>
@@ -109,9 +109,9 @@
             </tr>
             <tr>
                 <td>Basic Pay</td>
-                <td class="right">{{ number_format($calculated['base'], 2) }}</td>
+                <td class="right">{{ number_format($calculated['base']) }}</td>
                 <td>EPF</td>
-                <td class="right">{{ number_format($calculated['pf'], 2) }}</td>
+                <td class="right">{{ number_format($calculated['pf']) }}</td>
             </tr>
             <tr>
                 <td>House Rent Allowances</td>
@@ -140,7 +140,7 @@
                 <td>Gross Salary</td>
                 <td class="right">{{number_format($calculated['gross'],2)}}</td>
                 <td>Total Deductions</td>
-                <td class="right">0</td>
+                <td class="right">{{number_format($calculated['totalDeduction'],2)}}</td>
             </tr>
             <tr class="bold">
                 <td colspan="2">Net Pay</td>
@@ -148,7 +148,7 @@
             </tr>
         </table>
 
-        <p class="bold">Amount in Words: <span style="font-weight:normal;">Fifty Three Thousand Five Hundred Only</span>
+        <p class="bold">Amount in Words: <span style="font-weight:normal;">{{ucfirst($numberInWords)}} rupees Only</span>
         </p>
     </div>
 

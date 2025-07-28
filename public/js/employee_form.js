@@ -321,18 +321,30 @@
 		}else{
 		  	payFrequencyErr.innerHTML = "";
 		}   
-		return isValid;
+			return isValid;
 	}
 
+	document.querySelector('label[for="tab2"]').addEventListener('click', function (e) {
+    	e.preventDefault();
+
+	    // Run your validation function
+	    if (validation()) {
+	        document.getElementById("tab2").checked = true;
+	    }
+	});
+
+
 	const token = localStorage.getItem('token');
-				document.addEventListener("DOMContentLoaded", function () {
+
+		document.addEventListener("DOMContentLoaded", function () {
 				    const employeeInfo = document.getElementById("employeeInfo");
 				    const employeeAddress = document.getElementById("employeeAddress");
 				    const employeeBank = document.getElementById("employeeBank");			    
 				    const employeeJob = document.getElementById("employeeJob");
 				    const employeeSalary = document.getElementById("employeeSalary");
 
-				    document.getElementById("submitAll").onclick = function () {                     
+				    document.getElementById("submitAll").onclick = function () {  
+
 				    	if(!salaryValidation()){
 				    		return;
 				    	}
@@ -370,14 +382,14 @@
 					        xhr.send(formData);
 
         			};
-				});
+		});
 
 		//this is for Close Employee Form
 		document.getElementById('closebtn').addEventListener('click',function(){
             window.location.href = "/api/employeeList";
         });
 
-
+		
         //employee Department
 	document.addEventListener('DOMContentLoaded', function () {
 	    let employeeDepartment = document.getElementById('department_id');

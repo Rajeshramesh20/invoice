@@ -162,10 +162,9 @@ class EmployeesController extends Controller
     }
 
     //Update Employee Data 
-    public function updateEmployeeData($id, Request $request, EmployeeService $updateEmployee)
+    public function updateEmployeeData($id, EmployeeRequests $request, EmployeeService $updateEmployee)
     {
         try {
-
             // $validatedEmployee = $request->validated();
             $updateEmployeesData = $updateEmployee->updateEmployeeData($id, $request);
             if ($updateEmployeesData) {

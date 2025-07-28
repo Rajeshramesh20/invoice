@@ -12,7 +12,7 @@ use App\Models\BankDetail;
 use App\Models\Company;
 
 
-
+use App\Http\Requests\EmployeeRequests;
 
 use App\Services\CommonServices;
 use Exception;
@@ -200,21 +200,22 @@ class EmployeeService
     }
 
     //Update Employee Data
-    public function updateEmployeeData($id, Request $request){
+    public function updateEmployeeData($id,EmployeeRequests $request){
         try{
             $employee = Employees::with(['jobDetails.department', 'address', 'salary.bankDetails'])->findOrFail($id);
             $commonServices = new CommonServices();
+            $validatedEmployee = $request->validated();
 
             $updateData = [
-                'first_name'        => $request->input('first_name', $employee->first_name),
-                'last_name'         => $request->input('last_name', $employee->last_name),
-                'gender'            => $request->input('gender', $employee->gender),
-                'date_of_birth'     => $request->input('date_of_birth', $employee->date_of_birth),
-                'nationality'       => $request->input('nationality', $employee->nationality),
-                'marital_status'    => $request->input('marital_status', $employee->marital_status),
-                'contact_number'    => $request->input('contact_number', $employee->contact_number),
-                'email'             => $request->input('email', $employee->email),
-                'updated_by' => $commonServices->getUserID()
+                'first_name'        => $validatedEmployee['first_name'],
+                'last_name'         => $validatedEmployee['last_name'],
+                'gender'            => $validatedEmployee['gender'],
+                'date_of_birth'     => $validatedEmployee['date_of_birth'],
+                'nationality'       => $validatedEmployee['nationality'],
+                'marital_status'    => $validatedEmployee['marital_status'],
+                'contact_number'    => $validatedEmployee['contact_number'],
+                'email'             => $validatedEmployee['email'],
+                'updated_by'        => $commonServices->getUserID()
             ];
 
         
@@ -237,32 +238,32 @@ class EmployeeService
 
                 //employee Address 
                 $employeeAddress = $employee->address;
-                $address = $commonServices->updateAddress($employeeAddress, $request);
+                $address = $commonServices->updateAddress($employeeAddress, $validatedEmployee);
 
                 //Employee Bankdetails
                 $employeeBank = $employee->salary->bankDetails;
-                $bank = $commonServices->updateBankDetails($employeeBank, $request);
+                $bank = $commonServices->updateBankDetails($employeeBank, $validatedEmployee);
 
             //Employee Salary
             if($employee->salary){
                 $employee->salary->update([
-                  'base_salary' => $request->input('base_salary', $employee->salary->base_salary),
-                  'pay_grade' => $request->input('pay_grade', $employee->salary->pay_grade),
-                  'pay_frequency' => $request->input('pay_frequency', $employee->salary->pay_frequency)
+                    'base_salary'   => $validatedEmployee['base_salary'],
+                    'pay_grade'     => $validatedEmployee['pay_grade'],
+                    'pay_frequency' => $validatedEmployee['pay_frequency']
                 ]);
             }
 
         //Employee JobDetails
         if($employee->jobDetails){
             $employee->jobDetails->update([
-              'job_title' => $request->input('job_title', $employee->jobDetails->job_title),
-              'department_id' => $request->input('department_id', $employee->jobDetails->department_id),
-              'employee_type' => $request->input('employee_type', $employee->jobDetails->employee_type),
-              'employment_status' => $request->input('employment_status', $employee->jobDetails->employment_status),
-              'joining_date' => $request->input('joining_date', $employee->jobDetails->joining_date),
-              'probation_period' => $request->input('probation_period', $employee->jobDetails->probation_period),
-               'work_location' => $request->input('work_location', $employee->jobDetails->work_location),
-               'updated_by' => $commonServices->getUserID()
+                'job_title'         => $validatedEmployee['job_title'],
+                'department_id'     => $validatedEmployee['department_id'],
+                'employee_type'     => $validatedEmployee['employee_type'],
+                'employment_status' => $validatedEmployee['employment_status'],
+                'joining_date'      => $validatedEmployee['joining_date'],
+                'probation_period'  => $validatedEmployee['probation_period'],
+                'work_location'     => $validatedEmployee['work_location'],
+                'updated_by'        => $commonServices->getUserID()
             ]);
         }
 
