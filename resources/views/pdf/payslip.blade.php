@@ -72,15 +72,16 @@
 
     <div class="container">
         <div class="logo">
-            <img src="images/twigik.png" alt="Company Logo">
+            <img src="{{asset('storage/app/public/'.$company->logo_path)}}" alt="Company Logo">
         </div>
 
         <div class="company-details">
             <!-- <strong>TWIGIK TECHNOLOGIES PRIVATE LIMITED</strong><br> -->
-        Plot No 69, 3rd Floor, 11th Cross Street,
-        Sai Ganesh Nagar, Pallikaranai,<br>
-            Phone: +91-6383707076 | GSTIN: 33AALCT4631L1Z3<br>
-            Email: info@twigik.com | Website: www.twigik.com
+            {{$company->address->line1}}, {{$company->address->line2}},<br>
+            {{$company->address->line3}}, <br>
+            {{$company->address->line4}}, {{$company->address->pincode}}<br>,<br>
+            Phone: +91- {{$company->contact_number}} | GSTIN:{{$company->gstin}}<br>
+            Email: {{ $company->email }} | Website: {{ $company->website_url }}
         </div>
 
         <h3>Salary Slip for July 2025</h3>
@@ -114,36 +115,36 @@
             </tr>
             <tr>
                 <td>House Rent Allowances</td>
-                <td class="right">9,408</td>
+                <td class="right">0</td>
                 <td>Health Insurance</td>
-                <td class="right">500</td>
+                <td class="right">0</td>
             </tr>
             <tr>        
                 <td>Conveyance Allowances</td>
-                <td class="right">1,493</td>
+                <td class="right">0</td>
                 <td>Professional Tax</td>
-                <td class="right">200</td>
+                <td class="right">0</td>
             </tr>
             <tr>
                 <td>Medical Allowance</td>
-                <td class="right">1,167</td>
+                <td class="right">0</td>
                 <td>TDS</td>
                 <td class="right">0</td>
             </tr>
             <tr>
                 <td>Special Allowance</td>
-                <td class="right">18,732</td>
+                <td class="right">0</td>
                 <td colspan="2"></td>
             </tr>
             <tr class="bold">
                 <td>Gross Salary</td>
-                <td class="right">56,000</td>
+                <td class="right">{{number_format($calculated['gross'],2)}}</td>
                 <td>Total Deductions</td>
-                <td class="right">2,500</td>
+                <td class="right">0</td>
             </tr>
             <tr class="bold">
                 <td colspan="2">Net Pay</td>
-                <td colspan="2" class="right">53,500</td>
+                <td colspan="2" class="right">{{number_format($calculated['net'],2)}}</td>
             </tr>
         </table>
 

@@ -381,6 +381,7 @@ class EmployeeService
     //SendMail with payroll PDF
     public function payRollMail($id){
         try{
+
         $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])->
                     findOrFail($id);
         $company = Company::with(['address', 'bankDetails'])->latest()->first();
@@ -405,7 +406,7 @@ class EmployeeService
         }
     }
 
-
+    
     public function generateplyslipPdf($employeeId) {
         $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])
             ->where('id', $employeeId)->first();
@@ -413,38 +414,7 @@ class EmployeeService
         $commonServices = new CommonServices();
         $data = $commonServices->generatePayslipPdf($employee);
 
-        // $latestPayroll = $employee->latestPayrollDetail;
-
-        // $company = Company::with(['address', 'bankDetails'])->latest()->first();
-
-        // if (!$employee || !$company) {
-        //     return null;
-        // }
-        // $base =  $employee->salary->base_salary;
-        // $bonus = 0.00;
-        // $deduction = 0.00;
-        // $advanceDeduction = 0.00;
-        // $pf = round($base * 0.10, 2);
-        // $gross = $base + $bonus;
-        // $net = $gross - ($deduction + $advanceDeduction + $pf);
-
-        // $data = [
-        //     'employee' => $employee,
-        //     'company' => $company,
-        //     'payroll' => $latestPayroll,
-        //     'calculated' => [
-        //         'base' => $base,
-        //         'pf' => $pf,
-        //         'bonus' => $bonus,  
-        //         'deduction' => $deduction,
-        //         'advance_deduction' => $advanceDeduction,
-        //         'gross' => $gross,
-        //         'net' => $net,
-        //     ]
-        // ];
-
         $pdf = Pdf::loadView('pdf.payslip', $data);
-
         return   $pdf->download('payslip-'.$employee->id.'.pdf');
 
 
