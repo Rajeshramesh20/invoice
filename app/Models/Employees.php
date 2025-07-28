@@ -14,23 +14,23 @@ class Employees extends Model
     use HasFactory;
     protected $table = 'employees';
     protected $fillable = [
-            'employee_id',
-            'first_name',
-            'last_name',
-            'gender',
-            'date_of_birth',
-            'nationality',
-            'marital_status',
-            'photo',
-            'contact_number',
-            'email',
-            'address_id',
-            'status',
-            'created_by',
-            'updated_by',
-            'created_at',
-            'updated_at',
-            'is_deleted'
+        'employee_id',
+        'first_name',
+        'last_name',
+        'gender',
+        'date_of_birth',
+        'nationality',
+        'marital_status',
+        'photo',
+        'contact_number',
+        'email',
+        'address_id',
+        'status',
+        'created_by',
+        'updated_by',
+        'created_at',
+        'updated_at',
+        'is_deleted'
     ];
 
 
@@ -41,7 +41,7 @@ class Employees extends Model
 
     public function salary()
     {
-        return $this->hasOne(EmployeeSalary::class , 'employee_id', 'id');
+        return $this->hasOne(EmployeeSalary::class, 'employee_id', 'id');
     }
 
     public function department()
@@ -49,24 +49,25 @@ class Employees extends Model
         return $this->hasOne(
             Department::class,
             EmployeeJobDetail::class,
-            'employee_id', 
+            'employee_id',
             'id',
-            'id', 
-            'department_id' 
+            'id',
+            'department_id'
         );
     }
 
-     public function address()
+    public function address()
     {
         return $this->belongsTo(Addresses::class, 'address_id', 'address_id');
     }
 
-    public function payrollDeatils(){
+    public function payrollDeatils()
+    {
         return $this->hasMany(PayrollDetail::class, 'employee_id');
-}
-
-    public function lastPayrollDeatil(){
-        return $this->hasOne(PayrollDetail::class, 'employee_id', 'id')->latestOfMany();
     }
 
+    public function latestPayrollDetail()
+    {
+        return $this->hasOne(PayrollDetail::class, 'employee_id', 'id')->latestOfMany();
+    }
 }

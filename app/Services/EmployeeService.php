@@ -18,7 +18,7 @@ use App\Services\CommonServices;
 use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -381,7 +381,7 @@ class EmployeeService
     //SendMail with payroll PDF
     public function payRollMail($id){
         try{
-         $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'lastPayrollDeatil'])->findOrFail($id);
+         $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])->findOrFail($id);
          $company = Company::latest()->first();
          $employeeMail = $employee->email;
          $pdf = Pdf::loadView('pdf.employees_payroll', ['employee' => $employee]);
@@ -399,7 +399,7 @@ class EmployeeService
             Log::error('error in send mail' . $e->getMessage());
         }
 
-
+    }
     public function generateplyslipPdf($employeeId) {
         $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])
             ->where('id', $employeeId)->first();
@@ -422,7 +422,7 @@ class EmployeeService
         $data = [
             'employee' => $employee,
             'company' => $company,
-            'payroll' => $employee->latestPayrollDetail,
+            'payroll' => $latestPayroll,
             'calculated' => [
                 'base' => $base,
                 'pf' => $pf,
