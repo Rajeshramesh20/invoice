@@ -42,8 +42,8 @@ class EmployeeRequests extends FormRequest
             'last_name' => 'required|string|max:255',
             'gender' => 'required',
             'date_of_birth' => 'required',
-            'nationality'=> 'required',
-            'marital_status' =>'required',
+            'nationality'=> 'nullable',
+            'marital_status' =>'nullable',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
 
             'line1' => 'required|string|max:255',

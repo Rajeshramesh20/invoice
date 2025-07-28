@@ -18,7 +18,7 @@ use App\Services\CommonServices;
 use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -381,10 +381,15 @@ class EmployeeService
     //SendMail with payroll PDF
     public function payRollMail($id){
         try{
-         $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'lastPayrollDeatil'])->findOrFail($id);
-         $company = Company::latest()->first();
-         $employeeMail = $employee->email;
-         $pdf = Pdf::loadView('pdf.employees_payroll', ['employee' => $employee]);
+        $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])->
+                    findOrFail($id);
+        $company = Company::with(['address', 'bankDetails'])->latest()->first();
+
+        //geneartePdf for payslip
+        $commonServices = new CommonServices();
+        $data = $commonServices->generatePayslipPdf($employee);
+        $employeeMail = $employee->email;
+        $pdf = Pdf::loadView('pdf.payslip', $data);
 
          Mail::send('mail.employee_payroll_mail', ['employee' => $employee, 'company' => $company], function($message) use($employee, $employeeMail, $pdf, $company) {
                 $message->to($employeeMail);
@@ -398,41 +403,45 @@ class EmployeeService
         }catch(Exception $e){
             Log::error('error in send mail' . $e->getMessage());
         }
+    }
 
 
     public function generateplyslipPdf($employeeId) {
         $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])
             ->where('id', $employeeId)->first();
 
-         $latestPayroll = $employee->latestPayrollDetail;
+        $commonServices = new CommonServices();
+        $data = $commonServices->generatePayslipPdf($employee);
 
-        $company = Company::with(['address', 'bankDetails'])->latest()->first();
+        // $latestPayroll = $employee->latestPayrollDetail;
 
-        if (!$employee || !$company) {
-            return null;
-        }
-        $base =  $employee->salary->base_salary;
-        $bonus = 0.00;
-        $deduction = 0.00;
-        $advanceDeduction = 0.00;
-        $pf = round($base * 0.10, 2);
-        $gross = $base + $bonus;
-        $net = $gross - ($deduction + $advanceDeduction + $pf);
+        // $company = Company::with(['address', 'bankDetails'])->latest()->first();
 
-        $data = [
-            'employee' => $employee,
-            'company' => $company,
-            'payroll' => $employee->latestPayrollDetail,
-            'calculated' => [
-                'base' => $base,
-                'pf' => $pf,
-                'bonus' => $bonus,  
-                'deduction' => $deduction,
-                'advance_deduction' => $advanceDeduction,
-                'gross' => $gross,
-                'net' => $net,
-            ]
-        ];
+        // if (!$employee || !$company) {
+        //     return null;
+        // }
+        // $base =  $employee->salary->base_salary;
+        // $bonus = 0.00;
+        // $deduction = 0.00;
+        // $advanceDeduction = 0.00;
+        // $pf = round($base * 0.10, 2);
+        // $gross = $base + $bonus;
+        // $net = $gross - ($deduction + $advanceDeduction + $pf);
+
+        // $data = [
+        //     'employee' => $employee,
+        //     'company' => $company,
+        //     'payroll' => $latestPayroll,
+        //     'calculated' => [
+        //         'base' => $base,
+        //         'pf' => $pf,
+        //         'bonus' => $bonus,  
+        //         'deduction' => $deduction,
+        //         'advance_deduction' => $advanceDeduction,
+        //         'gross' => $gross,
+        //         'net' => $net,
+        //     ]
+        // ];
 
         $pdf = Pdf::loadView('pdf.payslip', $data);
 

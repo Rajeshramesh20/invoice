@@ -15,7 +15,7 @@
             <strong>Employee ID:</strong> {{ $employee->employee_id }}<br>
             <strong>Department:</strong> {{ $employee->jobDetails->department->department_name ?? 'N/A' }}<br>
             <strong>Designation:</strong> {{ $employee->jobDetails->job_title ?? 'N/A' }}<br>
-            <strong>Payroll Month:</strong> {{$employee->lastPayrollDeatil->payroll_date->format('F Y')}}
+            <strong>Payroll Month:</strong> {{$employee->latestPayrollDetail->payroll_date->format('F Y')}}
         </p>
 
         <p>
