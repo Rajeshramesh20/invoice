@@ -232,14 +232,14 @@ document.addEventListener('DOMContentLoaded', function () {
     http.setRequestHeader('Accept', 'application/json');
     if (!token) {
         alert('Token has been Expired! Please Login Again');
-        window.location.href = './api/login';
+        window.location.href = '/api/login';
         return;
     }
 
     http.onreadystatechange = function () {
 
         if (http.readyState === 4 && http.status === 401) {
-            window.location.href = './api/login';
+            window.location.href = '/api/login';
         }
         else if (http.readyState === 4 && http.status === 200) {
             const datas = JSON.parse(http.responseText);
@@ -267,14 +267,14 @@ document.addEventListener('DOMContentLoaded', function () {
     http.setRequestHeader('Accept', 'application/json');
     if (!token) {
         alert('Token has been Expired! Please Login Again');
-        window.location.href = './api/login';
+        window.location.href = '/api/login';
         return;
     }
 
     http.onreadystatechange = function () {
 
         if (http.readyState === 4 && http.status === 401) {
-            window.location.href = './api/login';
+            window.location.href = '/api/login';
         }
         else if (http.readyState === 4 && http.status === 200) {
             const datas = JSON.parse(http.responseText);
@@ -300,7 +300,7 @@ function myFunction(id) {
         deleteInvoiceData(id);
     }
     else {
-        window.location.href = './api/invoice/list';
+        window.location.href = '/api/invoice/list';
     }
 }
 

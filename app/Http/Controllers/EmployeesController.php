@@ -6,6 +6,8 @@ use App\Services\EmployeeService;
 use App\Http\Requests\EmployeeRequests;
 use App\Http\Requests\StorePayrollRequest;
 use Exception;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\EmployeeExport;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -311,5 +313,30 @@ class EmployeesController extends Controller
                 'message' => 'Not Found In Department Data'
             ]);
         }
+    }
+
+
+    public function exportEmployeeData()
+    {
+        try {
+            return Excel::download(new EmployeeExport, 'employeeData.csv');
+        } catch (Exception $e) {
+            Log::error('Employee export error: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to export Employee data.'
+            ], 500);
+        }
+    }
+    public function downloadpayslip($employeeId, EmployeeService $employeeDownload)
+    {
+        $response = $employeeDownload->generateplyslipPdf($employeeId);
+
+        if (!$response) {
+            return response()->json(['error' => 'payroll details not found'], 404);
+        }
+
+        return $response;
     }
 }

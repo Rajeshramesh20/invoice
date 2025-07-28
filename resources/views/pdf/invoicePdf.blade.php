@@ -124,7 +124,7 @@
         <div class="flex_container">
             <div class="flex_container">
                 <div class="left">
-                    <img src="{{asset('storage/app/public/'.$logo_path)}}" class="logo " alt="Twigik Logo">
+                    <img src="{{asset('storage/app/public/'.$logo_path)}}" class="logo" alt="Twigik Logo">
                 </div>
                 <h2 class="bold right ">INVOICE</h2>
             </div>

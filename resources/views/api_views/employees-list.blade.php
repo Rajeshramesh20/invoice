@@ -36,8 +36,8 @@
 			<img src="{{ asset('/images/twigik.png') }}" class="twigikImage" alt="Twigik Logo">
 		<div>
 
-			<a href="/payrolllist" class="create">PayRoll List</a>
-			<a href="/payrolldetails" class="create">PayRoll Details</a>
+			<a href="/api/payrolllist" class="create">PayRoll List</a>
+			<a href="/api/payrolldetails" class="create">PayRoll Details</a>
 			<a href="/api/createemployee" class="create">Add Employee</a>				
             <button id="openPayrollBtn"  class="create">Generate Payroll</button>
 			<button class='logout btn' id="logoutBtn">Logout</button>
@@ -140,7 +140,11 @@
 							<th>Name</th>
 							<th>Role</th>
 							<th>Salary</th>
-							{{-- <th>Status</th> --}}
+							<th>Bonus</th>
+							<th>Deduction</th>
+							<th>EPF</th>
+							<th>Total Net Pay</th>
+							
 						</tr>
 					</thead>
 					<tbody id="employeeBody"></tbody>
@@ -415,100 +419,101 @@ function deleteEmployeeData(id) {
 
 // payroll modal and payroll list 
 document.addEventListener('DOMContentLoaded', function () {
-			
-			const openBtn = document.getElementById('openPayrollBtn'); 
-			const closeBtn = document.getElementById('closePayrollBtn'); 
-			const modal = document.getElementById('payrollModal'); 
-			const table = document.getElementById('employeeTable');
-			const tbody = document.getElementById('employeeBody');
-			const selectAll = document.getElementById('selectAll');
-			const totalSalaryDisplay = document.getElementById('totalSalary');
+	const openBtn = document.getElementById('openPayrollBtn');
+	const closeBtn = document.getElementById('closePayrollBtn');
+	const modal = document.getElementById('payrollModal');
+	const table = document.getElementById('employeeTable');
+	const tbody = document.getElementById('employeeBody');
+	const selectAll = document.getElementById('selectAll');
+	const totalSalaryDisplay = document.getElementById('totalSalary');
 
-		
-			openBtn.addEventListener('click', () => {
-				modal.style.display = 'flex';
-				loadPayrollData();
-			});
+	openBtn.addEventListener('click', () => {
+		modal.style.display = 'flex';
+		loadPayrollData();
+	});
 
-			
-			closeBtn.addEventListener('click', () => {
-				modal.style.display = 'none';
-			});
+	closeBtn.addEventListener('click', () => {
+		modal.style.display = 'none';
+	});
 
-	
-			window.addEventListener('click', function (e) {
-				if (e.target === modal) {
-					modal.style.display = 'none';
-				}
-			});
+	window.addEventListener('click', function (e) {
+		if (e.target === modal) {
+			modal.style.display = 'none';
+		}
+	});
 
-			function loadPayrollData() {
-				tbody.innerHTML = ''; 
-				const xhr = new XMLHttpRequest();
-				xhr.open('GET', 'http://127.0.0.1:8000/api/employeesForPayrolle', true);
-				xhr.setRequestHeader('Accept', 'application/json');
-				xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+	function loadPayrollData() {
+		tbody.innerHTML = '';
+		const xhr = new XMLHttpRequest();
+		xhr.open('GET', 'http://127.0.0.1:8000/api/employeesForPayrolle', true);
+		xhr.setRequestHeader('Accept', 'application/json');
+		xhr.setRequestHeader('Authorization', 'Bearer ' + token);
 
-				xhr.onreadystatechange = function () {
-					if (xhr.readyState === 4 && xhr.status === 200) {
-						const response = JSON.parse(xhr.responseText);
-						const employees = response.data;
-						let totalSalary = 0;
+		xhr.onreadystatechange = function () {
+			if (xhr.readyState === 4 && xhr.status === 200) {
+				const response = JSON.parse(xhr.responseText);
+				const employees = response.data;
+				let totalNetSalary = 0;
 
-						employees.forEach(emp => {
-							const row = document.createElement('tr');
-							const salary = emp.salary ? parseFloat(emp.salary.base_salary) : 0;
-							totalSalary += salary;
+				employees.forEach(emp => {
+					const row = document.createElement('tr');
+					const base = emp.salary ? parseFloat(emp.salary.base_salary) : 0;
 
-							row.innerHTML = `
-								<td><input type="checkbox" class="empCheck" checked value="${emp.id}"></td>
-								<td>${emp.employee_id}</td>
-								<td>${emp.first_name} ${emp.last_name}</td>
-								<td>${emp.job_details ? emp.job_details.job_title : '-'}</td>
-								<td class="salary">₹${salary.toLocaleString()}</td>
-								
-							`;
-							// <td>${emp.status === 1 ? 'Active' : 'Inactive'}</td>
-							tbody.appendChild(row);
-						});
+					const advance = 0;
+					const advanceDeduction = 0;
+					const deduction = 0;
+					const bonus = 0;
+					const pf = +(base * 0.10).toFixed(2);
+					const gross = base + bonus;
+					const net = gross - (deduction + advanceDeduction + pf);
 
-						totalSalaryDisplay.textContent = `Total Salary: ₹${totalSalary.toLocaleString()}`;
-						table.style.display = '';
-					}
-				};
-				xhr.send();
-			}
+					totalNetSalary += net;
 
-			selectAll.addEventListener('change', function () {
-				const allChecks = document.querySelectorAll('.empCheck');
-				allChecks.forEach(chk => chk.checked = selectAll.checked);
+					row.innerHTML = `
+						<td><input type="checkbox" class="empCheck" checked value="${emp.id}"></td>
+						<td>${emp.employee_id}</td>
+						<td>${emp.first_name} ${emp.last_name}</td>
+						<td>${emp.job_details ? emp.job_details.job_title : '-'}</td>
+						<td>₹${base.toLocaleString()}</td>
+						<td>₹${bonus.toLocaleString()}</td>
+						<td>₹${deduction.toLocaleString()}</td>
+						<td>₹${pf.toLocaleString()}</td>
+						<td><strong>₹${net.toLocaleString()}</strong></td>
+					`;
 
+					tbody.appendChild(row);
 
-				updateTotal();
-			});
-
-			
-			document.addEventListener('change', function (e) {
-				if (e.target.classList.contains('empCheck')) {
-					updateTotal();
-				}
-			});
-
-			function updateTotal() {
-				const checkboxes = document.querySelectorAll('.empCheck');
-				let total = 0;
-
-				checkboxes.forEach((checkbox) => {
-					if (checkbox.checked) {
-						const row = checkbox.closest('tr');
-						const salaryText = row.querySelector('.salary').textContent.replace(/[₹,]/g, '');
-						total += parseFloat(salaryText);
-					}
+					
+					row.querySelector('.empCheck').addEventListener('change', updateTotalNetPay); 
 				});
 
-				totalSalaryDisplay.textContent = `Total Salary: ₹${total.toLocaleString()}`;
+				totalSalaryDisplay.textContent = `Total Net Pay: ₹${totalNetSalary.toLocaleString()}`;
+				table.style.display = '';
 			}
+		};
+		xhr.send();
+	}
+
+	function updateTotalNetPay() {
+		let total = 0;
+		document.querySelectorAll('.empCheck:checked').forEach(checkbox => {
+			const row = checkbox.closest('tr');
+			const netCell = row.querySelector('td:last-child'); 
+			const netText = netCell.textContent.replace(/[₹,]/g, '');
+			total += parseFloat(netText) || 0;
 		});
+		totalSalaryDisplay.textContent = `Total Net Pay: ₹${total.toLocaleString()}`;
+	}
+
+	selectAll.addEventListener('change', function () {
+		const allChecks = document.querySelectorAll('.empCheck');
+		allChecks.forEach(chk => {
+			chk.checked = selectAll.checked;
+		});
+		updateTotalNetPay(); 
+	});
+
+});
 
 
   document.getElementById('generatePayroll').addEventListener('click', function () {
@@ -542,7 +547,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		  document.getElementById('closebtn').addEventListener('click',function(){
         window.location.href = "/api/invoice/list";
     });
-
 
 	//log out
 document.getElementById('logoutBtn').addEventListener('click', function () {
@@ -600,6 +604,42 @@ document.getElementById('logoutBtn').addEventListener('click', function () {
 	    };
 	    http.send();
 	});
+
+
+	//Excel Export 
+document.getElementById('exportBtn').addEventListener('click', function () {
+    const xhr = new XMLHttpRequest();
+    const url = 'http://127.0.0.1:8000/api/employee/export';
+
+    xhr.open('GET', url, true);
+    xhr.setRequestHeader('Accept', 'application/csv');
+    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+    xhr.responseType = 'blob';
+    xhr.withCredentials = true;
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            const blob = new Blob([xhr.response], { type: 'application/csv' });
+            const downloadUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = 'employeeData.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } else {
+            alert('Failed to download file. Status: ' + xhr.status);
+        }
+    };
+
+    xhr.onerror = function () {
+        alert('Network error occurred while trying to download the file.');
+    };
+
+    xhr.send();
+});
+
+
 		</script>
 
 	</body>

@@ -5,12 +5,10 @@ namespace App\Services;
 use App\Models\Employees;
 use App\Models\EmployeeJobDetail;
 use App\Models\EmployeeSalary;
-use App\Models\Addresses;
 use App\Models\Department;
 use App\Models\payroll_history;
 use App\Models\PayrollDetail;
-use App\Models\BankDetail;
-
+use App\Models\Company;
 
 use App\Services\CommonServices;
 use Exception;
@@ -22,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class EmployeeService
@@ -187,7 +186,10 @@ class EmployeeService
 
     //Edit  Employee Data 
     public function editEmployeeData($id){
-        $employee = Employees::with(['jobDetails.department', 'address', 'salary.bankDetails'])->findOrFail($id);
+          $employee = Employees::with(['jobDetails.department', 'address', 'salary.bankDetails', 'payrollDeatils'])->findOrFail($id);
+        // $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])
+        //     ->where('id', $id)->first();
+
         return $employee;
     }
 
@@ -303,7 +305,7 @@ class EmployeeService
             $advanceDeduction = 0;
             $deduction = 0;
             $bonus = 0;
-            $pf = 0;
+            $pf =  round($base * 0.10, 2);
 
             $gross = $base + $bonus;
             $net = $gross - ($advanceDeduction + $deduction + $pf);
@@ -351,7 +353,7 @@ class EmployeeService
             ->whereMonth('payroll_date', now()->month)
             ->whereYear('payroll_date', now()->year);
 
-        return Employees::with(['salary', 'jobDetails'])->where('status', '1')
+        return Employees::with(['salary', 'jobDetails'])->where('status', '1')->where('is_deleted','0')
             ->whereNotIn('id', $employeeIdsWithPayroll)
             ->get();
     }
@@ -372,5 +374,46 @@ class EmployeeService
     public function employeeDepartment(){
         $department = Department::get();
         return $department;
+    }
+
+
+    public function generateplyslipPdf($employeeId) {
+        $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])
+            ->where('id', $employeeId)->first();
+
+         $latestPayroll = $employee->latestPayrollDetail;
+
+        $company = Company::with(['address', 'bankDetails'])->latest()->first();
+
+        if (!$employee || !$company) {
+            return null;
+        }
+        $base =  $employee->salary->base_salary;
+        $bonus = 0.00;
+        $deduction = 0.00;
+        $advanceDeduction = 0.00;
+        $pf = round($base * 0.10, 2);
+        $gross = $base + $bonus;
+        $net = $gross - ($deduction + $advanceDeduction + $pf);
+
+        $data = [
+            'employee' => $employee,
+            'company' => $company,
+            'payroll' => $employee->latestPayrollDetail,
+            'calculated' => [
+                'base' => $base,
+                'pf' => $pf,
+                'bonus' => $bonus,  
+                'deduction' => $deduction,
+                'advance_deduction' => $advanceDeduction,
+                'gross' => $gross,
+                'net' => $net,
+            ]
+        ];
+
+        $pdf = Pdf::loadView('pdf.payslip', $data);
+
+        return   $pdf->download('payslip-'.$employee->id.'.pdf');
+
     }
 }

@@ -346,7 +346,7 @@
 
 
 				        const xhr = new XMLHttpRequest();
-					    xhr.open("POST", "http://127.0.0.1:8000/api/employee",true); // your Laravel API route
+					    xhr.open("POST", "http://127.0.0.1:8000/api/employee",true); 
 					    xhr.setRequestHeader("Accept", "application/json");
 					    xhr.setRequestHeader('Authorization' , 'Bearer ' + token);
 
@@ -394,7 +394,7 @@
 	    http.onreadystatechange = function () {
 
 	        if (http.readyState === 4 && http.status === 401) {
-	            window.location.href = './api/login';
+	            window.location.href = '/api/login';
 	        }
 	        else if (http.readyState === 4 && http.status === 200) {
 	            const datas = JSON.parse(http.responseText);

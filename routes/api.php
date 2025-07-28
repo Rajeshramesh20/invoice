@@ -127,6 +127,10 @@ Route::middleware(['auth:api'])->group(function() {
     Route::get('getpayrolldetails',[EmployeesController::class, 'getpayrollDetails']);
     Route::get('employeeDataDropDown',[EmployeesController::class, 'getEmployeeDataDropdown']);
 
+    Route::get('employee/export', [EmployeesController::class, 'exportEmployeeData']);
+
     Route::get('employee/department',[EmployeesController::class, 'getEmployeeDepartment']);//get employee department
+
+    Route::post('downloadPayslip/{id}',[EmployeesController::class, 'downloadpayslip']);
 });
 

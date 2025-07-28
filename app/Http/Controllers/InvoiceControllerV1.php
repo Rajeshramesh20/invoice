@@ -85,7 +85,7 @@ class InvoiceControllerV1 extends Controller
     }
 
     //update payment
-   /* public function updatePayment(Request $request, $id, InvoiceServiceV1 $invoiceService)
+    /* public function updatePayment(Request $request, $id, InvoiceServiceV1 $invoiceService)
     {
         $request->validate([
             'paid_amount' => 'required|numeric|min:0',
@@ -134,27 +134,25 @@ class InvoiceControllerV1 extends Controller
     }
 
     // //update customer status
-    public function updateCustomerStatus($id, InvoiceServiceV1 $invoiceService,  Request $request )
+    public function updateCustomerStatus($id, InvoiceServiceV1 $invoiceService,  Request $request)
     {
-        try{
+        try {
             $request->validate([
                 'status' => 'required|numeric',
             ]);
-           
-              $customer= $invoiceService->updateCustomerStatus($id, $request->status);
+
+            $customer = $invoiceService->updateCustomerStatus($id, $request->status);
             return response()->json([
                 'success' => true,
                 'data' => $customer,
                 'message' => 'Customer status updated successfully.',
             ]);
-        }catch(Exception $e){
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
             ], 422);
-
         }
-        
     }
 
     // get all customer 
@@ -381,7 +379,7 @@ class InvoiceControllerV1 extends Controller
             Log::error('Error In  show Invoicedata list' . $e->getMessage());
         }
     }
-    
+
     //download pdf
     public function downloadInvoice($invoiceId, InvoiceServiceV1 $invoiceService)
     {
@@ -461,10 +459,6 @@ class InvoiceControllerV1 extends Controller
             ], 500);
         }
     }
-
-
-
-
 
     //Customer list For Show Details
     public function customerList(InvoiceServiceV1 $customer)
@@ -719,7 +713,7 @@ class InvoiceControllerV1 extends Controller
         }
     }
 
-    public function invoiceChart(InvoiceServiceV1 $invoiceService) 
+    public function invoiceChart(InvoiceServiceV1 $invoiceService)
     {
         try {
             $data = $invoiceService->getInvoiceChart();
@@ -740,26 +734,25 @@ class InvoiceControllerV1 extends Controller
         }
     }
 
-            //update partially paid amount 
-            public function updatePaidAmount($id, Request $request,InvoiceServiceV1 $partiallyPaid){
+    //update partially paid amount 
+    public function updatePaidAmount($id, Request $request, InvoiceServiceV1 $partiallyPaid)
+    {
 
-                $paidAmount = $request->input('paid_amount'); 
-                //Log::info("Updating invoice ID: $id with amount: $paidAmount");
+        $paidAmount = $request->input('paid_amount');
+        //Log::info("Updating invoice ID: $id with amount: $paidAmount");
 
-                $invoicePartiallyPaid = $partiallyPaid->updatePaidAmount($id, $paidAmount);
-                if($invoicePartiallyPaid){
-                        return response()->json([
-                            'type' => 'success',
-                            'message' => 'Invoice Paid Amount Updated successfully',
-                            'data' => $invoicePartiallyPaid
-                        ]);
-                }else{
-                    return response()->json([
-                        'type' => 'error',
-                        'error'=> 'something Error In Server'
-                        ]);
-                }
-            }
-
-            
+        $invoicePartiallyPaid = $partiallyPaid->updatePaidAmount($id, $paidAmount);
+        if ($invoicePartiallyPaid) {
+            return response()->json([
+                'type' => 'success',
+                'message' => 'Invoice Paid Amount Updated successfully',
+                'data' => $invoicePartiallyPaid
+            ]);
+        } else {
+            return response()->json([
+                'type' => 'error',
+                'error' => 'something Error In Server'
+            ]);
+        }
+    }
 }
