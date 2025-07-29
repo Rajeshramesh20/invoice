@@ -470,16 +470,72 @@ class InvoiceServiceV1
     }
 
     //chart 
+    // public function getInvoiceChart()
+    // {
+    //     $currentMonth = Carbon::now()->month;
+    //     $currentYear = Carbon::now()->year;
+
+    //     $thisMonthInvoices = Invoice::whereMonth('created_at', $currentMonth)
+    //         ->whereYear('created_at', $currentYear)
+    //         ->get();
+
+    //     $allInvoices = Invoice::all();
+
+    //     return [
+    //         'thisMonth' => [
+    //             'count' => $thisMonthInvoices->count(),
+    //             'total' => $thisMonthInvoices->sum('total_amount'),
+    //             'paid' => $thisMonthInvoices->sum('paid_amount'),
+    //         ],
+    //         'overall' => [
+    //             'count' => $allInvoices->count(),
+    //             'total' => $allInvoices->sum('total_amount'),
+    //             'paid' => $allInvoices->sum('paid_amount'),
+    //         ],
+    //         'recent' => $allInvoices->sortByDesc('created_at')->take(5)->values(),
+    //     ];
+    // }
+    // use Carbon\Carbon;
+    // use App\Models\Invoice;
+    // use Illuminate\Support\Facades\DB;
+
     public function getInvoiceChart()
     {
         $currentMonth = Carbon::now()->month;
         $currentYear = Carbon::now()->year;
 
+        // This month invoices
         $thisMonthInvoices = Invoice::whereMonth('created_at', $currentMonth)
             ->whereYear('created_at', $currentYear)
             ->get();
 
+        // All invoices
         $allInvoices = Invoice::all();
+
+        // Total unpaid amount (null treated as 0)
+        $totalUnpaid = $allInvoices->sum(function ($invoice) {
+            $paid = $invoice->paid_amount ?? 0;
+            return max($invoice->total_amount - $paid, 0);
+        });
+
+        // Unpaid count per month (grouped)
+        $unpaidInvoices = Invoice::where(function ($q) {
+            $q->whereNull('paid_amount')
+                ->orWhereColumn('paid_amount', '<', 'total_amount');
+        })
+            ->get()
+            ->groupBy(function ($item) {
+                return Carbon::parse($item->created_at)->format('Y-m'); // Format: 2025-07
+            })
+            ->map(function ($group) {
+                return [
+                    'count' => $group->count(),
+                    'total_unpaid' => $group->sum(function ($invoice) {
+                        $paid = $invoice->paid_amount ?? 0;
+                        return max($invoice->total_amount - $paid, 0);
+                    })
+                ];
+            });
 
         return [
             'thisMonth' => [
@@ -491,14 +547,17 @@ class InvoiceServiceV1
                 'count' => $allInvoices->count(),
                 'total' => $allInvoices->sum('total_amount'),
                 'paid' => $allInvoices->sum('paid_amount'),
+                'unpaid_total' => $totalUnpaid
             ],
+            'monthly_unpaid' => $unpaidInvoices, // array: { "2025-07": { count, total_unpaid }, ... }
             'recent' => $allInvoices->sortByDesc('created_at')->take(5)->values(),
         ];
     }
 
 
+
     //Update PaidAmount
-              public function updatePaidAmount($id,$amount){
+    public function updatePaidAmount($id,$amount){
                 try{
                     $invoice = invoice::findOrFail($id);
                     // Update Paid Amount

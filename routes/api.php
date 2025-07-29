@@ -113,8 +113,6 @@ Route::middleware(['auth:api'])->group(function() {
     Route::PUT('updateemployee/{id}',[EmployeesController::class, 'updateEmployeeData']); //update employee
     Route::GET('showemployee/{id}',[EmployeesController::class, 'showEmployeeData']); //show employee Data
 
-    Route::DELETE('deleteemployee/{id}',[EmployeesController::class, 'deleteEmployeeData']); //Delete employee Data
-
     Route::PUT('deleteemployee/{id}',[EmployeesController::class, 'deleteEmployeeData']); //Delete employee Data
 
     Route::get('searchEmployee', [EmployeesController::class, 'searchData']);

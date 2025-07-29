@@ -102,4 +102,8 @@ class ApiViewController extends Controller
     {
         return view('api_views.payroll_details');
     }
+
+    public function viewEmployee(){
+        return view('api_views.employee_view');
+    }
 }

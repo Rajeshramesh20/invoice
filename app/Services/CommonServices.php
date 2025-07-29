@@ -141,7 +141,6 @@ class CommonServices
                 'pf' => $pf,
                 'bonus' => $bonus,  
                 'deduction' => $deduction,
-                'totaldeduction'=> $totaldeduction,
                 'advance_deduction' => $advanceDeduction,
                 'totalDeduction' => $totalDeduction,
                 'gross' => $gross,

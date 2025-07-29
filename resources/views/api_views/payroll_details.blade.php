@@ -128,7 +128,7 @@
                           <abbr title="Edit"><a href="/${list.id}"><i class='fa-solid fa-pencil'></i></a></abbr>
                           <abbr title="Send Mail"><button class="mail-send" onclick="sendMail(${list.employee_id})">
                           <i class="fa-solid fa-paper-plane"></i></button></abbr>
-                           <abbr  title="Download Pdf"> <button class="pdf" onclick="pdfDownload('${list.employee_id}','${employee_id}')">
+                           <abbr  title="Download payslip"> <button class="pdf" onclick="pdfDownload('${list.employee_id}','${employee_id}')">
                               <i class="fas fa-file-pdf" style="color: red;"></i></button></abbr>
                         </td>                   
                     `

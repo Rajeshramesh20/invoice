@@ -78,10 +78,7 @@ class InvoiceService
             'status_id'=> $data['status_id']
         ]);
         $this->generatePdf($invoice_id);
-
         return  $updateinvoicestatus;
-
-    
     }
     
     //generate invoice id month wise

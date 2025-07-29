@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>Salary Slip </title>
+    <title>Salary Slip</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,22 +14,36 @@
             width: 600px;
             margin: 20px auto;
             border: 1px solid #000;
-            padding: 20px;  
+            padding: 20px;
+        }
+
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
         }
 
         .logo {
-            text-align: center;
-            margin-bottom: 10px;
+            float: left;
+            width: 60%;
         }
 
         .logo img {
             height: 50px;
+            display: block;
         }
 
-        .company-details {
-            text-align: center;
+        .company-contact {
+            float: right;
+            width: 38%;
+            text-align: right;
             font-size: 13px;
-            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .company-address {
+            /* text-align: center; */
+            /* margin: 10px 0 20px; */
         }
 
         h3 {
@@ -44,8 +57,7 @@
             margin-bottom: 15px;
         }
 
-        th,
-        td {
+        th, td {
             border: 1px solid #000;
             padding: 8px 10px;
         }
@@ -69,62 +81,51 @@
 </head>
 
 <body>
-
     <div class="container">
-        <div class="logo">
-            <img src="{{asset('storage/app/public/'.$company->logo_path)}}" alt="Company Logo">
+        <div class="clearfix">
+            <div class="logo">
+                <img src="{{ asset('storage/app/public/' . $company->logo_path) }}" alt="Company Logo">
+            </div>
+            <div class="company-contact">
+                Email: {{ $company->email }}<br>
+                Phone: +91-{{ $company->contact_number }}<br>
+                GSTIN: {{ $company->gstin }}<br>
+                Website: {{ $company->website_url }}
+            </div>
         </div>
 
-        <div class="company-details">
-            <!-- <strong>TWIGIK TECHNOLOGIES PRIVATE LIMITED</strong><br> -->
-            {{$company->address->line1}}, {{$company->address->line2}},<br>
-            {{$company->address->line3}}, <br>
-            {{$company->address->line4}}, {{$company->address->pincode}}<br><br>
-            Phone: +91- {{$company->contact_number}} | GSTIN:{{$company->gstin}}<br>
-            Email: {{ $company->email }} | Website: {{ $company->website_url }}
+        <div class="company-address">
+            {{ $company->address->line1 }},
+            {{ $company->address->line2 }},
+            <br>    
+            {{ $company->address->line3 }},
+            {{ $company->address->line4 }},
+            {{ $company->address->pincode }}
         </div>
 
-        <h3>Salary Slip for {{$employee->latestPayrollDetail->payroll_date->format('F Y')}}</h3>
-
-        <!-- Employee Information -->
+        <h3>Salary Slip for {{ $employee->latestPayrollDetail->payroll_date->format('F Y') }}</h3>
 
         <table class="noborder">
             <tr>
-                <td><strong>Name:</strong> {{ ucfirst($employee->first_name)}} {{ ucfirst($employee->last_name)}}</td>
-                <td><strong>Employee ID:</strong> {{ $employee->employee_id }}</td>
-                <td><strong>Department:</strong> {{ $employee->jobDetails->department->department_name ?? '-' }}</td>
-                <td><strong>Bank:</strong>  {{ $employee->salary->bankDetails->bank_name ?? '-' }}</td>
+                <td><strong>Name:</strong></td>
+                <td>{{ ucfirst($employee->first_name) }} {{ ucfirst($employee->last_name) }}</td>
+                <td><strong>Department:</strong></td>
+                <td>{{ $employee->jobDetails->department->department_name ?? '-' }}</td>
             </tr>
             <tr>
-                <td><strong>Designation:</strong> {{ $employee->jobDetails->job_title ?? '-' }}</td>
-                <td colspan="2"></td>
-                <td><strong>Account No:</strong>  {{ $employee->salary->bankDetails->account_number ?? '-' }}</td>
+                <td><strong>Employee ID:</strong></td>
+                <td>{{ $employee->employee_id }}</td>
+                <td><strong>Bank:</strong></td>
+                <td>{{ $employee->salary->bankDetails->bank_name ?? '-' }}</td>
+            </tr>
+            <tr>
+                <td><strong>Designation:</strong></td>
+                <td>{{ $employee->jobDetails->job_title ?? '-' }}</td>
+                <td><strong>Account No:</strong></td>
+                <td>{{ $employee->salary->bankDetails->account_number ?? '-' }}</td>
             </tr>
         </table>
 
-
-         <table class="noborder">
-         <tr>
-            <td><strong>Name:</strong></td>
-            <td> {{ ucfirst($employee->first_name) }} {{ ucfirst($employee->last_name) }}</td>
-            <td><strong>Department:</strong> </td>
-            <td>{{ $employee->jobDetails->department->department_name ?? '-' }}</td>
-          </tr>
-          <tr>
-            <td><strong>Employee ID:</strong> </td>
-            <td>{{ $employee->employee_id }}</td>
-            <td><strong>Bank:</strong></td>
-            <td> {{ $employee->salary->bankDetails->bank_name ?? '-' }}</td>
-          </tr>
-          <tr>
-            <td><strong>Designation:</strong> </td>
-            <td>{{ $employee->jobDetails->job_title ?? '-' }}</td>
-            <td><strong>Account No:</strong></td>
-            <td> {{ $employee->salary->bankDetails->account_number ?? '-' }}</td>
-           </tr>
-         </table>
-
-        <!-- Salary Breakdown -->
         <table>
             <tr>
                 <th colspan="2">Earnings</th>
@@ -142,7 +143,7 @@
                 <td>Health Insurance</td>
                 <td class="right">0</td>
             </tr>
-            <tr>        
+            <tr>
                 <td>Conveyance Allowances</td>
                 <td class="right">0</td>
                 <td>Professional Tax</td>
@@ -161,20 +162,20 @@
             </tr>
             <tr class="bold">
                 <td>Gross Salary</td>
-                <td class="right">{{number_format($calculated['gross'],2)}}</td>
+                <td class="right">{{ number_format($calculated['gross'], 2) }}</td>
                 <td>Total Deductions</td>
-                <td class="right">{{number_format($calculated['totalDeduction'],2)}}</td>               
+                <td class="right">{{ number_format($calculated['totalDeduction'], 2) }}</td>
             </tr>
             <tr class="bold">
                 <td colspan="2">Net Pay</td>
-                <td colspan="2" class="right">{{number_format($calculated['net'],2)}}</td>
+                <td colspan="2" class="right">{{ number_format($calculated['net'], 2) }}</td>
             </tr>
         </table>
 
-        <p class="bold">Amount in Words: <span style="font-weight:normal;">{{ucfirst($numberInWords)}} rupees Only</span>
+        <p class="bold">
+            Amount in Words:
+            <span style="font-weight: normal;">{{ ucfirst($numberInWords) }} rupees only</span>
         </p>
     </div>
-
 </body>
-
 </html>

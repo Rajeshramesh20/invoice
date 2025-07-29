@@ -127,6 +127,7 @@
 		}
 		p {
 			color: red;
+	
 		}
 		/* Display correct form */
 		#tab1:checked ~ #employeeInfo,
