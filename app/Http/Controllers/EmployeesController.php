@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Services\EmployeeService;
 use App\Http\Requests\EmployeeRequests;
 use App\Http\Requests\StorePayrollRequest;
-use Exception;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EmployeeExport;
+use Exception;
+use Twilio\Rest\Client;
+use Illuminate\Support\Facades\Http;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -360,4 +362,25 @@ class EmployeesController extends Controller
         return $response;
     }
 
+
+
+    public function sendWhatsAppMessage()
+    {
+        $sid = env('TWILIO_SID');
+        $token = env('TWILIO_AUTH_TOKEN');
+        $from = env('TWILIO_WHATSAPP_FROM');
+        $to = 'whatsapp:+917305772514';
+
+        $response = Http::withBasicAuth($sid, $token)->post("https://api.twilio.com/2010-04-01/Accounts/{$sid}/Messages.json", [
+            'From' => $from,
+            'To' => $to,
+            'Body' => 'Hello from Laravel (via Twilio API)!',
+        ]);
+
+        if ($response->successful()) {
+            return 'Message sent successfully!';
+        } else {
+            return $response->body(); 
+        }
+    }
 }

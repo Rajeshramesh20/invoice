@@ -72,11 +72,18 @@
 
         .bold {
             font-weight: bold;
+            margin: 0;
         }
 
         .right {
             text-align: right;
         }
+    .stamp {
+    height: 150px;
+    width: 150px;
+    display: block;
+    margin-bottom: 5px;
+}
     </style>
 </head>
 
@@ -176,6 +183,12 @@
             Amount in Words:
             <span style="font-weight: normal;">{{ ucfirst($numberInWords) }} rupees only</span>
         </p>
+
+   <div style="text-align: right; display: inline-block; float: right;">
+    <img class="stamp" src="{{ asset('storage/app/public/logos/twigik-stamp.png') }}" alt="company-stamp">
+    <p style="margin: -20px 0 0; text-align: center;">HR DEPARTMENT</p>
+</div>
     </div>
+
 </body>
 </html>

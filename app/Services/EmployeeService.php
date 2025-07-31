@@ -310,7 +310,7 @@ class EmployeeService
             $pf =  round($base * 0.10, 2);
 
             $gross = $base + $bonus;
-            $net = $gross - ($advanceDeduction + $deduction + $pf);
+            $net = $gross - ($advanceDeduction + $deduction + $pf);  
 
             PayrollDetail::create([
                 'payroll_id' => $payrollId,

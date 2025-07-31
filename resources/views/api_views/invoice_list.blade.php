@@ -149,7 +149,7 @@
 		</div>
 		{{-- <div id="container" style="height: 300px; width: 350px;"></div> --}}
 <div style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 20px;">
-    <div id="overallDonut" style="width: 350px; height: 300px;"></div>
+    <div id="overallDonut" style="width: 400px; height: 300px;"></div>
     <div id="amountColumn" style="width: 350px; height: 300px;"></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -301,15 +301,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     },
                     title: { text: 'Overall Invoice Status' },
-                    tooltip: {
-                        pointFormat: '{point.name}: ₹{point.y} ({point.percentage:.0f}%)'
+                  tooltip: {
+                        pointFormat: '{point.name}: ₹{point.y:.2f} ({point.percentage:.0f}%)'
                     },
                     plotOptions: {
                         pie: {
                             innerSize: '60%',
                             dataLabels: {
                                 enabled: true,
-                                format: '{point.name}: ₹{point.y}'
+                                format: '{point.name}: ₹{point.y:.2f}'  
                             }
                         }
                     },
@@ -331,18 +331,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     yAxis: {
                         title: { text: 'Amount (₹)' }
                     },
-                    tooltip: {
-                        shared: true,
-                        valuePrefix: '₹'
-                    },
-                    plotOptions: {
-                        column: {
-                            dataLabels: {
-                                enabled: true,
-                                format: '₹{y}'
+                  tooltip: {
+                            shared: true,
+                            valuePrefix: '₹',
+                            valueDecimals: 2 
+                        },
+                        plotOptions: {
+                            column: {
+                                dataLabels: {
+                                    enabled: true,
+                                    format: '₹{y:.2f}' 
+                                }
                             }
-                        }
-                    },
+                        },
                     series: [
                         { name: 'Overall', data: [overall.paid, overall.unpaid_total] },
                         { name: 'This Month', data: [thisMonth.paid || 0, unpaidMonth.total_unpaid || 0] }

@@ -33,6 +33,7 @@ class StoreInvoiceRequest extends FormRequest
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.unit_price' => 'required|numeric|min:0',
             'items.*.gst_percent'=>'required|numeric',
+            'items.*.is_inclusive_price' => 'required|boolean',//added new
             'additional_text' => 'nullable|string',
 
             'location' => 'nullable|string|max:255',

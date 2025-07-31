@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Carbon;
 use Exception;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+
 
 
 // use Illuminate\Support\Facades\Storage;
@@ -22,55 +24,123 @@ class InvoiceServiceV1
 {
 
 
-// create new invoice
-    public function store($data, $userId)
-    {
+    // create new invoice
+    /*  public function store($data, $userId)
+        {
 
-        $totalAmount = 0;
+            $totalAmount = 0;
+
+            foreach ($data['items'] as $item) {
+                $netAmount = $item['quantity'] * $item['unit_price'];
+                $gstPercent = $item['gst_percent'] ?? 0;
+                $gstAmount = $netAmount * $gstPercent / 100;
+                $total = $netAmount + $gstAmount;
+                $totalAmount += $total;
+            }
+
+            //invoice table data
+            $invoice =  Invoice::create([
+                'invoice_no' => $this->generateInvoiceNumber($data['invoice_date'] ?? now()),
+                'invoice_date' => $data['invoice_date'] ?? now(),
+                'customer_id' => $data['customer_id'],
+                'invoice_due_date' => $data['invoice_due_date'] ?? null,
+                'total_amount' => $totalAmount,
+                'balance_amount' => $totalAmount,
+                'additional_text' => $data['additional_text'] ?? null,
+                'created_by' => $userId,
+                
+
+            ]);
+
+            //item table data
+            foreach ($data['items'] as $item) {
+                $netAmount = $item['quantity'] * $item['unit_price'];
+                $gstPercent = $item['gst_percent'] ?? 0;
+                $gstAmount = $netAmount * $gstPercent / 100;
+                $total =  $netAmount + $gstAmount;
+                InvoiceItem::create([
+                    'invoice_id' => $invoice->invoice_id,
+                    'item_name' => $item['item_name'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                    'net_amount' => $netAmount,
+                    'gst_percent' => $gstPercent,
+                    'gst_amount' => $gstAmount,
+                    'total' => $total,
+                    'created_by' => $userId,
+                ]);
+            }
+
+            return $invoice;
+        }*/
+
+    public function store( $data,  $userId)
+    {
+        $totalExcl = 0;
+        $totalIncl = 0;
+        $items = [];
 
         foreach ($data['items'] as $item) {
-            $netAmount = $item['quantity'] * $item['unit_price'];
-            $gstPercent = $item['gst_percent'] ?? 0;
-            $gstAmount = $netAmount * $gstPercent / 100;
-            $total = $netAmount + $gstAmount;
-            $totalAmount += $total;
+            Log::info('Item Loop Start', ['item' => $item]);
+
+            $isInclusive = $item['is_inclusive_price'] ?? false;
+            Log::info('Parsed flag isInclusive', ['value' => $isInclusive]);
+
+            $rawPrice = floatval($item['unit_price']);
+            $gst = floatval($item['gst_percent']);
+            $qty = floatval($item['quantity']);
+
+            Log::info('Values rawPrice, gst, qty', compact('rawPrice', 'gst', 'qty'));
+
+            $basePrice = $isInclusive ? $rawPrice / (1 + $gst / 100) : $rawPrice;
+            $netAmount = $basePrice * $qty;
+            $gstAmount = round($netAmount * ($gst / 100), 2);
+            $totalAmount = $isInclusive ? ($rawPrice * $qty) : ($netAmount + $gstAmount);
+
+            Log::info('Computed values', compact('basePrice', 'netAmount', 'gstAmount', 'totalAmount'));
+
+            $items[] = [
+                'item_name' => $item['item_name'],
+                'quantity' => $qty,
+                'unit_price' => round($rawPrice, 2),
+                'gst_percent' => $gst,
+                'net_amount' => round($netAmount, 2),
+                'gst_amount' => round($gstAmount, 2),
+                'total' => round($totalAmount, 2),
+            ];
+
+            $totalExcl += $netAmount;
+            $totalIncl += $totalAmount;
         }
 
-        //invoice table data
-        $invoice =  Invoice::create([
-            'invoice_no' => $this->generateInvoiceNumber($data['invoice_date'] ?? now()),
-            'invoice_date' => $data['invoice_date'] ?? now(),
-            'customer_id' => $data['customer_id'],
+        $invoice = Invoice::create([
+            'invoice_no' => $this->generateInvoiceNumber($data['invoice_date']),
+            'invoice_date' => $data['invoice_date'],
             'invoice_due_date' => $data['invoice_due_date'] ?? null,
-            'total_amount' => $totalAmount,
-            'balance_amount' => $totalAmount,
+            'customer_id' => $data['customer_id'],
+            'total_amount' => round($totalIncl, 2),
+            'balance_amount' => round($totalIncl, 2),
+            'total_excluding_gst' => round($totalExcl, 2),
             'additional_text' => $data['additional_text'] ?? null,
+            'created_type' => 'internal',
+            'created_from' => 'system',
             'created_by' => $userId,
-            
-
         ]);
 
-        //item table data
-        foreach ($data['items'] as $item) {
-            $netAmount = $item['quantity'] * $item['unit_price'];
-            $gstPercent = $item['gst_percent'] ?? 0;
-            $gstAmount = $netAmount * $gstPercent / 100;
-            $total =  $netAmount + $gstAmount;
-            InvoiceItem::create([
+        foreach ($items as $item) {
+            InvoiceItem::create(array_merge($item, [
                 'invoice_id' => $invoice->invoice_id,
-                'item_name' => $item['item_name'],
-                'quantity' => $item['quantity'],
-                'unit_price' => $item['unit_price'],
-                'net_amount' => $netAmount,
-                'gst_percent' => $gstPercent,
-                'gst_amount' => $gstAmount,
-                'total' => $total,
                 'created_by' => $userId,
-            ]);
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]));
         }
 
         return $invoice;
     }
+
+
+
 
     //update status
     public function updateStatusTOInvoiceTable($data, $invoice_id)

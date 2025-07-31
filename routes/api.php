@@ -132,6 +132,6 @@ Route::middleware(['auth:api'])->group(function() {
 
     Route::POST('payroll/mail/{id}', [EmployeesController::class, 'sendPayRollMail']);
     Route::post('downloadPayslip/{id}',[EmployeesController::class, 'downloadpayslip']);
-
+    Route::get('/send-whatsapp', [EmployeesController::class, 'sendWhatsAppMessage']);
 });
 
