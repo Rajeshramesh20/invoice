@@ -30,10 +30,17 @@ return [
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
+
+    'vonage' => [
+        'key'      => env('VONAGE_KEY'),
+        'secret'   => env('VONAGE_SECRET'),
+        'sms_from' => env('VONAGE_SMS_FROM'),
+    ],
+
     'twilio' => [
         'sid'            => env('TWILIO_SID'),
         'token'          => env('TWILIO_AUTH_TOKEN'),
         'whatsapp_from'  => env('TWILIO_WHATSAPP_NUMBER'),
+        'sms_from'       => env('TWILIO_SMS_FROM'),
     ],
-
 ];

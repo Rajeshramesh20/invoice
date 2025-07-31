@@ -101,6 +101,41 @@
             </div>
         </div>
 
+
+        <div class="company-details">
+            {{$company->address->line1}}, {{$company->address->line2}},<br>
+            {{$company->address->line3}}, <br>
+            {{$company->address->line4}}, {{$company->address->pincode}}<br><br>
+            Phone: +91- {{$company->contact_number}} | GSTIN:{{$company->gstin}}<br>
+            Email: {{ $company->email }} | Website: {{ $company->website_url }}
+        </div>
+
+        <h3>Salary Slip for {{$employee->latestPayrollDetail->payroll_date->format('F Y')}}</h3>
+        
+
+        <!-- Employee Information -->
+         <table class="noborder">
+         <tr>
+            <td><strong>Name:</strong></td>
+            <td> {{ ucfirst($employee->first_name) }} {{ ucfirst($employee->last_name) }}</td>
+            <td><strong>Department:</strong> </td>
+            <td>{{ $employee->jobDetails->department->department_name ?? '-' }}</td>
+          </tr>
+          <tr>
+            <td><strong>Employee ID:</strong> </td>
+            <td>{{ $employee->employee_id }}</td>
+            <td><strong>Bank:</strong></td>
+            <td> {{ $employee->salary->bankDetails->bank_name ?? '-' }}</td>
+          </tr>
+          <tr>
+            <td><strong>Designation:</strong> </td>
+            <td>{{ $employee->jobDetails->job_title ?? '-' }}</td>
+            <td><strong>Account No:</strong></td>
+            <td> {{ $employee->salary->bankDetails->account_number ?? '-' }}</td>
+           </tr>
+         </table>
+
+        <!-- Salary Breakdown -->
         <div class="company-address">
             {{ $company->address->line1 }},
             {{ $company->address->line2 }},

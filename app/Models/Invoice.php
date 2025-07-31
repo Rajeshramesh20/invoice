@@ -57,5 +57,15 @@ class Invoice extends Model
     {
         return $this->belongsTo(Customers::class, 'customer_id');
     }
+
+     public function bankDetails()
+    {
+        return $this->belongsTo(BankDetail::class,'bank_details_id');
+    }
+
+       public function companies()
+    {
+        return $this->belongsTo(Company::class);
+    }
  
 }

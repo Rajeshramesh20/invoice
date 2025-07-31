@@ -69,13 +69,25 @@ class InvoiceControllerV1 extends Controller
             ]);
             $updateinvoicestatus = $invoiceService->updateStatusTOInvoiceTable($validated, $invoiceId);
 
-            //  $invoiceService->generatePdf($invoiceId);
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Invoice  status updated successfully.',
-                'invoice' => $updateinvoicestatus
-            ]);
+           if($updateinvoicestatus['invoice']){
+                return response()->json([
+                        'status' => true,
+                        'message' => 'Invoice  status updated successfully.',
+                        'invoice' => $updateinvoicestatus
+                ]);
+            }elseif($updateinvoicestatus['updateStatusErr']){
+                return response()->json([
+                        'type' => 'error',
+                        'error' => $updateinvoicestatus['message'] ?? 'Cannot change status.'
+                    ], 422);
+            }
+            else {
+                    return response()->json([
+                        'type' => 'warning',
+                        'error' => 'The Status Does Not Change'
+                    ], 404);
+            }
+           
         } catch (Exception $e) {
             return response()->json([
                 'status' => false,
@@ -739,7 +751,6 @@ class InvoiceControllerV1 extends Controller
     {
 
         $paidAmount = $request->input('paid_amount');
-        //Log::info("Updating invoice ID: $id with amount: $paidAmount");
 
         $invoicePartiallyPaid = $partiallyPaid->updatePaidAmount($id, $paidAmount);
         if ($invoicePartiallyPaid) {

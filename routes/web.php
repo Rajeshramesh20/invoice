@@ -60,6 +60,6 @@ Route::prefix('api')->name('api.')->group(function () {
 
     Route::GET('payrolldetails', [ApiViewController::class, 'payrollDetails']);
 
-  
+    Route::GET('show/employee/{id}', [ApiViewController::class, 'showEmployeeData']);
 });
 

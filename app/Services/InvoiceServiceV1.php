@@ -17,6 +17,11 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
 
+use Twilio\Rest\Client;
+
+// use Vonage\Client;
+// use Vonage\Client\Credentials\Basic;
+// use Vonage\SMS\Message\SMS;
 
 // use Illuminate\Support\Facades\Storage;
 
@@ -28,6 +33,10 @@ class InvoiceServiceV1
     /*  public function store($data, $userId)
         {
 
+<<<<<<< HEAD
+        $company = Company::with(['address', 'bankDetails'])->latest()->first();
+        $totalAmount = 0;
+=======
             $totalAmount = 0;
 
             foreach ($data['items'] as $item) {
@@ -76,6 +85,8 @@ class InvoiceServiceV1
 
     public function store( $data,  $userId)
     {
+        $company = Company::with(['address', 'bankDetails'])->latest()->first();
+    
         $totalExcl = 0;
         $totalIncl = 0;
         $items = [];
@@ -122,6 +133,10 @@ class InvoiceServiceV1
             'balance_amount' => round($totalIncl, 2),
             'total_excluding_gst' => round($totalExcl, 2),
             'additional_text' => $data['additional_text'] ?? null,
+
+            'company_id' => $company->company_id,
+            'company_bank_details_id' => $company->bankDetails?->bank_detail_id,
+            'created_by' => $userId,
             'created_type' => 'internal',
             'created_from' => 'system',
             'created_by' => $userId,
@@ -147,11 +162,30 @@ class InvoiceServiceV1
     {
         $updateinvoicestatus = Invoice::findOrfail($invoice_id);
 
+        if ($updateinvoicestatus->status_id == '4') {
+            return [              
+                'invoice' => null,
+                'updateStatusErr' => true,
+                'message' => 'Cannot change status because this invoice is already Paid.'
+            ];
+        }
+        if($updateinvoicestatus->status_id == '3'){
+            return [              
+                'invoice' => null,
+                'updateStatusErr' => true,
+                'message' => 'Cannot change status back to Draft after payment has started.'
+            ];
+        }
+
+
         $updateinvoicestatus->update([
             'status_id' => $data['status_id']
         ]);
         
-        return  $updateinvoicestatus;
+        return  [
+            'invoice' => $updateinvoicestatus,
+            'updateStatusErr' => false
+        ];
     }
 
     //generate invoice id month wise
@@ -484,6 +518,7 @@ class InvoiceServiceV1
     public function updateInvoiceData($request, string $id )
     {
         try {
+             $commonServices = new CommonServices();
             $totalAmount = 0;
 
             foreach ($request['items'] as $item) {
@@ -505,7 +540,7 @@ class InvoiceServiceV1
                 'balance_amount' => $totalAmount ?? null,
                 'additional_text' => $request['additional_text'] ?? null,
                 'customer_id' => $request['customer_id'],
-                //'customer_id' => $request['customer_id']
+                'updated_by' => $commonServices->getUserID()
             ]);
 
             $existingItems = $invoiceData->items;
@@ -600,27 +635,66 @@ class InvoiceServiceV1
 
 
     //Update PaidAmount
-    public function updatePaidAmount($id,$amount){
-                try{
-                    $invoice = invoice::findOrFail($id);
-                    // Update Paid Amount
-                    $invoice->paid_amount += $amount;
+     public function updatePaidAmount($id,$amount){
+        try{
+            $invoice = invoice::with('customer')->findOrFail($id);
+            $customer = $invoice->customer->contact_number;
 
-                    // Update Balance Amount
-                    $invoice->balance_amount -= $amount;
+            // Update Paid Amount
+            $invoice->paid_amount += $amount;
 
-                    //chnage invoice status id after balance 
-                    if($invoice->balance_amount == 0){
-                         $invoice->invoice_status_id = "4";
-                    }
-                    Log::info('Invoice status before save: ' . $invoice->invoice_status_id);
+            // Update Balance Amount
+            $invoice->balance_amount -= $amount;
 
-                    $invoice->save();                
-                    return $invoice;
-                 }catch(Exception $e){
-                    Log::error(' Error in Update Paid Amount:' . $e->getMessage());
-                 }
-                 }   
+            //chnage invoice status id after balance 
+            if ($invoice->balance_amount > 0) {
+                 $invoice->status_id = '3'; // Partially Paid
+            } elseif($invoice->balance_amount == 0){
+                $invoice->status_id = '4'; // Paid
+            }
+
+            //send SMS to the customer
+            $total = number_format($invoice->total_amount, 2);
+            $paid = number_format($invoice->paid_amount, 2);
+            $balance = number_format($invoice->balance_amount, 2);
+            $customerName =  $invoice->customer->customer_name;
+            $invoiceNo = $invoice->invoice_no;
+
+            if ($invoice->balance_amount > 0) {
+                // Partially paid message
+                $message = "Hello {$customerName},\nInvoice:{$invoiceNo}\nPaid Amount: {$paid}\nBalance Amount:{$balance}\n pending. Thank you!";
+            } else {
+                // Fully paid message
+                $message = "Hello {$customerName},\n Invoice {$invoiceNo} is fully paid. 
+                         Total Amount:{$total}\n Thank you for your payment!\n We appreciate your business!";
+            }
+
+            $client = new Client(
+                config('services.twilio.sid'),
+                config('services.twilio.token')
+            );
+            $smsFrom = config('services.twilio.sms_from'); 
+            $whatsappFrom = config('services.twilio.whatsapp_from'); 
+            $smsTo = $customer;
+            $whatsappTo = "whatsapp:{$customer}";
+
+            //SMS
+           $client->messages->create($smsTo,[
+                'from' => $smsFrom,
+                'body' => $message
+           ]);
+
+           //Whatsapp
+           $client->messages->create($whatsappTo,[
+                'from' => $whatsappFrom,
+                'body' => $message
+           ]);
+            $invoice->save();                
+            return $invoice;
+        }catch(Exception $e){
+            Log::error(' Error in Update Paid Amount:' . $e->getMessage());
+        }
+    }   
 }
 
 

@@ -149,7 +149,6 @@
 		}
 
 		return isValid;	
-
 	}
 
 	//employee bank validation
@@ -325,6 +324,7 @@
 	}
 
 
+
 	document.querySelector('label[for="tab2"]').addEventListener('click', function (e) {
     	e.preventDefault();
 
@@ -335,6 +335,37 @@
 		
 	});
 
+<<<<<<< HEAD
+	document.querySelector('label[for="tab3"]').addEventListener('click', function (e) {
+    	e.preventDefault();
+
+	    // Run your validation function
+	    if (employeesAddress()) {
+	        document.getElementById("tab3").checked = true;
+	    }
+	});
+
+
+	document.querySelector('label[for="tab4"]').addEventListener('click', function (e) {
+    	e.preventDefault();
+
+	    // Run your validation function
+	    if (employeeBandDetail()) {
+	        document.getElementById("tab4").checked = true;
+	    }
+	});
+
+	document.querySelector('label[for="tab5"]').addEventListener('click', function (e) {
+    	e.preventDefault();
+
+	    // Run your validation function
+	    if (jobDetailsValidation()) {
+	        document.getElementById("tab5").checked = true;
+	    }
+	});
+
+
+				//Store the Employee Data
 				const token = localStorage.getItem('token');
 				document.addEventListener("DOMContentLoaded", function () {
 				    const employeeInfo = document.getElementById("employeeInfo");

@@ -6,6 +6,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MenusController;
 use App\Http\Controllers\RoleMenuPermissionController;
 use App\Http\Controllers\EmployeesController;
+use App\Http\Controllers\SMSController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,7 +64,7 @@ Route::middleware(['auth:api'])->group(
     
         //invoice Status
         Route::get('invoicestatus', [InvoiceControllerV1::class, 'invoiceStatus']);
-        Route::put('invoice/{id}', [InvoiceControllerV1::class, 'updateStatusTOInvoiceTable']);
+        Route::put('update/invoice/status/{id}', [InvoiceControllerV1::class, 'updateStatusTOInvoiceTable']);
 
         //show invoice table data
         Route::get('invoicedata', [InvoiceControllerV1::class, 'invoiceDataList']);
@@ -132,6 +133,13 @@ Route::middleware(['auth:api'])->group(function() {
 
     Route::POST('payroll/mail/{id}', [EmployeesController::class, 'sendPayRollMail']);
     Route::post('downloadPayslip/{id}',[EmployeesController::class, 'downloadpayslip']);
-    Route::get('/send-whatsapp', [EmployeesController::class, 'sendWhatsAppMessage']);
+
+    Route::POST('employee/payroll/mail', [EmployeesController::class, 'sendPayslipsToEmployees']);
+
+
+    Route::get('/send-sms/{id}', [SMSController::class, 'send']);
+    Route::get('/twilio/send-sms/{id}', [SMSController::class, 'twilioSend']);
+    Route::get('/whatsapp/send/{id}', [SMSController::class, 'sendWhatsapp']);
+
 });
 

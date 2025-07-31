@@ -363,24 +363,28 @@ class EmployeesController extends Controller
     }
 
 
+    // public function sendPayslipsToEmployees(Request $request, EmployeeService $sendPayslipsToEmployees){
+    //     try{
+    //     $employeeId = $request->input('id');    
+    //     $employee = $sendPayslipsToEmployees->sendPayslipsToEmployees($employeeId);
 
-    public function sendWhatsAppMessage()
-    {
-        $sid = env('TWILIO_SID');
-        $token = env('TWILIO_AUTH_TOKEN');
-        $from = env('TWILIO_WHATSAPP_FROM');
-        $to = 'whatsapp:+917305772514';
+    //     if($employee){
+    //             return response()->json([
+    //                 'status' => 'success',
+    //                 'data' => $employee,
+    //                 'message' => 'mail send Successfully to the Employee Mail'
+    //             ]);
+    //         }else{
+    //             return response()->json([
+    //                 'status' => 'false',
+    //                 'message' => 'mail does not send'
+    //             ]);
+    //         }
+    //     }catch(Exception $e){
+    //          Log::error('Error in send payroll mail', ['exception' => $e->getMessage()]);
+    //     }    
+    // }
 
-        $response = Http::withBasicAuth($sid, $token)->post("https://api.twilio.com/2010-04-01/Accounts/{$sid}/Messages.json", [
-            'From' => $from,
-            'To' => $to,
-            'Body' => 'Hello from Laravel (via Twilio API)!',
-        ]);
-
-        if ($response->successful()) {
-            return 'Message sent successfully!';
-        } else {
-            return $response->body(); 
-        }
-    }
 }
+
+

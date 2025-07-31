@@ -121,7 +121,7 @@ class EmployeeService
 
     //Get Employee Data For List dropdown
     public function getEmployeeData(){
-        $employee = Employees::where('status', '1')->where('is_deleted','0')->get();
+        $employee = Employees::get();
         return $employee;
     }
 
@@ -288,6 +288,7 @@ class EmployeeService
 
     //store payroll month
     public function storePayroll(array $employeeIds, $createdBy = null) {
+        $commonServices = new CommonServices();
         $payrollId = strtoupper('PYR-' . Str::random(6));
         $payDate = Carbon::now()->toDateString();
 
@@ -295,7 +296,8 @@ class EmployeeService
         $failed = 0;
 
         foreach ($employeeIds as $empId) {
-            $employee = Employees::with('salary')->find($empId);
+            $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])->
+                        findOrFail($empId);
 
             if (!$employee || !$employee->salary) {
                 $failed++;
@@ -325,6 +327,24 @@ class EmployeeService
                 'gross_pay' => $gross,
                 'net_pay' => $net,
             ]);
+
+             $employee->load('latestPayrollDetail');
+            
+            //generate PDF With Mail Send
+            $company = Company::with(['address', 'bankDetails'])->latest()->first();
+            $employeeMail = $employee->email;
+            $data = $commonServices->generatePayslipPdf($employee);
+            $employeeMail = $employee->email;
+            $pdf = Pdf::loadView('pdf.payslip', $data);
+
+            Mail::send('mail.employee_payroll_mail', ['employee' => $employee, 'company' => $company, 'payroll_date'=> $payDate], function($message) use($employee, $employeeMail, $pdf, $company) {
+                $message->to($employeeMail);
+                $message->subject('Your Payroll From '. $company->company_name);
+                $message->attachData($pdf->output(), 'Employee-' . $employee->employee_id . '.pdf', [
+                    'mime' => 'application/pdf',
+                ]);
+         });
+
 
             $success++;
         }
@@ -386,7 +406,7 @@ class EmployeeService
         $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])->
                     findOrFail($id);
         $company = Company::with(['address', 'bankDetails'])->latest()->first();
-
+        
         //geneartePdf for payslip
         $commonServices = new CommonServices();
         $data = $commonServices->generatePayslipPdf($employee);
@@ -407,7 +427,36 @@ class EmployeeService
         }
     }
 
-    //downloadPdf
+
+   /* public function sendPayslipsToEmployees($Ids){
+        try{
+           foreach($Ids as $employeeIds){
+                $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])
+                            ->findOrFail($employeeIds);
+                $company = Company::with(['address', 'bankDetails'])->latest()->first();
+                $employeeMail = $employee->email;
+
+                if($employee && $employeeMail){  
+                    //geneartePdf for payslip
+                    $commonServices = new CommonServices();
+                    $data = $commonServices->generatePayslipPdf($employee);                
+                    $pdf = Pdf::loadView('pdf.payslip', $data);
+
+                 Mail::send('mail.employee_payroll_mail', ['employee' => $employee, 'company' => $company], function($message) use($employee, $employeeMail, $pdf, $company) {
+                        $message->to($employeeMail);
+                        $message->subject('Your Payroll From '. $company->company_name);
+                        $message->attachData($pdf->output(), 'Employee-' . $employee->employee_id . '.pdf', [
+                            'mime' => 'application/pdf',
+                        ]);
+                    });
+                }            
+           }
+           return true;
+        }catch(Exception $e){
+            Log::error('error in send mail' . $e->getMessage());
+        }
+    }*/
+   
     public function generateplyslipPdf($employeeId) {
         $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])
             ->where('id', $employeeId)->first();
