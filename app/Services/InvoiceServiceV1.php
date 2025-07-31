@@ -540,34 +540,7 @@ class InvoiceServiceV1
     }
 
     //chart 
-    // public function getInvoiceChart()
-    // {
-    //     $currentMonth = Carbon::now()->month;
-    //     $currentYear = Carbon::now()->year;
-
-    //     $thisMonthInvoices = Invoice::whereMonth('created_at', $currentMonth)
-    //         ->whereYear('created_at', $currentYear)
-    //         ->get();
-
-    //     $allInvoices = Invoice::all();
-
-    //     return [
-    //         'thisMonth' => [
-    //             'count' => $thisMonthInvoices->count(),
-    //             'total' => $thisMonthInvoices->sum('total_amount'),
-    //             'paid' => $thisMonthInvoices->sum('paid_amount'),
-    //         ],
-    //         'overall' => [
-    //             'count' => $allInvoices->count(),
-    //             'total' => $allInvoices->sum('total_amount'),
-    //             'paid' => $allInvoices->sum('paid_amount'),
-    //         ],
-    //         'recent' => $allInvoices->sortByDesc('created_at')->take(5)->values(),
-    //     ];
-    // }
-    // use Carbon\Carbon;
-    // use App\Models\Invoice;
-    // use Illuminate\Support\Facades\DB;
+   
 
     public function getInvoiceChart()
     {
