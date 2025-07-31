@@ -76,7 +76,6 @@
         </div>
 
         <div class="company-details">
-            <!-- <strong>TWIGIK TECHNOLOGIES PRIVATE LIMITED</strong><br> -->
             {{$company->address->line1}}, {{$company->address->line2}},<br>
             {{$company->address->line3}}, <br>
             {{$company->address->line4}}, {{$company->address->pincode}}<br><br>
@@ -85,24 +84,9 @@
         </div>
 
         <h3>Salary Slip for {{$employee->latestPayrollDetail->payroll_date->format('F Y')}}</h3>
+        
 
         <!-- Employee Information -->
-
-        <table class="noborder">
-            <tr>
-                <td><strong>Name:</strong> {{ ucfirst($employee->first_name)}} {{ ucfirst($employee->last_name)}}</td>
-                <td><strong>Employee ID:</strong> {{ $employee->employee_id }}</td>
-                <td><strong>Department:</strong> {{ $employee->jobDetails->department->department_name ?? '-' }}</td>
-                <td><strong>Bank:</strong>  {{ $employee->salary->bankDetails->bank_name ?? '-' }}</td>
-            </tr>
-            <tr>
-                <td><strong>Designation:</strong> {{ $employee->jobDetails->job_title ?? '-' }}</td>
-                <td colspan="2"></td>
-                <td><strong>Account No:</strong>  {{ $employee->salary->bankDetails->account_number ?? '-' }}</td>
-            </tr>
-        </table>
-
-
          <table class="noborder">
          <tr>
             <td><strong>Name:</strong></td>

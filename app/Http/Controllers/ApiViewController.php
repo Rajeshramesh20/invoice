@@ -9,8 +9,6 @@ class ApiViewController extends Controller
 {
     public function showRegisterForm()
     {
-
-        
         return view('auth.register');
     }
 
@@ -101,5 +99,10 @@ class ApiViewController extends Controller
     public function payrollDetails()
     {
         return view('api_views.payroll_details');
+    }
+
+    public function showEmployeeData()
+    {
+        return view('api_views.show_employeeData');
     }
 }

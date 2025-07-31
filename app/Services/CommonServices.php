@@ -9,6 +9,7 @@ use App\Models\Company;
 use Illuminate\Support\Number;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CommonServices
 {
@@ -90,6 +91,7 @@ class CommonServices
         }
 
         $numberInWords = Number::spell($invoice->total_amount);
+        Log::error($numberInWords);
 
         $formattedInvoiceDate = Carbon::parse($invoice->invoice_date)->format('M j, Y');
 
@@ -141,7 +143,6 @@ class CommonServices
                 'pf' => $pf,
                 'bonus' => $bonus,  
                 'deduction' => $deduction,
-                'totaldeduction'=> $totaldeduction,
                 'advance_deduction' => $advanceDeduction,
                 'totalDeduction' => $totalDeduction,
                 'gross' => $gross,

@@ -145,6 +145,7 @@
 				<span id="closePopup" onclick="closePaidAlert()">&times;</span>
 				<label for="partiallyPaid">Enter Amount</label>
 		  	<input type="number" name="partiallyPaid" id="paid_amount" placeholder="Enter Amount">
+		  	<p id="paid_amount_err" class="error"></p>
 		  	<button onclick="updatePaidAmount(selectedInvoiceId)" class="alertBtn">Enter</button>
 		</div>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

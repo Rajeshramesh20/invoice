@@ -360,4 +360,26 @@ class EmployeesController extends Controller
         return $response;
     }
 
+    public function sendPayslipsToEmployees(Request $request, EmployeeService $sendPayslipsToEmployees){
+        try{
+        $employeeId = $request->input('id');    
+        $employee = $sendPayslipsToEmployees->sendPayslipsToEmployees($employeeId);
+
+        if($employee){
+                return response()->json([
+                    'status' => 'success',
+                    'data' => $employee,
+                    'message' => 'mail send Successfully to the Employee Mail'
+                ]);
+            }else{
+                return response()->json([
+                    'status' => 'false',
+                    'message' => 'mail does not send'
+                ]);
+            }
+        }catch(Exception $e){
+             Log::error('Error in send payroll mail', ['exception' => $e->getMessage()]);
+        }    
+    }
+
 }

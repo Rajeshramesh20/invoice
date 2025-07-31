@@ -413,136 +413,132 @@
 		</form>
 	</section>	
 
-		<script>
-				let token = localStorage.getItem('token');
-				function getId(){
-					let pathSegments = window.location.pathname.split('/');
-					let id = pathSegments[pathSegments.length - 1];
-					return id;
-					console.log(id);
-				}
+	<script>
+		let token = localStorage.getItem('token');
+		function getId(){
+			let pathSegments = window.location.pathname.split('/');
+			let id = pathSegments[pathSegments.length - 1];
+			return id;
+			console.log(id);
+		}
 
 
-	           function editCustomerData(){                
-	            	 let id = getId();
-	                console.log(id);
+	    function editCustomerData(){                
+	        let id = getId();
+	        console.log(id);
 
-	            	let editData = new XMLHttpRequest();
-	            	editData.open("GET",`http://127.0.0.1:8000/api/editemployee/${id}`,true);
-	            	editData.setRequestHeader('Authorization' , 'Bearer ' + token);
-			    	editData.setRequestHeader('Accept','application/json')
+	        let editData = new XMLHttpRequest();
+	        editData.open("GET",`http://127.0.0.1:8000/api/editemployee/${id}`,true);
+	        editData.setRequestHeader('Authorization' , 'Bearer ' + token);
+			editData.setRequestHeader('Accept','application/json')
 
-			    	editData.onload = function () {
-			    	  if (editData.status === 200) {
-	        			let customer = JSON.parse(editData.responseText);
-	        			let data = customer.data;
-	        			let address = data.address;
-	        			let salary = data.salary;
-	        			// let bankDetails = data
-	        			console.log(data);
+			editData.onload = function () {
+			  if (editData.status === 200) {
+	        	let customer = JSON.parse(editData.responseText);
+	        	let data = customer.data;
+	        	let address = data.address;
+	        	let salary = data.salary;	        	
+	        	console.log(data);
 	        				
-	        			//Employee Info	
-						document.getElementById('first_name').value = data.first_name || '';
-					   document.getElementById('last_name').value = data.last_name || '';
-					    if (data.gender) {
-						    document.querySelector(`input[name="gender"][value="${data.gender}"]`).checked = true;
-							}
-						document.getElementById('date_of_birth').value = data.date_of_birth || '';
-						document.getElementById('nationality').value = data.nationality || '';
-						document.getElementById('marital_status').value = data.marital_status || '';					
-						document.getElementById('contact_number').value = data.contact_number || '';
-						document.getElementById('email').value = data.email || '';
+	    //Employee Info	
+		document.getElementById('first_name').value = data.first_name || '';
+		document.getElementById('last_name').value = data.last_name || '';
+		if (data.gender) {
+			document.querySelector(`input[name="gender"][value="${data.gender}"]`).checked = true;
+		}
+		document.getElementById('date_of_birth').value = data.date_of_birth || '';
+		document.getElementById('nationality').value = data.nationality || '';
+		document.getElementById('marital_status').value = data.marital_status || '';
+		document.getElementById('contact_number').value = data.contact_number || '';
+		document.getElementById('email').value = data.email || '';
 
-						//Employee Address
-						document.getElementById('line1').value = address.line1;
-		 				document.getElementById('line2').value = address.line2;
-		 				document.getElementById('line3').value = address.line3;
-						document.getElementById('line4').value = address.line4;
-						document.getElementById('pincode').value = address.pincode;
+		//Employee Address
+		document.getElementById('line1').value = address.line1;
+		document.getElementById('line2').value = address.line2;
+		document.getElementById('line3').value = address.line3;
+		document.getElementById('line4').value = address.line4;
+		document.getElementById('pincode').value = address.pincode;
 
-						//Employee Bank
-						document.getElementById('bank_name').value = salary.bank_details?.bank_name;
-						document.getElementById('account_holder_name').value = salary.bank_details?.account_holder_name;
-					   document.getElementById('account_number').value = salary.bank_details?.account_number;
-						document.getElementById('ifsc_code').value = salary.bank_details?.ifsc_code;
-		 				document.getElementById('branch_name').value = salary.bank_details?.branch_name;
-						document.getElementById('account_type').value = salary.bank_details?.account_type;
+		//Employee Bank
+		document.getElementById('bank_name').value = salary.bank_details?.bank_name;
+		document.getElementById('account_holder_name').value = salary.bank_details?.account_holder_name;
+		document.getElementById('account_number').value = salary.bank_details?.account_number;
+		document.getElementById('ifsc_code').value = salary.bank_details?.ifsc_code;
+		document.getElementById('branch_name').value = salary.bank_details?.branch_name;
+		document.getElementById('account_type').value = salary.bank_details?.account_type;
 
-						//Employee JobDetails
-						document.getElementById('job_title').value = data.job_details?.job_title;
-						document.getElementById('department_id').value = data.job_details?.department?.id;
-						document.getElementById('employee_type').value = data.job_details?.employee_type;
-						document.getElementById('employment_status').value = data.job_details?.employment_status;
-						document.getElementById('joining_date').value = data.job_details?.joining_date;
-						document.getElementById('probation_period').value = data.job_details?.probation_period;
-						document.getElementById('work_location').value = data.job_details?.work_location;
+		//Employee JobDetails
+		document.getElementById('job_title').value = data.job_details?.job_title;
+		document.getElementById('department_id').value = data.job_details?.department?.id;
+		document.getElementById('employee_type').value = data.job_details?.employee_type;
+		document.getElementById('employment_status').value = data.job_details?.employment_status;
+		document.getElementById('joining_date').value = data.job_details?.joining_date;
+		document.getElementById('probation_period').value = data.job_details?.probation_period;
+		document.getElementById('work_location').value = data.job_details?.work_location;
 
-						//Employee Salary
-						document.getElementById('base_salary').value = salary.base_salary;
-						document.getElementById('pay_grade').value = salary.pay_grade;
-						document.getElementById('pay_frequency').value = salary.pay_frequency;
-					}
+		//Employee Salary
+		document.getElementById('base_salary').value = salary.base_salary;
+		document.getElementById('pay_grade').value = salary.pay_grade;
+		document.getElementById('pay_frequency').value = salary.pay_frequency;
+		}
 			    	   
-	            	}
+	}
 
-	            	 editData.send(); 
-	            }	
+	    editData.send(); 
+	}	
 
 
-	            //Form submission with file upload
-	             const employeeInfo = document.getElementById("employeeInfo");
-				    const employeeAddress = document.getElementById("employeeAddress");
-				    const employeeBank = document.getElementById("employeeBank");			    
-				    const employeeJob = document.getElementById("employeeJob");
-				    const employeeSalary = document.getElementById("employeeSalary"); 
+	//Form submission with file upload
+	const employeeInfo = document.getElementById("employeeInfo");
+	const employeeAddress = document.getElementById("employeeAddress");
+	const employeeBank = document.getElementById("employeeBank");			    
+	const employeeJob = document.getElementById("employeeJob");
+    const employeeSalary = document.getElementById("employeeSalary"); 
 				    
-			    document.getElementById('submitAll').addEventListener('click', function (e) {
-			      e.preventDefault();
+	document.getElementById('submitAll').addEventListener('click', function (e) {
+		e.preventDefault();
 
-			      let token = localStorage.getItem('token');
-			      let id = getId();
+	let token = localStorage.getItem('token');
+	let id = getId();
 
-			      const formData = new FormData();
+	const formData = new FormData();
 
-					[employeeInfo, employeeAddress, employeeBank, employeeJob, employeeSalary].forEach(form => {
-						new FormData(form).forEach((value, key) => {
-							formData.set(key, value); // `set()` avoids duplicate keys
-						});
-					});
+		[employeeInfo, employeeAddress, employeeBank, employeeJob, employeeSalary].forEach(form => {
+				new FormData(form).forEach((value, key) => {
+					formData.set(key, value); // `set()` avoids duplicate keys
+				});
+		});
 
-			      let xhr = new XMLHttpRequest();
-			      xhr.open("POST", `http://127.0.0.1:8000/api/updateemployee/${id}`, true);
-			      xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-			      xhr.setRequestHeader('Accept', 'application/json');
-			      xhr.setRequestHeader('X-HTTP-Method_Override','PUT')
+		let xhr = new XMLHttpRequest();
+		xhr.open("POST", `http://127.0.0.1:8000/api/updateemployee/${id}`, true);
+	    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+	    xhr.setRequestHeader('Accept', 'application/json');
+	    xhr.setRequestHeader('X-HTTP-Method_Override','PUT')
 
-			      xhr.onload = function () {
-			        if (xhr.status === 200) {
-			          let res = JSON.parse(xhr.responseText);
-			          alert("✅ " + res.message);
-			          console.log(res);
-			           window.location.href ='/api/employeeList'
-			        } else if(xhr.status === 422) {
-					    let data = JSON.parse(xhr.responseText);
-							if(data.errors){
-								for(let keyErr in data.errors){
-								let errValue = document.getElementById(`${keyErr}_err`);
-									if(errValue){
-										alert(errValue);
-										errValue.innerHTML = data.errors[keyErr].join('<br>');
-									}
+	    xhr.onload = function () {
+			if (xhr.status === 200) {
+			   let res = JSON.parse(xhr.responseText);
+			   alert("✅ " + res.message);
+			   console.log(res);
+			   window.location.href ='/api/employeeList'
+			} else if(xhr.status === 422) {
+				let data = JSON.parse(xhr.responseText);
+					if(data.errors){
+						for(let keyErr in data.errors){
+							let errValue = document.getElementById(`${keyErr}_err`);
+								if(errValue){
+									errValue.innerHTML = data.errors[keyErr].join('<br>');
 								}
-							}
+						}
 					}
-			        else {
-			        	let res = JSON.parse(xhr.responseText);
-			          alert("❌ Failed to update employee");
-			          
-			        }
-			      };
-
-			      xhr.send(formData);
-			    });
+			}
+			else {
+			    let res = JSON.parse(xhr.responseText);
+			   	alert("❌ Failed to update employee");			          
+			}
+		};
+			xhr.send(formData);
+	});
 
 
 
@@ -584,7 +580,7 @@
 	   	 http.send();
 		});
 
-			//this is for Close Employee Form
+		// Close Employee Form
 		document.getElementById('closebtn').addEventListener('click',function(){
             window.location.href = "/api/employeeList";
         });

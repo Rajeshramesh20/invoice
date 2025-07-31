@@ -246,4 +246,16 @@ class Controller extends BaseController
     // });
 
 
+//             ['tab2', 'tab3', 'tab4'].forEach(tabId => {
+//     document.querySelector(`label[for="${tabId}"]`).addEventListener('click', function (e) {
+//         e.preventDefault();
+
+//         if (validation()) {
+//             document.getElementById(tabId).checked = true;
+//         } else {
+//             alert("Please complete this section before continuing.");
+//         }
+//     });
+// });
+
 }
