@@ -330,10 +330,12 @@
 
 	    // Run your validation function
 	    if (validation()) {
-	        document.getElementById("tab2").checked = true;
-	    }
+			document.getElementById("tab2").checked = true;
+		}
+		
 	});
 
+<<<<<<< HEAD
 	document.querySelector('label[for="tab3"]').addEventListener('click', function (e) {
     	e.preventDefault();
 
@@ -418,7 +420,6 @@
             window.location.href = "/api/employeeList";
         });
 
-		
         //employee Department
 	document.addEventListener('DOMContentLoaded', function () {
 	    let employeeDepartment = document.getElementById('department_id');
@@ -428,7 +429,7 @@
 	    http.setRequestHeader('Accept', 'application/json');
 	    if (!token) {
 	        alert('Token has been Expired! Please Login Again');
-	        window.location.href = './api/login';
+	        window.location.href = '	/api/login';
 	        return;
 	    }
 

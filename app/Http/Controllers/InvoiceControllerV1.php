@@ -59,7 +59,7 @@ class InvoiceControllerV1 extends Controller
             ], 500);
         }
     }
-
+  
     //update invoice status
     public function updateStatusTOInvoiceTable(InvoiceServiceV1 $invoiceService, $invoiceId, Request $request)
     {

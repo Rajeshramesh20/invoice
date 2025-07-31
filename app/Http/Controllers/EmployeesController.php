@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Services\EmployeeService;
 use App\Http\Requests\EmployeeRequests;
 use App\Http\Requests\StorePayrollRequest;
-use Exception;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EmployeeExport;
+use Exception;
+use Twilio\Rest\Client;
+use Illuminate\Support\Facades\Http;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -360,6 +362,7 @@ class EmployeesController extends Controller
         return $response;
     }
 
+
     public function sendPayslipsToEmployees(Request $request, EmployeeService $sendPayslipsToEmployees){
         try{
         $employeeId = $request->input('id');    
@@ -383,3 +386,5 @@ class EmployeesController extends Controller
     }
 
 }
+
+

@@ -275,7 +275,7 @@ class EmployeeService
 
     //Show(Separate) Employee Data
     public function showEmployeeData($id){
-        $employee = Employees::with(['jobDetails', 'salary', 'address'])->findOrFail($id);
+        $employee = Employees::with(['jobDetails.department', 'salary', 'address'])->findOrFail($id);
         return $employee;
     }
 
@@ -312,7 +312,7 @@ class EmployeeService
             $pf =  round($base * 0.10, 2);
 
             $gross = $base + $bonus;
-            $net = $gross - ($advanceDeduction + $deduction + $pf);
+            $net = $gross - ($advanceDeduction + $deduction + $pf);  
 
             PayrollDetail::create([
                 'payroll_id' => $payrollId,
@@ -383,7 +383,7 @@ class EmployeeService
 
     // get pay roll history
     public function getpayroll_history() {
-        $payroll_history = payroll_history::paginate(2);
+        $payroll_history = payroll_history::paginate(5);
         return  $payroll_history;
     }
 

@@ -3,7 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiViewController;
 use App\Http\Controllers\EmployeesController;
-
+use Laravel\Passport\ApiTokenCookieFactory;
+use Maatwebsite\Excel\Row;
+use Twilio\Rest\Client; 
 
 Route::get('/', function () {
     return view('welcome');
@@ -50,6 +52,7 @@ Route::prefix('api')->name('api.')->group(function () {
     Route::get('employeeList', [ApiViewController::class, 'employeesList']);
 
     Route::get('edit/employee/{id}', [ApiViewController::class, 'editEmployee']);
+  Route::get('view/employee/{id}', [ApiViewController::class, 'viewEmployee']);
     
     Route::get('createemployee', [ApiViewController::class, 'employeeForm']);
 

@@ -114,8 +114,6 @@ Route::middleware(['auth:api'])->group(function() {
     Route::PUT('updateemployee/{id}',[EmployeesController::class, 'updateEmployeeData']); //update employee
     Route::GET('showemployee/{id}',[EmployeesController::class, 'showEmployeeData']); //show employee Data
 
-    Route::DELETE('deleteemployee/{id}',[EmployeesController::class, 'deleteEmployeeData']); //Delete employee Data
-
     Route::PUT('deleteemployee/{id}',[EmployeesController::class, 'deleteEmployeeData']); //Delete employee Data
 
     Route::get('searchEmployee', [EmployeesController::class, 'searchData']);
@@ -135,11 +133,13 @@ Route::middleware(['auth:api'])->group(function() {
 
     Route::POST('payroll/mail/{id}', [EmployeesController::class, 'sendPayRollMail']);
     Route::post('downloadPayslip/{id}',[EmployeesController::class, 'downloadpayslip']);
+
     Route::POST('employee/payroll/mail', [EmployeesController::class, 'sendPayslipsToEmployees']);
 
 
     Route::get('/send-sms/{id}', [SMSController::class, 'send']);
     Route::get('/twilio/send-sms/{id}', [SMSController::class, 'twilioSend']);
     Route::get('/whatsapp/send/{id}', [SMSController::class, 'sendWhatsapp']);
+
 });
 

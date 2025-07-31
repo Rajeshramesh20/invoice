@@ -141,15 +141,223 @@
 </div>
 
 	<!-- Custom alert Box for Partially Paid -->
-		<div id="paidAlert" class="custom-alert paid">
+		<div id="paidAlert" class="custom-alert paid" >
 				<span id="closePopup" onclick="closePaidAlert()">&times;</span>
 				<label for="partiallyPaid">Enter Amount</label>
 		  	<input type="number" name="partiallyPaid" id="paid_amount" placeholder="Enter Amount">
 		  	<p id="paid_amount_err" class="error"></p>
 		  	<button onclick="updatePaidAmount(selectedInvoiceId)" class="alertBtn">Enter</button>
 		</div>
+		{{-- <div id="container" style="height: 300px; width: 350px;"></div> --}}
+<div style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 20px;">
+    <div id="overallDonut" style="width: 400px; height: 300px;"></div>
+    <div id="amountColumn" style="width: 350px; height: 300px;"></div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="/js/invoiceListV1.js"></script>
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+{{-- <script>
+	// const token = localStorage.getItem('token');
+		
+ document.addEventListener('DOMContentLoaded', function () {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://127.0.0.1:8000/api/invoicechart', true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+		xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+
+                if (response.status && response.data.overall) {
+                    const data = response.data.overall;
+                    const total = parseFloat(data.total);
+                    const paid = parseFloat(data.paid);
+                    const unpaid = parseFloat(data.unpaid_total);
+                    const invoiceCount = data.count;
+
+                    Highcharts.chart('container', {
+                        chart: {
+                            type: 'pie',
+                            custom: {},
+                            events: {
+                              render() {
+    const chart = this;
+    const series = chart.series[0];
+
+    let customLabel = chart.options.chart.custom.label;
+
+    const labelHTML = `
+        <div style="text-align: center; font-size: 14px;">
+            Invoices<br/>
+            <span style="font-weight: bold; font-size: 18px;">${invoiceCount}</span><br/>
+            ₹${total.toLocaleString()}
+        </div>
+    `;
+
+    if (!customLabel) {
+        customLabel = chart.options.chart.custom.label =
+            chart.renderer.label(labelHTML, 0, 0, null, null, null, true) // `true` = useHTML
+                .css({
+                    width: '120px'
+                })
+                .add();
+    } else {
+        customLabel.attr({ text: labelHTML });
+    }
+
+    const labelBBox = customLabel.getBBox();
+    const x = series.center[0] + chart.plotLeft - (labelBBox.width / 2);
+    const y = series.center[1] + chart.plotTop - (labelBBox.height / 2);
+
+    customLabel.attr({ x, y });
+}
+
+                            }
+                        },
+                        title: {
+                            text: 'Overall Invoice Summary'
+                        },
+                        tooltip: {
+                            pointFormat: '{point.name}: <b>₹{point.y}</b> ({point.percentage:.0f}%)'
+                        },
+                        plotOptions: {
+                            pie: {
+                                innerSize: '70%',
+                                dataLabels: [{
+                                    enabled: true,
+                                    format: '{point.name}: ₹{point.y}'
+                                }]
+                            }
+                        },
+                        series: [{
+                            name: 'Amount',
+                            colorByPoint: true,
+                            data: [
+                                { name: 'Paid', y: paid },
+                                { name: 'Unpaid', y: unpaid }
+                            ]
+                        }]
+                    });
+                }
+            }
+        };
+        xhr.send();
+    });
+</script> --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'http://127.0.0.1:8000/api/invoicechart', true);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            const res = JSON.parse(xhr.responseText);
+
+            if (res.status && res.data) {
+                const overall = res.data.overall;
+                const thisMonth = res.data.thisMonth;
+                const unpaidMonth = res.data.monthly_unpaid['2025-07'] || { total_unpaid: 0 };
+
+                const total = overall.total;
+                const invoiceCount = overall.count;
+
+                Highcharts.chart('overallDonut', {
+                    chart: {
+                        type: 'pie',
+                        events: {
+                            render() {
+                                const chart = this;
+                                const series = chart.series[0];
+
+                                const labelHTML = `
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 13px;">Invoices</div>
+                                        <div style="font-weight: bold; font-size: 18px;">${invoiceCount}</div>
+                                        <div style="font-size: 13px;">₹${total.toLocaleString()}</div>
+                                    </div>
+                                `;
+
+                                // Create or update label
+                                if (!chart.customLabel) {
+                                    chart.customLabel = chart.renderer.label(labelHTML, 0, 0, null, null, null, true)
+                                        .css({ width: '120px' })
+                                        .attr({ zIndex: 5 })
+                                        .add();
+                                } else {
+                                    chart.customLabel.attr({ text: labelHTML });
+                                }
+
+                                // Center the label
+                                const labelBBox = chart.customLabel.getBBox();
+                                const centerX = series.center[0] + chart.plotLeft;
+                                const centerY = series.center[1] + chart.plotTop;
+                                const labelX = centerX - (labelBBox.width / 2);
+                                const labelY = centerY - (labelBBox.height / 2);
+
+                                chart.customLabel.attr({ x: labelX, y: labelY });
+                            }
+                        }
+                    },
+                    title: { text: 'Overall Invoice Status' },
+                  tooltip: {
+                        pointFormat: '{point.name}: ₹{point.y:.2f} ({point.percentage:.0f}%)'
+                    },
+                    plotOptions: {
+                        pie: {
+                            innerSize: '60%',
+                            dataLabels: {
+                                enabled: true,
+                                format: '{point.name}: ₹{point.y:.2f}'  
+                            }
+                        }
+                    },
+                    series: [{
+                        name: 'Amount',
+                        colorByPoint: true,
+                        data: [
+                            { name: 'Paid', y: overall.paid },
+                            { name: 'Unpaid', y: overall.unpaid_total }
+                        ]
+                    }]
+                });
+
+                // Column Chart
+                Highcharts.chart('amountColumn', {
+                    chart: { type: 'column' },
+                    title: { text: 'Paid vs Unpaid: Overall vs This Month' },
+                    xAxis: { categories: ['Paid', 'Unpaid'] },
+                    yAxis: {
+                        title: { text: 'Amount (₹)' }
+                    },
+                  tooltip: {
+                            shared: true,
+                            valuePrefix: '₹',
+                            valueDecimals: 2 
+                        },
+                        plotOptions: {
+                            column: {
+                                dataLabels: {
+                                    enabled: true,
+                                    format: '₹{y:.2f}' 
+                                }
+                            }
+                        },
+                    series: [
+                        { name: 'Overall', data: [overall.paid, overall.unpaid_total] },
+                        { name: 'This Month', data: [thisMonth.paid || 0, unpaidMonth.total_unpaid || 0] }
+                    ]
+                });
+            }
+        }
+    };
+    xhr.send();
+});
+</script>
+
+
 
 </body>
 

@@ -40,7 +40,7 @@ class ApiViewController extends Controller
     }
     public function Addinvoice()
     {
-        return view('api_views.invoice_form');
+        return view('api_views.invoice_formV1');
     }
     public function invoiceList()
     {
@@ -101,8 +101,7 @@ class ApiViewController extends Controller
         return view('api_views.payroll_details');
     }
 
-    public function showEmployeeData()
-    {
-        return view('api_views.show_employeeData');
+    public function viewEmployee(){
+        return view('api_views.employee_view');
     }
 }

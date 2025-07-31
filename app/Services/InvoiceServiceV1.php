@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Carbon;
 use Exception;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+
 
 use Twilio\Rest\Client;
 
@@ -27,59 +29,131 @@ class InvoiceServiceV1
 {
 
 
-// create new invoice
-    public function store($data, $userId)
-    {
+    // create new invoice
+    /*  public function store($data, $userId)
+        {
 
+<<<<<<< HEAD
         $company = Company::with(['address', 'bankDetails'])->latest()->first();
         $totalAmount = 0;
+=======
+            $totalAmount = 0;
+
+            foreach ($data['items'] as $item) {
+                $netAmount = $item['quantity'] * $item['unit_price'];
+                $gstPercent = $item['gst_percent'] ?? 0;
+                $gstAmount = $netAmount * $gstPercent / 100;
+                $total = $netAmount + $gstAmount;
+                $totalAmount += $total;
+            }
+
+            //invoice table data
+            $invoice =  Invoice::create([
+                'invoice_no' => $this->generateInvoiceNumber($data['invoice_date'] ?? now()),
+                'invoice_date' => $data['invoice_date'] ?? now(),
+                'customer_id' => $data['customer_id'],
+                'invoice_due_date' => $data['invoice_due_date'] ?? null,
+                'total_amount' => $totalAmount,
+                'balance_amount' => $totalAmount,
+                'additional_text' => $data['additional_text'] ?? null,
+                'created_by' => $userId,
+                
+
+            ]);
+
+            //item table data
+            foreach ($data['items'] as $item) {
+                $netAmount = $item['quantity'] * $item['unit_price'];
+                $gstPercent = $item['gst_percent'] ?? 0;
+                $gstAmount = $netAmount * $gstPercent / 100;
+                $total =  $netAmount + $gstAmount;
+                InvoiceItem::create([
+                    'invoice_id' => $invoice->invoice_id,
+                    'item_name' => $item['item_name'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                    'net_amount' => $netAmount,
+                    'gst_percent' => $gstPercent,
+                    'gst_amount' => $gstAmount,
+                    'total' => $total,
+                    'created_by' => $userId,
+                ]);
+            }
+
+            return $invoice;
+        }*/
+
+    public function store( $data,  $userId)
+    {
+        $totalExcl = 0;
+        $totalIncl = 0;
+        $items = [];
 
         foreach ($data['items'] as $item) {
-            $netAmount = $item['quantity'] * $item['unit_price'];
-            $gstPercent = $item['gst_percent'] ?? 0;
-            $gstAmount = $netAmount * $gstPercent / 100;
-            $total = $netAmount + $gstAmount;
-            $totalAmount += $total;
+            Log::info('Item Loop Start', ['item' => $item]);
+
+            $isInclusive = $item['is_inclusive_price'] ?? false;
+            Log::info('Parsed flag isInclusive', ['value' => $isInclusive]);
+
+            $rawPrice = floatval($item['unit_price']);
+            $gst = floatval($item['gst_percent']);
+            $qty = floatval($item['quantity']);
+
+            Log::info('Values rawPrice, gst, qty', compact('rawPrice', 'gst', 'qty'));
+
+            $basePrice = $isInclusive ? $rawPrice / (1 + $gst / 100) : $rawPrice;
+            $netAmount = $basePrice * $qty;
+            $gstAmount = round($netAmount * ($gst / 100), 2);
+            $totalAmount = $isInclusive ? ($rawPrice * $qty) : ($netAmount + $gstAmount);
+
+            Log::info('Computed values', compact('basePrice', 'netAmount', 'gstAmount', 'totalAmount'));
+
+            $items[] = [
+                'item_name' => $item['item_name'],
+                'quantity' => $qty,
+                'unit_price' => round($rawPrice, 2),
+                'gst_percent' => $gst,
+                'net_amount' => round($netAmount, 2),
+                'gst_amount' => round($gstAmount, 2),
+                'total' => round($totalAmount, 2),
+            ];
+
+            $totalExcl += $netAmount;
+            $totalIncl += $totalAmount;
         }
 
-        //invoice table data
-        $invoice =  Invoice::create([
-            'invoice_no' => $this->generateInvoiceNumber($data['invoice_date'] ?? now()),
-            'invoice_date' => $data['invoice_date'] ?? now(),
-            'customer_id' => $data['customer_id'],
+        $invoice = Invoice::create([
+            'invoice_no' => $this->generateInvoiceNumber($data['invoice_date']),
+            'invoice_date' => $data['invoice_date'],
             'invoice_due_date' => $data['invoice_due_date'] ?? null,
-            'total_amount' => $totalAmount,
-            'balance_amount' => $totalAmount,
+            'customer_id' => $data['customer_id'],
+            'total_amount' => round($totalIncl, 2),
+            'balance_amount' => round($totalIncl, 2),
+            'total_excluding_gst' => round($totalExcl, 2),
             'additional_text' => $data['additional_text'] ?? null,
+
             'company_id' => $company->company_id,
             'company_bank_details_id' => $company->bankDetails?->bank_detail_id,
             'created_by' => $userId,
-
-            
-
+            'created_type' => 'internal',
+            'created_from' => 'system',
+            'created_by' => $userId,
         ]);
 
-        //item table data
-        foreach ($data['items'] as $item) {
-            $netAmount = $item['quantity'] * $item['unit_price'];
-            $gstPercent = $item['gst_percent'] ?? 0;
-            $gstAmount = $netAmount * $gstPercent / 100;
-            $total =  $netAmount + $gstAmount;
-            InvoiceItem::create([
+        foreach ($items as $item) {
+            InvoiceItem::create(array_merge($item, [
                 'invoice_id' => $invoice->invoice_id,
-                'item_name' => $item['item_name'],
-                'quantity' => $item['quantity'],
-                'unit_price' => $item['unit_price'],
-                'net_amount' => $netAmount,
-                'gst_percent' => $gstPercent,
-                'gst_amount' => $gstAmount,
-                'total' => $total,
                 'created_by' => $userId,
-            ]);
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]));
         }
 
         return $invoice;
     }
+
+
+
 
     //update status
     public function updateStatusTOInvoiceTable($data, $invoice_id)
@@ -499,16 +573,72 @@ class InvoiceServiceV1
     }
 
     //chart 
+    // public function getInvoiceChart()
+    // {
+    //     $currentMonth = Carbon::now()->month;
+    //     $currentYear = Carbon::now()->year;
+
+    //     $thisMonthInvoices = Invoice::whereMonth('created_at', $currentMonth)
+    //         ->whereYear('created_at', $currentYear)
+    //         ->get();
+
+    //     $allInvoices = Invoice::all();
+
+    //     return [
+    //         'thisMonth' => [
+    //             'count' => $thisMonthInvoices->count(),
+    //             'total' => $thisMonthInvoices->sum('total_amount'),
+    //             'paid' => $thisMonthInvoices->sum('paid_amount'),
+    //         ],
+    //         'overall' => [
+    //             'count' => $allInvoices->count(),
+    //             'total' => $allInvoices->sum('total_amount'),
+    //             'paid' => $allInvoices->sum('paid_amount'),
+    //         ],
+    //         'recent' => $allInvoices->sortByDesc('created_at')->take(5)->values(),
+    //     ];
+    // }
+    // use Carbon\Carbon;
+    // use App\Models\Invoice;
+    // use Illuminate\Support\Facades\DB;
+
     public function getInvoiceChart()
     {
         $currentMonth = Carbon::now()->month;
         $currentYear = Carbon::now()->year;
 
+        // This month invoices
         $thisMonthInvoices = Invoice::whereMonth('created_at', $currentMonth)
             ->whereYear('created_at', $currentYear)
             ->get();
 
+        // All invoices
         $allInvoices = Invoice::all();
+
+        // Total unpaid amount (null treated as 0)
+        $totalUnpaid = $allInvoices->sum(function ($invoice) {
+            $paid = $invoice->paid_amount ?? 0;
+            return max($invoice->total_amount - $paid, 0);
+        });
+
+        // Unpaid count per month (grouped)
+        $unpaidInvoices = Invoice::where(function ($q) {
+            $q->whereNull('paid_amount')
+                ->orWhereColumn('paid_amount', '<', 'total_amount');
+        })
+            ->get()
+            ->groupBy(function ($item) {
+                return Carbon::parse($item->created_at)->format('Y-m'); // Format: 2025-07
+            })
+            ->map(function ($group) {
+                return [
+                    'count' => $group->count(),
+                    'total_unpaid' => $group->sum(function ($invoice) {
+                        $paid = $invoice->paid_amount ?? 0;
+                        return max($invoice->total_amount - $paid, 0);
+                    })
+                ];
+            });
 
         return [
             'thisMonth' => [
@@ -520,10 +650,13 @@ class InvoiceServiceV1
                 'count' => $allInvoices->count(),
                 'total' => $allInvoices->sum('total_amount'),
                 'paid' => $allInvoices->sum('paid_amount'),
+                'unpaid_total' => $totalUnpaid
             ],
+            'monthly_unpaid' => $unpaidInvoices, // array: { "2025-07": { count, total_unpaid }, ... }
             'recent' => $allInvoices->sortByDesc('created_at')->take(5)->values(),
         ];
     }
+
 
 
     //Update PaidAmount

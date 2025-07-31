@@ -45,8 +45,8 @@ function closePaidAlert() {
 document.addEventListener('DOMContentLoaded', function () {
     flatpickr("#startDate", {
         altInput: true,
-        altFormat: "d-m-Y",      
-        dateFormat: "Y-m-d"      
+        altFormat: "d-m-Y",
+        dateFormat: "Y-m-d"
     });
 
     flatpickr("#endDate", {
@@ -412,7 +412,7 @@ document.getElementById('logoutBtn').addEventListener('click', function () {
     xhr.open("GET", "http://127.0.0.1:8000/api/logout", true);
     xhr.setRequestHeader("Authorization", "Bearer " + token);
     xhr.setRequestHeader("Accept", "application/json");
-    
+
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
@@ -524,6 +524,7 @@ document.getElementById('statusSubmit').addEventListener('click', function (e) {
 });
 
 //update payAmount
+
 function updatePaidAmount(selectedInvoiceId){
     if(!paidAmountValidation()){
         return;
@@ -533,27 +534,29 @@ function updatePaidAmount(selectedInvoiceId){
                     paid_amount : invoicePaidAmount
             };
 
-            let paidAmountRequest = new XMLHttpRequest();
-            paidAmountRequest.open('PUT',`http://127.0.0.1:8000/api/update/paidamount/${selectedInvoiceId}`,true);
-            paidAmountRequest.setRequestHeader('Accept', 'application/json');
-            paidAmountRequest.setRequestHeader('Authorization', 'Bearer ' + token);
-            paidAmountRequest.setRequestHeader('Content-Type', 'application/json');
+    let paidAmountRequest = new XMLHttpRequest();
+    paidAmountRequest.open('PUT', `http://127.0.0.1:8000/api/update/paidamount/${selectedInvoiceId}`, true);
+    paidAmountRequest.setRequestHeader('Accept', 'application/json');
+    paidAmountRequest.setRequestHeader('Authorization', 'Bearer ' + token);
+    paidAmountRequest.setRequestHeader('Content-Type', 'application/json');
 
-            paidAmountRequest.onload = function(){
-                if(paidAmountRequest.status === 200){
-                        let paidAmountResponse = JSON.parse(paidAmountRequest.responseText);
-                        const success = paidAmountResponse.type;
-                        const message = paidAmountResponse.message;
-                        const error = paidAmountResponse.error;
-                      showAlert(message,success);   
-                      document.getElementById("paidAlert").style.display = "none"; // Close alert
-                overlay.style.display = "none"; // Close modal
-                getInvoiceList(current_page); // Refresh list
-                }else if(paidAmountRequest.status === 422){
-                    showAlert(error,success);
-                }
-            }
-            console.log(payload);
-            console.log(selectedInvoiceId);
-            paidAmountRequest.send(JSON.stringify(payload));
-     }
+
+    paidAmountRequest.onload = function () {
+        if (paidAmountRequest.status === 200) {
+            let paidAmountResponse = JSON.parse(paidAmountRequest.responseText);
+            const success = paidAmountResponse.type;
+            const message = paidAmountResponse.message;
+            const error = paidAmountResponse.error;
+            showAlert(message, success);
+            document.getElementById("paidAlert").style.display = "none"; // Close alert
+            overlay.style.display = "none"; // Close modal
+            getInvoiceList(current_page); // Refresh list
+        } else if (paidAmountRequest.status === 422) {
+            showAlert(error, success);
+        }
+    }
+         console.log(payload);
+         console.log(selectedInvoiceId);
+         paidAmountRequest.send(JSON.stringify(payload));
+}
+
