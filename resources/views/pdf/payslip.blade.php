@@ -78,12 +78,12 @@
         .right {
             text-align: right;
         }
-    .stamp {
-    height: 150px;
-    width: 150px;
-    display: block;
-    margin-bottom: 5px;
-}
+        .stamp {
+            height: 150px;
+            width: 150px;
+            display: block;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 
@@ -101,14 +101,16 @@
             </div>
         </div>
 
-
         <div class="company-details">
             {{$company->address->line1}}, {{$company->address->line2}},<br>
             {{$company->address->line3}}, <br>
+
             {{$company->address->line4}}, {{$company->address->pincode}}<br>
+
         </div>
 
         <h3>Salary Slip for {{$employee->latestPayrollDetail->payroll_date->format('F Y')}}</h3>
+
 
         <!-- Employee Information -->
          <table class="noborder">
@@ -131,6 +133,7 @@
             <td> {{ $employee->salary->bankDetails->account_number ?? '-' }}</td>
            </tr>
          </table>
+
         <table>
             <tr>
                 <th colspan="2">Earnings</th>

@@ -20,8 +20,8 @@
             <a href="{{route('api.forgotpassword.form')}}" class="abtn">forgotPassword</a>
 
             <div class="button-group">
-                <button type="submit" name="student_login_button">Log In</button>
                 <button type="reset" class="clear">clear</button>
+                <button type="submit" name="student_login_button">Log In</button>
             </div>
 
         </form>

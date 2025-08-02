@@ -56,5 +56,8 @@ class User extends Authenticatable
             //     return $this->belongsTo(Roles::class,  'role_id');
             // }
 
+    public function userOTP(){
+        return $this->belongsTo(UserOTP::class);
+    }
 
 }

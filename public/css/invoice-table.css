@@ -101,7 +101,6 @@
     background-color: #170b30;
     color: white;
     padding: 15px;
-
   }
 
   tr:nth-child(even) {
@@ -121,7 +120,6 @@
     padding: 8px;
     font-size: 14px;
   }
-
 
   label {
     margin-bottom: 8px;
@@ -154,7 +152,6 @@
   .search:hover {
     background-color: #267289;
   }
-
 
   .pagination {
     text-align: center;
@@ -193,8 +190,6 @@
     cursor: pointer;
   }
 
-
-
   /* .status {
     /* background-color: #1c6080; 
     color: black;
@@ -202,12 +197,10 @@
 
   } */
 
-
   .mail-status {
     color: black;
     text-align: center;
   }
-
 
   .export {
     background-color: #0b9e57;
@@ -224,7 +217,6 @@
     /* your color */
     cursor: pointer;
     padding: 8px;
-
   }
 
   option {
@@ -234,9 +226,6 @@
   .fa-eye {
     color: blue;
   }
-
-
-
 
   h1 {
     text-align: center;
@@ -349,8 +338,6 @@
     margin-right: 15px;
   }
 
-
-
   .switch {
     position: relative;
     display: inline-block;
@@ -400,13 +387,10 @@
     box-shadow: 0 0 1px #27728a;
   }
 
-
   .left-align{
     text-align:left;
   }
 
-
-  
   /*custom alert box */
   .custom-alert {
     display: none;
@@ -483,13 +467,9 @@
     box-sizing: border-box;
   }
 
-
-
   .alertBtn {
     color: black;
   }
-
-  
 
   .fa-arrow-up-right-from-square {
     color: green;
@@ -500,8 +480,7 @@
   	body {
   	  display: none;
   	}
-  
-  
+   
   	/* Overlay to dim the background */
   	#modalOverlay {
   	  display: none;
@@ -582,7 +561,6 @@
 			z-index: 1000;
 		}
 
-	
 		.modal {
 			background: #fff;
 			padding: 30px;
@@ -595,7 +573,6 @@
 			position: relative;
 		}
 
-	
 		#closePayrollBtn {
 			position: absolute;
 			top: 10px;
@@ -623,7 +600,6 @@
 			cursor: pointer;
 		}
 
-	
 		#openPayrollBtn {
 			margin: 20px;
 			padding: 10px 20px;

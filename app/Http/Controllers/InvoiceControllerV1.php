@@ -8,6 +8,7 @@ use App\Services\AuthServices;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use App\Http\Resources\InvoiceResource;
 use Maatwebsite\Excel\Facades\Excel;
@@ -172,6 +173,7 @@ class InvoiceControllerV1 extends Controller
     {
         try {
             $Customer = $invoiceService->getAllCostomer();
+            Log::error('invoice token', ['session Token '=> session::get('token')]);
             if ($Customer) {
                 return response()->json(
                     [
@@ -618,6 +620,7 @@ class InvoiceControllerV1 extends Controller
         }
     }
 
+<<<<<<< HEAD
     //sign up or register user
     public function register(RegisterUserRequest $request, AuthServices $AuthService)
     {
@@ -727,6 +730,9 @@ class InvoiceControllerV1 extends Controller
         }
     }
 
+=======
+    
+>>>>>>> 99933fcca08484342da5a1ae7ee5f28490718802
     public function invoiceChart(InvoiceServiceV1 $invoiceService)
     {
         try {
