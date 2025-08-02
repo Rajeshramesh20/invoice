@@ -8,6 +8,7 @@ use App\Services\AuthServices;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use App\Http\Resources\InvoiceResource;
 use Maatwebsite\Excel\Facades\Excel;
@@ -172,6 +173,7 @@ class InvoiceControllerV1 extends Controller
     {
         try {
             $Customer = $invoiceService->getAllCostomer();
+            Log::error('invoice token', ['session Token '=> session::get('token')]);
             if ($Customer) {
                 return response()->json(
                     [
@@ -618,113 +620,7 @@ class InvoiceControllerV1 extends Controller
         }
     }
 
-    //sign up or register user
-    public function register(RegisterUserRequest $request, AuthServices $AuthService)
-    {
-        try {
-            $user = $request->validated();
-
-            $user = $AuthService->register($user);
-            if ($user) {
-                return response([
-                    'status' => true,
-                    'data' => $user,
-                ]);
-            }
-        } catch (Exception $e) {
-            Log::error('Registration failed', ['error_message' => $e->getMessage()]);
-            return response(['status' => false, 'message' => 'Registration failed.']);
-        }
-    }
-
-    // login authenticate user
-    public function authenticate(LoginUserRequest $request, AuthServices $AuthService)
-    {
-        try {
-            $data = $request->validated();
-
-            $user = $AuthService->authenticate($data);
-
-            if (!Auth::attempt($user)) {
-
-                return  response([
-                    'error' => 'Invalid credentials provided'
-                ]);
-            }
-
-            $token = auth()->user()->createToken('userToken')->accessToken;
-
-            session(['api_token' => $token]);
-            return response([
-                'data' => auth()->user(),
-                'token' => $token,
-            ]);
-        } catch (Exception $e) {
-            Log::error('Authentication failed', ['error_message' => $e->getMessage()]);
-            return response(['status' => false, 'message' => 'Login failed.']);
-        }
-    }
-
-
-    //logout user
-    public function logout(Request $request)
-    {
-        try {
-            $request->user()->token()->revoke();
-            return response()->json([
-                'status' => true,
-                'message' => 'Logged out successfully.'
-            ]);
-        } catch (Exception $e) {
-            Log::error('Logout failed', ['error_message' => $e->getMessage(),]);
-            return response()->json([
-                'status' => false,
-                'message' => 'Logout failed: ' . $e->getMessage()
-            ]);
-        }
-    }
-
-
-    //forgot password
-    public function submitforgotpasswordformapi(ForgotPasswordRequest $request, AuthServices $AuthService)
-    {
-        try {
-            $data = $request->validated();
-            $AuthService->submitforgotpasswordform($data, 'mail.ForgotPassword_api');
-            return response()->json([
-                'success' => true,
-                'message' => 'We have emailed you a reset password link.'
-            ]);
-        } catch (Exception $e) {
-
-            return response()->json([
-                'success' => false,
-                'message' => 'failed to send email.',
-                'error' => $e->getMessage()
-            ]);
-        }
-    }
-    // send reset password link
-    public function submitresetpasswordform(ResetPasswordRequest $request, AuthServices $authService)
-    {
-        try {
-            $data = $request->validated();
-            $data['token'] = $request->token;
-            $authService->submitresetpasswordform($data);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Your password has been changed successfully.'
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'failed to change password.',
-                'error' => $e->getMessage()
-            ]);
-        }
-    }
-
+    
     public function invoiceChart(InvoiceServiceV1 $invoiceService)
     {
         try {

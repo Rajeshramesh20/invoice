@@ -12,6 +12,11 @@ class ApiViewController extends Controller
         return view('auth.register');
     }
 
+    public function showOTPForm()
+    {
+        return view('auth.verify-otp');
+    }
+
     public function showLoginForm()
     {
         return view('auth.login');

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 use App\Services\AuthServices;
 use App\Http\Requests\LoginUserRequest;
@@ -17,91 +19,194 @@ use Exception;
 
 class AuthController extends Controller
 {
-
-
+    //sign up or register user
     public function register(RegisterUserRequest $request, AuthServices $AuthService)
     {
-
         try {
-
             $user = $request->validated();
 
-            $AuthService->register($user);
-             
-
-            // Auth::login($user);
-
-            return redirect()->route('login');
+            $user = $AuthService->register($user);
+            if ($user) {
+                return response([
+                    'status' => true,
+                    'data' => $user,
+                ]);
+            }
         } catch (Exception $e) {
-            Log::error('Failed to fetch marks data', [
-                'error_message' => $e->getMessage()
-            ]);
-            return back()->with('error', 'Registration  Failed' . $e->getMessage());
+            Log::error('Registration failed', ['error_message' => $e->getMessage()]);
+            return response(['status' => false, 'message' => 'Registration failed.']);
         }
     }
 
+
+
+    public function verifyUserOTP(Request $request, AuthServices $verifyOTP){
+        try{
+            $data = $request->validate([
+                'user_id' => 'required',
+                'otp' => 'required'
+            ]);
+
+            $OTP = $verifyOTP->verifyOTP($data);
+            if($OTP){
+                return response([
+                    'status' => true,
+                    'data' => $OTP
+                ]);
+            }else if($OTP['OTPerror']){
+                return [
+                    'type' => 'error',
+                    'message' => $OTP['message'] ?? 'Invalid OTP'
+                ];
+            }
+        }catch(Exception $e){
+            Log::error('Error in ', ['error_message' => $e->getMessage()]);
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // public function sendOTP(RegisterUserRequest $request, AuthServices $sendOTP){
+    //     try{
+    //         $user = $request->validated();
+    //         $data = $sendOTP->sendOTP($user);
+    //         if($data){
+    //             return response([
+    //                 'status' => true,
+    //                 'data' => $data
+    //             ]);
+    //         }
+    //     }catch(Exception $e){
+    //            Log::error('Registration failed', ['error_message' => $e->getMessage()]);
+    //            return response(['status' => false, 'message' => 'Registration failed.']);
+    //     }
+
+    // }
+
+    // public function verifyOTP(Request $request, AuthServices $verifyOTP){
+    //     try{
+    //         $validatedOTP = $request->validate([
+    //              'otp' => 'required|digits:6',
+    //         ]);
+    //         $OTP = $verifyOTP->verifyOTP($validatedOTP);
+    //         if($OTP){
+    //             return response([
+    //                 'status' => true,
+    //                 'data' => $OTP
+    //             ]);
+    //         }else if($OTP['OTPerror']){
+    //             return [
+    //                 'type' => 'error',
+    //                 'message' => $OTP['message'] ?? 'Invalid OTP'
+    //             ];
+    //         }
+    //     }catch(Exception $e){
+    //         Log::error('Error in ', ['error_message' => $e->getMessage()]);
+    //     }
+    // }
+
+
+    // login authenticate user
     public function authenticate(LoginUserRequest $request, AuthServices $AuthService)
     {
         try {
-
             $data = $request->validated();
 
             $user = $AuthService->authenticate($data);
 
-            if (Auth::attempt($user)) {
-                return redirect()->route('getStudentData')->with('success', 'Logged in successfully!');
-            } else {
-                return back()->withErrors([
-                    'name' => 'Invalid credentials provided.',
+            if (!Auth::attempt($user)) {
+
+                return  response([
+                    'error' => 'Invalid credentials provided'
                 ]);
             }
+
+            $token = auth()->user()->createToken('userToken')->accessToken;
+
+            session::put('token',['api_token' => $token]);
+            Log::error('token', ['session Token '=> session::get('token')]);
+            return response([
+                'data' => auth()->user(),
+                'token' => $token,
+            ]);
         } catch (Exception $e) {
-            return back()->with('error', 'Login Failed' . $e->getMessage());
+            Log::error('Authentication failed', ['error_message' => $e->getMessage()]);
+            return response(['status' => false, 'message' => 'Login failed.']);
         }
     }
 
-    public function logout()
+
+    //logout user
+    public function logout(Request $request)
     {
         try {
-            Auth::logout();
-            return redirect()->route('login');
+            $request->user()->token()->revoke();
+            return response()->json([
+                'status' => true,
+                'message' => 'Logged out successfully.'
+            ]);
         } catch (Exception $e) {
-            return back()->with('error', 'Logout Failed' . $e->getMessage());
+            Log::error('Logout failed', ['error_message' => $e->getMessage(),]);
+            return response()->json([
+                'status' => false,
+                'message' => 'Logout failed: ' . $e->getMessage()
+            ]);
         }
     }
 
-    public function showforgotpasswordform()
+
+    //forgot password
+    public function submitforgotpasswordformapi(ForgotPasswordRequest $request, AuthServices $AuthService)
     {
-        return view('auth.ForgotPassword');
+        try {
+            $data = $request->validated();
+            $AuthService->submitforgotpasswordform($data, 'mail.ForgotPassword_api');
+            return response()->json([
+                'success' => true,
+                'message' => 'We have emailed you a reset password link.'
+            ]);
+        } catch (Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'failed to send email.',
+                'error' => $e->getMessage()
+            ]);
+        }
     }
-
-    public function submitforgotpasswordform(ForgotPasswordRequest $request , AuthServices $AuthService)
+    // send reset password link
+    public function submitresetpasswordform(ResetPasswordRequest $request, AuthServices $authService)
     {
-        try{
-        $data=$request->validated();
+        try {
+            $data = $request->validated();
+            $data['token'] = $request->token;
+            $authService->submitresetpasswordform($data);
 
-        $AuthService->submitforgotpasswordform($data , 'mail.ForgotPassword');
-
-        return back()->with('message', 'We have emailed you a reset password link');
-    }catch(Exception $e){
-            return back()->with('error', 'Failed to send reset password link' . $e->getMessage());
+            return response()->json([
+                'success' => true,
+                'message' => 'Your password has been changed successfully.'
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'failed to change password.',
+                'error' => $e->getMessage()
+            ]);
         }
     }
 
-    public function showresetpasswordform($token)
-    {
-        return view('auth.ForgotPasswordLink', ['token' => $token]);
-    }
-
-    public function submitresetpasswordform(ResetPasswordRequest $request, AuthServices $AuthService)
-         {
-            try{
-        $data= $request->validated();
-        $data['token'] = $request->token;
-        $AuthService->submitresetpasswordform($data);
-        return redirect()->route('login')->with('success', 'your password has been changed');
-            }catch(Exception $e){
-            return back()->with('error', 'Failed to change password'. $e->getMessage());
-        }
-         }
-    }
+ }

@@ -85,6 +85,7 @@ class InvoiceServiceV1
 
     public function store( $data,  $userId)
     {
+        $company = Company::with(['address', 'bankDetails'])->latest()->first();
         $totalExcl = 0;
         $totalIncl = 0;
         $items = [];
@@ -174,7 +175,6 @@ class InvoiceServiceV1
                 'message' => 'Cannot change status back to Draft after payment has started.'
             ];
         }
-
 
         $updateinvoicestatus->update([
             'status_id' => $data['status_id']

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
@@ -10,23 +9,156 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
+use Twilio\Rest\Client;
 
 use App\Models\User;
+use App\Models\UserOTP;
 
 class AuthServices{
 
   public function register(array $data)
   {
+   
     $user = User::create([
           'name' => $data['name'],
           'email' => $data['email'],
           'user_phone_num' => $data['user_phone_num'],
           'password' => Hash::make($data['password']),
           'role_id'=>$data['role_id'],         
+    ]);
+
+     $otp = rand(100000, 999999);
+
+     $userOTP = userOTP::create([
+        'user_id' => $user->id,
+        'otp' => $otp
       ]);
+
+    $contactNo = "+91".$data['user_phone_num'];
+
+    $twilio = new Client(
+        config('services.twilio.sid'),
+        config('services.twilio.token')
+    );
+
+    $from = config('services.twilio.sms_from');
+      $twilio->messages->create($contactNo,[
+        'from' => $from,
+        'body' => "Your OTP is: $otp"
+    ]);
+
       return $user;
   }
 
+
+
+public function verifyOTP($data)
+    {      
+
+        $otpRecord = UserOTP::where('user_id', $data['user_id'])
+            ->where('otp', $data['otp'])
+            ->first();
+
+        if (!$otpRecord) {
+            return[
+              'OTPerror' => true,
+              'message' => 'Invalid OTP. Please try again.'
+          ];
+        }
+
+        // Delete OTP after use
+        $otpRecord->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'OTP verified successfully'
+        ]);
+
+        return [
+          'OTPerror' => false
+        ];
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // public function sendOTP($data){
+
+  //   try{
+  //     $otp = rand(100000, 999999);
+  //     Session::put('register_data',[
+  //         'name' => $data['name'],
+  //         'email' => $data['email'],
+  //         'user_phone_num' => $data['user_phone_num'],
+  //         'password' => $data['password'],
+  //         'role_id'=>$data['role_id'],  
+  //         'otp' => $otp
+  //     ]);
+  //      Session::save();
+  //      Log::error('Full session', session()->all());
+  //     $contactNo = "+91".$data['user_phone_num'];
+  //     Log::error('contact_no', ['contact_no' => $contactNo]);
+  //     //Twilio Send SMS
+  //     $twilio = new Client(
+  //       config('services.twilio.sid'),
+  //       config('services.twilio.token')
+  //     );
+  //     $from = config('services.twilio.sms_from');
+  //     $twilio->messages->create($contactNo,[
+  //       'from' => $from,
+  //       'body' => "Your OTP is: $otp"
+  //     ]);
+
+  //     return true;
+
+  //   }catch(Exception $e){
+  //       Log::error('error in '. $e->getMessage());
+  //   }
+  // }
+
+
+  // public function verifyOTP($otp){
+  //     $data = Session::get('register_data');
+  //      Session::save();
+  //      Log::error('user details', ['user' => $data]);
+      
+
+  //     if (!$data || !isset($data['otp'])) {
+  //       Log::error('Session expired or OTP missing.');
+  //       return [
+  //           'OTPerror' => true,
+  //           'message' => ' Session expired. Please register again.'
+  //       ];
+  //   }
+
+  //     if($otp != $data['otp']){
+  //         return[
+  //             'OTPerror' => true,
+  //             'message' => 'Invalid OTP. Please try again.'
+  //         ];
+  //     }
+
+  //     $this->register($data);
+  //     Session::forget('register_data');
+  //     return [
+  //         'OTPerror' => false
+  //     ];
+  // }
   
   //login athenticate user
   public function authenticate($request)

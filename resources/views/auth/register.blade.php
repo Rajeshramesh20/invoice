@@ -62,15 +62,15 @@ document.getElementById("registerForm").addEventListener("submit", function(even
     const formData = new FormData(form);
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://127.0.0.1:8000/api/register", true);
+    xhr.open("POST", "http://127.0.0.1:8000/api/send-otp", true);
     xhr.setRequestHeader('Accept', 'application/json');
 
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
-                alert("Registered successfully!");
+                // alert("Registered successfully!");
                  //redirect to student list page
-                window.location.href = "/api/login";
+                window.location.href = "/api/show/verify-otp";
 
             } else if (xhr.status === 422) {
                 const response = JSON.parse(xhr.responseText);

@@ -13,7 +13,7 @@ use Twilio\Rest\Client as TwilioClient;
 class SMSController extends Controller
 {
 
-
+   //Twilio SMS Send
    public function twilioSend($id){
     try {
         //get employee PhoneNumber
@@ -38,7 +38,6 @@ class SMSController extends Controller
             'from' => $from,
             'body' => $text
         ]);
-
 
         return response()->json([
             'success' => true, 'message' => "SMS sent to {$phone}"

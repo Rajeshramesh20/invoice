@@ -17,6 +17,8 @@ Route::prefix('api')->name('api.')->group(function () {
   Route::get('/register', [ApiViewController::class, 'showRegisterForm'])->name('signuppage');
     
     Route::get('/login', [ApiViewController::class, 'showLoginForm'])->name('api.login');
+
+    Route::GET('show/verify-otp', [ApiViewController::class, 'showOTPForm']);
     
     Route::get('/forgot-password', [ApiViewController::class, 'showForgotPasswordForm'])->name('forgotpassword.form');
     
@@ -61,5 +63,7 @@ Route::prefix('api')->name('api.')->group(function () {
     Route::GET('payrolldetails', [ApiViewController::class, 'payrollDetails']);
 
     Route::GET('show/employee/{id}', [ApiViewController::class, 'showEmployeeData']);
+
+
 });
 
