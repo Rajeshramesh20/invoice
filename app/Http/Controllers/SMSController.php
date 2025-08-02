@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Employees;
+use Exception;
 // use Vonage\Client;
 // use Vonage\Client\Credentials\Basic;
 // use Vonage\SMS\Message\SMS;
