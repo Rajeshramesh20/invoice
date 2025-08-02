@@ -39,8 +39,6 @@ class SMSController extends Controller
             'from' => $from,
             'body' => $text
         ]);
-
-
         return response()->json([
             'success' => true, 'message' => "SMS sent to {$phone}"
         ]);
@@ -53,23 +51,6 @@ class SMSController extends Controller
             ], 500);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     //vonage SMS send
      /* public function send($id){

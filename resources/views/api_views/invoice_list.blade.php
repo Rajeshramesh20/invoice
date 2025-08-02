@@ -245,7 +245,7 @@
         xhr.send();
     });
 </script> --}}
-<script>
+{{-- <script>
 document.addEventListener('DOMContentLoaded', function () {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', 'http://127.0.0.1:8000/api/invoicechart', true);
@@ -355,7 +355,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     xhr.send();
 });
-</script>
+</script> --}}
 
 
 

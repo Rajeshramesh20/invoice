@@ -8,7 +8,7 @@ use App\Models\InvoiceStatus;
 use App\Models\Customers;
 use App\Models\Company;
 use App\Models\MailHistory;
-
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Carbon;
@@ -83,32 +83,32 @@ class InvoiceServiceV1
             return $invoice;
         }*/
 
-    public function store( $data,  $userId)
+    public function store($data,  $userId)
     {
         $company = Company::with(['address', 'bankDetails'])->latest()->first();
-    
+
         $totalExcl = 0;
         $totalIncl = 0;
         $items = [];
 
         foreach ($data['items'] as $item) {
-            Log::info('Item Loop Start', ['item' => $item]);
+            // Log::info('Item Loop Start', ['item' => $item]);
 
             $isInclusive = $item['is_inclusive_price'] ?? false;
-            Log::info('Parsed flag isInclusive', ['value' => $isInclusive]);
+            // Log::info('Parsed flag isInclusive', ['value' => $isInclusive]);
 
             $rawPrice = floatval($item['unit_price']);
             $gst = floatval($item['gst_percent']);
             $qty = floatval($item['quantity']);
 
-            Log::info('Values rawPrice, gst, qty', compact('rawPrice', 'gst', 'qty'));
+            // Log::info('Values rawPrice, gst, qty', compact('rawPrice', 'gst', 'qty'));
 
             $basePrice = $isInclusive ? $rawPrice / (1 + $gst / 100) : $rawPrice;
             $netAmount = $basePrice * $qty;
             $gstAmount = round($netAmount * ($gst / 100), 2);
             $totalAmount = $isInclusive ? ($rawPrice * $qty) : ($netAmount + $gstAmount);
 
-            Log::info('Computed values', compact('basePrice', 'netAmount', 'gstAmount', 'totalAmount'));
+            // Log::info('Computed values', compact('basePrice', 'netAmount', 'gstAmount', 'totalAmount'));
 
             $items[] = [
                 'item_name' => $item['item_name'],
@@ -154,23 +154,20 @@ class InvoiceServiceV1
         return $invoice;
     }
 
-
-
-
     //update status
     public function updateStatusTOInvoiceTable($data, $invoice_id)
     {
         $updateinvoicestatus = Invoice::findOrfail($invoice_id);
 
         if ($updateinvoicestatus->status_id == '4') {
-            return [              
+            return [
                 'invoice' => null,
                 'updateStatusErr' => true,
                 'message' => 'Cannot change status because this invoice is already Paid.'
             ];
         }
-        if($updateinvoicestatus->status_id == '3'){
-            return [              
+        if ($updateinvoicestatus->status_id == '3') {
+            return [
                 'invoice' => null,
                 'updateStatusErr' => true,
                 'message' => 'Cannot change status back to Draft after payment has started.'
@@ -181,7 +178,7 @@ class InvoiceServiceV1
         $updateinvoicestatus->update([
             'status_id' => $data['status_id']
         ]);
-        
+
         return  [
             'invoice' => $updateinvoicestatus,
             'updateStatusErr' => false
@@ -238,7 +235,7 @@ class InvoiceServiceV1
     //get customer data
     public function getAllCostomer()
     {
-        $coustomer = Customers::where('status','1')->get();
+        $coustomer = Customers::where('status', '1')->get();
         return $coustomer;
     }
 
@@ -264,7 +261,7 @@ class InvoiceServiceV1
 
         $pdf = Pdf::loadView('pdf.invoicePdf', $data);
 
-         Log::error($invoice->invoice_no);
+        Log::error($invoice->invoice_no);
         return $pdf->download('invoice-' . $invoice->invoice_no . '.pdf');
     }
 
@@ -295,21 +292,21 @@ class InvoiceServiceV1
             'logo_path' => $logoPath,
             'created_by' => $userId,
         ]);
-          
+
 
 
         $address = $commonServices->storeAddress($companyData, $company->company_id, 'companies');
         $company->address_id = $address->address_id;
         $company->save();
 
-  
+
         $BankDetail = $commonServices->storeBankDetails($companyData, $company->company_id, 'companies');
         $company->bank_details_id = $BankDetail->bank_detail_id;
         $company->save();
         return $company;
     }
 
-    
+
 
     //show invoice table data
     public function invoiceData()
@@ -385,7 +382,7 @@ class InvoiceServiceV1
         // $invoiceData->delete();
         return $invoiceData;
     }
-    
+
     //invoice list 
     public function showInvoiceData($id)
     {
@@ -410,11 +407,11 @@ class InvoiceServiceV1
 
         $pdf = Pdf::loadView('pdf.invoicePdf', $data);
 
-            // Send Email with PDF attached from memory
-            Mail::send('mail.invoice_customer_mail', ['invoiceCustomer' => $invoice], function ($message) use ($invoiceMail, $pdf, $invoice, $data) {
-                $message->to($invoiceMail);
-                $message->subject('Your Invoice from ' . $data['company']->company_name);
-                $message->attachData($pdf->output(), 'Invoice-' . $invoice->invoice_no . '.pdf', [
+        // Send Email with PDF attached from memory
+        Mail::send('mail.invoice_customer_mail', ['invoiceCustomer' => $invoice], function ($message) use ($invoiceMail, $pdf, $invoice, $data) {
+            $message->to($invoiceMail);
+            $message->subject('Your Invoice from ' . $data['company']->company_name);
+            $message->attachData($pdf->output(), 'Invoice-' . $invoice->invoice_no . '.pdf', [
                 'mime' => 'application/pdf',
             ]);
         });
@@ -430,7 +427,7 @@ class InvoiceServiceV1
         $invoice->update(['email_send_status' => 'send']);
 
         return true;
-      }
+    }
 
 
     //Customer list For Show Details
@@ -496,7 +493,7 @@ class InvoiceServiceV1
             $commonServices = new CommonServices();
             $address = $commonServices->updateAddress($address, $request);
 
-            
+
             return $customerData;
         } catch (Exception $e) {
             Log::error('UpdateCustomer Data Error:' . $e->getMessage());
@@ -515,10 +512,10 @@ class InvoiceServiceV1
     }
 
     //update invoice data
-    public function updateInvoiceData($request, string $id )
+    public function updateInvoiceData($request, string $id)
     {
         try {
-             $commonServices = new CommonServices();
+            $commonServices = new CommonServices();
             $totalAmount = 0;
 
             foreach ($request['items'] as $item) {
@@ -529,14 +526,14 @@ class InvoiceServiceV1
                 $totalAmount += $total;
             }
             Log::error($totalAmount);
-         
+
 
             $invoiceData = Invoice::with(['items', 'customer'])->findOrFail($id);
             // 1. Update Invoice
             $invoiceData->update([
                 'invoice_date' => $request['invoice_date'] ?? null,
                 'invoice_due_date' => $request['invoice_due_date'] ?? null,
-                'total_amount' => $totalAmount?? null,
+                'total_amount' => $totalAmount ?? null,
                 'balance_amount' => $totalAmount ?? null,
                 'additional_text' => $request['additional_text'] ?? null,
                 'customer_id' => $request['customer_id'],
@@ -575,7 +572,7 @@ class InvoiceServiceV1
     }
 
     //chart 
-   
+
 
     public function getInvoiceChart()
     {
@@ -635,10 +632,14 @@ class InvoiceServiceV1
 
 
     //Update PaidAmount
-     public function updatePaidAmount($id,$amount){
-        try{
+    public function updatePaidAmount($id, $amount)
+    {
+        try {
+
             $invoice = invoice::with('customer')->findOrFail($id);
+
             $customer = $invoice->customer->contact_number;
+            
 
             // Update Paid Amount
             $invoice->paid_amount += $amount;
@@ -648,8 +649,8 @@ class InvoiceServiceV1
 
             //chnage invoice status id after balance 
             if ($invoice->balance_amount > 0) {
-                 $invoice->status_id = '3'; // Partially Paid
-            } elseif($invoice->balance_amount == 0){
+                $invoice->status_id = '3'; // Partially Paid
+            } elseif ($invoice->balance_amount == 0) {
                 $invoice->status_id = '4'; // Paid
             }
 
@@ -662,7 +663,9 @@ class InvoiceServiceV1
 
             if ($invoice->balance_amount > 0) {
                 // Partially paid message
-                $message = "Hello {$customerName},\nInvoice:{$invoiceNo}\nPaid Amount: {$paid}\nBalance Amount:{$balance}\n pending. Thank you!";
+                // $message = "Hello {$customerName},\nInvoice:{$invoiceNo}\nPaid Amount: {$paid}\nBalance Amount:{$balance}\n pending. Thank you!";
+                $message =  "Hello {$customerName},
+                  \n Thank you for your payment on Invoice #{$invoiceNo}.\n We've received ₹{$paid}, and the remaining balance is ₹{$balance}.\n We appreciate your business and look forward to full settlement soon.\n Feel free to reach out if you have any questions!\n Best regards,\n Twigik Technologies Pvt. Ltd.\n";
             } else {
                 // Fully paid message
                 $message = "Hello {$customerName},\n Invoice {$invoiceNo} is fully paid. 
@@ -673,31 +676,29 @@ class InvoiceServiceV1
                 config('services.twilio.sid'),
                 config('services.twilio.token')
             );
-            $smsFrom = config('services.twilio.sms_from'); 
-            $whatsappFrom = config('services.twilio.whatsapp_from'); 
+            $smsFrom = config('services.twilio.sms_from');
+            $whatsappFrom = config('services.twilio.whatsapp_from');
             $smsTo = $customer;
             $whatsappTo = "whatsapp:{$customer}";
 
             //SMS
-           $client->messages->create($smsTo,[
+            $client->messages->create($smsTo, [
                 'from' => $smsFrom,
                 'body' => $message
-           ]);
+            ]);
 
-           //Whatsapp
-           $client->messages->create($whatsappTo,[
+            //Whatsapp
+            $client->messages->create($whatsappTo, [
                 'from' => $whatsappFrom,
                 'body' => $message
-           ]);
-            $invoice->save();                
+            ]);
+            $invoice->save();
             return $invoice;
-        }catch(Exception $e){
+        } catch (Exception $e) {
             Log::error(' Error in Update Paid Amount:' . $e->getMessage());
         }
-    }   
+    }
 }
-
-
 
    /* public function sendInvoiceMail($invoice)
     { 

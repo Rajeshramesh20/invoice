@@ -77,15 +77,15 @@ class InvoiceControllerV1 extends Controller
                 ]);
             }elseif($updateinvoicestatus['updateStatusErr']){
                 return response()->json([
-                        'type' => 'error',
-                        'error' => $updateinvoicestatus['message'] ?? 'Cannot change status.'
-                    ], 422);
+                    'type' => 'error',
+                    'error' => $updateinvoicestatus['message'] ?? 'Cannot change status.'
+                ], 422);
             }
             else {
-                    return response()->json([
-                        'type' => 'warning',
-                        'error' => 'The Status Does Not Change'
-                    ], 404);
+                return response()->json([
+                    'type' => 'warning',
+                    'error' => 'The Status Does Not Change'
+                ], 404);
             }
            
         } catch (Exception $e) {
@@ -654,7 +654,9 @@ class InvoiceControllerV1 extends Controller
 
             $token = auth()->user()->createToken('userToken')->accessToken;
 
-            session(['api_token' => $token]);
+            session::put('token', ['api_token' => $token]);
+
+            Log::error('token', [session::get('token')]);
             return response([
                 'data' => auth()->user(),
                 'token' => $token,

@@ -31,7 +31,6 @@ Route::post('authenticate', [InvoiceControllerV1::class, 'authenticate'])->name(
 Route::post('/forgot-password', [InvoiceControllerV1::class, 'submitforgotpasswordformapi']);
 Route::post('/reset-password', [InvoiceControllerV1::class, 'submitResetPasswordForm']);
 
-
 Route::middleware(['auth:api'])->group(function () {
     //add role
     Route::post('role', [RoleController::class, 'store']);
@@ -140,6 +139,7 @@ Route::middleware(['auth:api'])->group(function() {
     Route::get('/send-sms/{id}', [SMSController::class, 'send']);
     Route::get('/twilio/send-sms/{id}', [SMSController::class, 'twilioSend']);
     Route::get('/whatsapp/send/{id}', [SMSController::class, 'sendWhatsapp']);
+  
 
 });
 
