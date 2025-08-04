@@ -644,7 +644,6 @@ class InvoiceControllerV1 extends Controller
     //update partially paid amount 
     public function updatePaidAmount($id, Request $request, InvoiceServiceV1 $partiallyPaid)
     {
-
         $paidAmount = $request->input('paid_amount');
 
         $invoicePartiallyPaid = $partiallyPaid->updatePaidAmount($id, $paidAmount);

@@ -258,4 +258,52 @@ class Controller extends BaseController
 //     });
 // });
 
+                // public function sendOTP($data){
+
+    //   try{
+    //     $otp = rand(100000, 999999);
+    //     Session::put('register_data',[
+    //         'name' => $data['name'],
+    //         'email' => $data['email'],
+    //         'user_phone_num' => $data['user_phone_num'],
+    //         'password' => $data['password'],
+    //         'role_id'=>$data['role_id'],  
+    //         'otp' => $otp
+    //     ]);
+    //      Session::save();
+    //      Log::error('Full session', session()->all());
+    //     $contactNo = "+91".$data['user_phone_num'];
+    //     Log::error('contact_no', ['contact_no' => $contactNo]);
+    //     //Twilio Send SMS
+    //     $twilio = new Client(
+    //       config('services.twilio.sid'),
+    //       config('services.twilio.token')
+    //     );
+    //     $from = config('services.twilio.sms_from');
+    //     $twilio->messages->create($contactNo,[
+    //       'from' => $from,
+    //       'body' => "Your OTP is: $otp"
+    //     ]);
+
+    //     return true;
+
+    //   }catch(Exception $e){
+    //       Log::error('error in '. $e->getMessage());
+    //   }
+    // }
+
+
+    // public function verifyOTP($otp){
+    //     $data = Session::get('register_data');
+    //      Session::save();
+    //      Log::error('user details', ['user' => $data]);
+
+
+    //     if (!$data || !isset($data['otp'])) {
+    //       Log::error('Session expired or OTP missing.');
+    //       return [
+    //           'OTPerror' => true,
+    //           'message' => ' Session expired. Please register again.'
+    //       ];
+    //   }
 }

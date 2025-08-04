@@ -66,20 +66,6 @@ class AuthController extends Controller
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // public function sendOTP(RegisterUserRequest $request, AuthServices $sendOTP){
     //     try{
     //         $user = $request->validated();
@@ -118,8 +104,7 @@ class AuthController extends Controller
     //         Log::error('Error in ', ['error_message' => $e->getMessage()]);
     //     }
     // }
-
-
+    
     // login authenticate user
     public function authenticate(LoginUserRequest $request, AuthServices $AuthService)
     {
