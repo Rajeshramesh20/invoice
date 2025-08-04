@@ -19,41 +19,43 @@ class AuthServices
 {
 
 
-  public function register(array $data)
-  {
-   
-    $user = User::create([
-          'name' => $data['name'],
-          'email' => $data['email'],
-          'user_phone_num' => $data['user_phone_num'],
-          'password' => Hash::make($data['password']),
-          'role_id'=>$data['role_id'],         
-    ]);
+    public function register(array $data)
+    {
 
-     $otp = rand(100000, 999999);
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'user_phone_num' => $data['user_phone_num'],
+            'password' => Hash::make($data['password']),
+            'role_id' => $data['role_id'],
+            'is_verified' => false
+        ]);
 
-     $userOTP = userOTP::create([
-        'user_id' => $user->id,
-        'otp' => $otp,
-        'attempts' => 0, //verify otp attempts
+        $otp = rand(100000, 999999);
+
+        $userOTP = userOTP::create([
+            'user_id' => $user->id,
+            'otp' => $otp,
+            'attempts' => 0, //verify otp attempts
         ]);
 
 
-    $contactNo = "+91".$data['user_phone_num'];
+        $contactNo = "+91" . $data['user_phone_num'];
 
-    $twilio = new Client(
-        config('services.twilio.sid'),
-        config('services.twilio.token')
-    );
+        $twilio = new Client(
+            config('services.twilio.sid'),
+            config('services.twilio.token')
+        );
 
-    $from = config('services.twilio.sms_from');
-      $twilio->messages->create($contactNo,[
-        'from' => $from,
-        'body' => "Your OTP is: $otp"
-    ]);
+        $from = config('services.twilio.sms_from');
+        $twilio->messages->create($contactNo, [
+            'from' => $from,
+            'body' => "Your OTP is: $otp"
+        ]);
 
-      return $user;
-  }
+        return $user;
+    }
+
 
 
 
@@ -61,17 +63,32 @@ class AuthServices
     {
         // $user_id = userOTP::findOrfail($id);
         $user_id = UserOTP::where('user_id', $id)->firstOrFail();
-
-
-        
         $otp = rand(100000, 999999);
 
         $user_id->update([
             'otp' => $otp,
             'attempts' => 0
         ]);
-      return true;
+        return true;
     }
+
+
+
+    // public function verifyOTP($data)
+    // {
+    //     $user = User::where('user_phone_num', $data['user_phone_num'])->first();
+
+    //     if (!$user) {
+    //         return [
+    //             'OTPerror' => true,
+    //             'message' => "User Not Found"
+    //         ];
+    //     }
+
+    //     $otpRecord = UserOTP::where('user_id', $user->id)
+    //         ->where('otp', $data['otp'])
+    //         ->first();
+    //     }}
 
 
     public function verifyOTP($data)
@@ -80,13 +97,29 @@ class AuthServices
         // $otpRecord = UserOTP::where('user_id', $data['user_id'])
         //     ->where('otp', $data['otp'])
         //     ->first();
-        $otpRecord = UserOTP::where('user_id', $data['user_id'])->first();
-        if (!$otpRecord) {
-            return[
-              'OTPerror' => true,
-              'message' => 'Invalid OTP. Please try again.'
-          ];
+        // $otpRecord = UserOTP::where('user_id', $data['user_id'])->first();
+        $user = User::where('user_phone_num', $data['user_phone_num'])->first();
+
+
+        if (!$user) {
+            return [
+                'OTPerror' => true,
+                'message' => "User Not Found"
+            ];
         }
+
+        $otpRecord = UserOTP::where('user_id', $user->id)
+            ->where('otp', $data['otp'])
+            ->first();
+
+
+        if (!$otpRecord) {
+            return [
+                'OTPerror' => true,
+                'message' => 'Invalid OTP. Please try again.'
+            ];
+        }
+
         // checking attempts limits
         if ($otpRecord->attempts >= 10) {
             $this->updateOtpAndLimit($data['user_id']);
@@ -94,11 +127,10 @@ class AuthServices
                 'OTPerror' => true,
                 'message' => 'Maximum OTP attempts exceeded.'
             ];
-       
         }
 
         if ($otpRecord->otp != $data['otp']) {
-        $otpRecord->attempts += 1;
+            $otpRecord->attempts += 1;
             $otpRecord->save();
 
 
@@ -107,6 +139,8 @@ class AuthServices
                 'message' => 'Invalid OTP. Please try again.'
             ];
         }
+
+        $user->update(['is_verified' => true]);
 
         // Delete OTP after use
         $otpRecord->delete();
@@ -117,10 +151,9 @@ class AuthServices
         ]);
 
         return [
-          'OTPerror' => false
+            'OTPerror' => false
         ];
     }
-
 
     // public function sendOTP($data){
 
@@ -187,13 +220,17 @@ class AuthServices
 
     //login athenticate user
     public function authenticate($request)
-  {
-      $userData = [
-          'name' => $request['name'],
-          'password' => $request['password'],
-      ];
-      return  $userData;
-  }
+    {
+        $userData = [
+            'name' => $request['name'],
+            'password' => $request['password'],
+        ];
+        $userName = User::where('name', $request['name'])->first();
+        return  [
+            'userData' => $userData,
+            'user' => $userName
+        ];
+    }
 
 
     // logout user

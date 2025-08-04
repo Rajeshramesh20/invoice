@@ -43,7 +43,7 @@ class AuthController extends Controller
     public function verifyUserOTP(Request $request, AuthServices $verifyOTP){
         try{
             $data = $request->validate([
-                'user_id' => 'required',
+                'user_phone_num' => 'required',
                 'otp' => 'required'
             ]);
 
@@ -113,17 +113,21 @@ class AuthController extends Controller
 
             $user = $AuthService->authenticate($data);
 
-            if (!Auth::attempt($user)) {
-
+            if (!Auth::attempt($user['userData'])) {
                 return  response([
                     'error' => 'Invalid credentials provided'
                 ]);
             }
+            if(!$user['user']->is_verified){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'phone number does not verified!'
+                 ],404);
+            }
 
             $token = auth()->user()->createToken('userToken')->accessToken;
 
-            session::put('token',['api_token' => $token]);
-            Log::error('token', ['session Token '=> session::get('token')]);
+           
             return response([
                 'data' => auth()->user(),
                 'token' => $token,
