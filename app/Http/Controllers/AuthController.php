@@ -48,16 +48,17 @@ class AuthController extends Controller
             ]);
 
             $OTP = $verifyOTP->verifyOTP($data);
-            if($OTP){
-                return response([
+
+            if($OTP['OTPerror']== false){
+                return response()->json([
                     'status' => true,
                     'data' => $OTP
                 ]);
-            }else if($OTP['OTPerror']){
-                return [
+            }else if($OTP['OTPerror'] == true){
+                return response()->json([
                     'type' => 'error',
                     'message' => $OTP['message'] ?? 'Invalid OTP'
-                ];
+                ],404);
             }
         }catch(Exception $e){
             Log::error('Error in ', ['error_message' => $e->getMessage()]);

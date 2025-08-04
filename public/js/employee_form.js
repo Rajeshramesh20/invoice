@@ -335,7 +335,6 @@
 		
 	});
 
-<<<<<<< HEAD
 	document.querySelector('label[for="tab3"]').addEventListener('click', function (e) {
     	e.preventDefault();
 

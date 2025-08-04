@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +22,6 @@ class AuthServices
 
     public function register(array $data)
     {
-
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -37,85 +37,38 @@ class AuthServices
             'user_id' => $user->id,
             'otp' => $otp,
             'attempts' => 0, //verify otp attempts
+            'otp_expires_at' => Carbon::now()->addMinutes(2)
         ]);
 
+        //send SMS
+        $common = new CommonServices();
+        $data = $common->sendSms($data['user_phone_num'], "Your OTP is: $otp");
 
-
-
-
-        $contactNo = "+91" . $data['user_phone_num'];
-
-        $twilio = new Client(
-            config('services.twilio.sid'),
-            config('services.twilio.token')
-        );
-
-        $from = config('services.twilio.sms_from');
-        $twilio->messages->create($contactNo, [
-            'from' => $from,
-            'body' => "Your OTP is: $otp"
-        ]);
-
-
-
-
-        return $user;
+        return [ 
+            'data'=>$user,
+           'message'=>'OTP sent to your mobile number.',
+        ];
     }
 
-
-
-
-    public function updateOtpAndLimit($id,$user_ph_no)
+    public function updateOtpAndLimit($id,$userPhoneNo)
     {
         // $user_id = userOTP::findOrfail($id);
         $user_id = UserOTP::where('user_id', $id)->firstOrFail();
         $otp = rand(100000, 999999);
-
-        $contactNo = "+91" .$user_ph_no;
-        $twilio = new Client(
-            config('services.twilio.sid'),
-            config('services.twilio.token')
-        );
-
-        $from = config('services.twilio.sms_from');
-        $twilio->messages->create($contactNo, [
-            'from' => $from,
-            'body' => "Your OTP is: $otp"
-        ]);
+        //send SMS
+        $common = new CommonServices();
+        $data = $common->sendSms($userPhoneNo, "Your OTP is: $otp");
 
         $user_id->update([
             'otp' => $otp,
-            'attempts' => 0
+            'attempts' => 0,
+            'otp_expires_at' => Carbon::now()->addMinutes(2)
         ]);
         return true;
     }
 
-
-
-    // public function verifyOTP($data)
-    // {
-    //     $user = User::where('user_phone_num', $data['user_phone_num'])->first();
-
-    //     if (!$user) {
-    //         return [
-    //             'OTPerror' => true,
-    //             'message' => "User Not Found"
-    //         ];
-    //     }
-
-    //     $otpRecord = UserOTP::where('user_id', $user->id)
-    //         ->where('otp', $data['otp'])
-    //         ->first();
-    //     }}
-
-
     public function verifyOTP($data)
     {
-
-        // $otpRecord = UserOTP::where('user_id', $data['user_id'])
-        //     ->where('otp', $data['otp'])
-        //     ->first();
-        // $otpRecord = UserOTP::where('user_id', $data['user_id'])->first();
         $user = User::where('user_phone_num', $data['user_phone_num'])->first();
 
         if (!$user) {
@@ -127,6 +80,20 @@ class AuthServices
 
         $otpRecord = UserOTP::where('user_id', $user->id)->first();
 
+        if (!$otpRecord) {
+            return [
+                'OTPerror' => true,
+                'message' => 'OTP not found. Please request a new one.'
+            ];
+        }
+        if (Carbon::now()->greaterThan($otpRecord->otp_expires_at)) {
+            $this->updateOtpAndLimit($user->id, $user->user_phone_num);
+            return [
+                'OTPerror' => true,
+                'message' => 'OTP has expired. Please request a new one.'
+            ];
+        }
+
         // checking attempts limits
         if ($otpRecord->attempts >= 10) {
             $this->updateOtpAndLimit($user->id,$user->user_phone_num);
@@ -135,7 +102,7 @@ class AuthServices
                 'message' => 'Maximum OTP attempts exceeded.'
             ];
         }
-
+         //count attempts
         if ($otpRecord->otp != $data['otp']) {
             $otpRecord->attempts += 1;
             $otpRecord->save();
@@ -150,15 +117,16 @@ class AuthServices
 
         // Delete OTP after use
         $otpRecord->delete();
-
-        return response()->json([
+     
+        //validate OTP
+        if ($otpRecord->otp == $data['otp']) {
+        return [
+            'OTPerror' => false,
             'status' => true,
             'message' => 'OTP verified successfully'
-        ]);
-
-        return [
-            'OTPerror' => false
         ];
+
+        }
     }
 
     // public function sendOTP($data){
@@ -279,4 +247,5 @@ class AuthServices
             ->where('email', $data['email'])
             ->delete();
     }
+
 }
