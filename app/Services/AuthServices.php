@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use App\Services\CommonServices;
 
 use Twilio\Rest\Client;
 
@@ -20,6 +21,7 @@ class AuthServices
 
     //Register User 
     public function register(array $data){
+        
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -38,17 +40,7 @@ class AuthServices
         ]);
 
         $contactNo = "+91" . $data['user_phone_num'];
-
-        $twilio = new Client(
-            config('services.twilio.sid'),
-            config('services.twilio.token')
-        );
-
-        $from = config('services.twilio.sms_from');
-        $twilio->messages->create($contactNo, [
-            'from' => $from,
-            'body' => "Your OTP is: $otp"
-        ]);
+        $twilioMessage = $commonServices->sendSMS($contactNo, $otp);
         return $user;
     }
 
@@ -59,19 +51,7 @@ class AuthServices
         // $user_id = userOTP::findOrfail($id);
         $user_id = UserOTP::where('user_id', $id)->firstOrFail();
         $otp = rand(100000, 999999);
-
-        $contactNo = "+91" .$user_ph_no;
-        $twilio = new Client(
-            config('services.twilio.sid'),
-            config('services.twilio.token')
-        );
-
-        $from = config('services.twilio.sms_from');
-        $twilio->messages->create($contactNo, [
-            'from' => $from,
-            'body' => "Your OTP is: $otp"
-        ]);
-
+      
         $user_id->update([
             'otp' => $otp,
             'attempts' => 0
@@ -99,7 +79,7 @@ class AuthServices
             $this->updateOtpAndLimit($user->id,$user->user_phone_num);
             return [
                 'OTPerror' => true,
-                'message' => 'Maximum OTP attempts exceeded.'
+                'message' => 'Maximum OTP attempts exceeded. A new OTP has been sent to your registered Mobile Number.'
             ];
         }
 

@@ -10,6 +10,7 @@ use Illuminate\Support\Number;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Twilio\Rest\Client;
 
 class CommonServices
 {
@@ -133,7 +134,6 @@ class CommonServices
         $net = $gross - $totalDeduction;
         $numberInWords = Number::spell($net);
 
-
         $data = [
             'employee' => $employee,
             'company' => $company,
@@ -152,6 +152,7 @@ class CommonServices
         ];
         return $data;
     }
+
 }
 
 

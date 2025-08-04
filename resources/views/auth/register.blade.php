@@ -62,7 +62,7 @@ document.getElementById("registerForm").addEventListener("submit", function(even
     const formData = new FormData(form);
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://127.0.0.1:8000/api/send-otp", true);
+    xhr.open("POST", "http://127.0.0.1:8000/api/register", true);
     xhr.setRequestHeader('Accept', 'application/json');
 
     xhr.onreadystatechange = function() {

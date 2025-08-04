@@ -49,15 +49,16 @@ class AuthController extends Controller
 
             $OTP = $verifyOTP->verifyOTP($data);
             if($OTP){
-                return response([
+                return response()->json([
                     'status' => true,
                     'data' => $OTP
+                    
                 ]);
             }else if($OTP['OTPerror']){
-                return [
+                return response()->json([
                     'type' => 'error',
                     'message' => $OTP['message'] ?? 'Invalid OTP'
-                ];
+                ],404);
             }
         }catch(Exception $e){
             Log::error('Error in ', ['error_message' => $e->getMessage()]);
@@ -132,7 +133,7 @@ class AuthController extends Controller
                 'data' => auth()->user(),
                 'token' => $token,
             ]);
-        } catch (Exception $e) {
+        }catch (Exception $e) {
             Log::error('Authentication failed', ['error_message' => $e->getMessage()]);
             return response(['status' => false, 'message' => 'Login failed.']);
         }
