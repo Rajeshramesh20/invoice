@@ -11,7 +11,7 @@ class UserOTP extends Model
 
     protected $table = 'user_otps';
     public $timestamps = false;
-    protected $fillable = ['user_id','otp'];
+    protected $fillable = ['user_id','otp', 'attempts'];
 
 
     public function user(){

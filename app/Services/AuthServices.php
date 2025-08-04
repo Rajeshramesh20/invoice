@@ -17,6 +17,8 @@ use App\Models\UserOTP;
 
 class AuthServices
 {
+
+
   public function register(array $data)
   {
    
@@ -32,8 +34,10 @@ class AuthServices
 
      $userOTP = userOTP::create([
         'user_id' => $user->id,
-        'otp' => $otp
-      ]);
+        'otp' => $otp,
+        'attempts' => 0, //verify otp attempts
+        ]);
+
 
     $contactNo = "+91".$data['user_phone_num'];
 
@@ -53,18 +57,55 @@ class AuthServices
 
 
 
-public function verifyOTP($data)
-    {      
+    public function updateOtpAndLimit($id)
+    {
+        // $user_id = userOTP::findOrfail($id);
+        $user_id = UserOTP::where('user_id', $id)->firstOrFail();
 
-        $otpRecord = UserOTP::where('user_id', $data['user_id'])
-            ->where('otp', $data['otp'])
-            ->first();
 
+        
+        $otp = rand(100000, 999999);
+
+        $user_id->update([
+            'otp' => $otp,
+            'attempts' => 0
+        ]);
+      return true;
+    }
+
+
+    public function verifyOTP($data)
+    {
+
+        // $otpRecord = UserOTP::where('user_id', $data['user_id'])
+        //     ->where('otp', $data['otp'])
+        //     ->first();
+        $otpRecord = UserOTP::where('user_id', $data['user_id'])->first();
         if (!$otpRecord) {
             return[
               'OTPerror' => true,
               'message' => 'Invalid OTP. Please try again.'
           ];
+        }
+        // checking attempts limits
+        if ($otpRecord->attempts >= 10) {
+            $this->updateOtpAndLimit($data['user_id']);
+            return [
+                'OTPerror' => true,
+                'message' => 'Maximum OTP attempts exceeded.'
+            ];
+       
+        }
+
+        if ($otpRecord->otp != $data['otp']) {
+        $otpRecord->attempts += 1;
+            $otpRecord->save();
+
+
+            return [
+                'OTPerror' => true,
+                'message' => 'Invalid OTP. Please try again.'
+            ];
         }
 
         // Delete OTP after use
@@ -80,71 +121,72 @@ public function verifyOTP($data)
         ];
     }
 
-  // public function sendOTP($data){
 
-  //   try{
-  //     $otp = rand(100000, 999999);
-  //     Session::put('register_data',[
-  //         'name' => $data['name'],
-  //         'email' => $data['email'],
-  //         'user_phone_num' => $data['user_phone_num'],
-  //         'password' => $data['password'],
-  //         'role_id'=>$data['role_id'],  
-  //         'otp' => $otp
-  //     ]);
-  //      Session::save();
-  //      Log::error('Full session', session()->all());
-  //     $contactNo = "+91".$data['user_phone_num'];
-  //     Log::error('contact_no', ['contact_no' => $contactNo]);
-  //     //Twilio Send SMS
-  //     $twilio = new Client(
-  //       config('services.twilio.sid'),
-  //       config('services.twilio.token')
-  //     );
-  //     $from = config('services.twilio.sms_from');
-  //     $twilio->messages->create($contactNo,[
-  //       'from' => $from,
-  //       'body' => "Your OTP is: $otp"
-  //     ]);
+    // public function sendOTP($data){
 
-  //     return true;
+    //   try{
+    //     $otp = rand(100000, 999999);
+    //     Session::put('register_data',[
+    //         'name' => $data['name'],
+    //         'email' => $data['email'],
+    //         'user_phone_num' => $data['user_phone_num'],
+    //         'password' => $data['password'],
+    //         'role_id'=>$data['role_id'],  
+    //         'otp' => $otp
+    //     ]);
+    //      Session::save();
+    //      Log::error('Full session', session()->all());
+    //     $contactNo = "+91".$data['user_phone_num'];
+    //     Log::error('contact_no', ['contact_no' => $contactNo]);
+    //     //Twilio Send SMS
+    //     $twilio = new Client(
+    //       config('services.twilio.sid'),
+    //       config('services.twilio.token')
+    //     );
+    //     $from = config('services.twilio.sms_from');
+    //     $twilio->messages->create($contactNo,[
+    //       'from' => $from,
+    //       'body' => "Your OTP is: $otp"
+    //     ]);
 
-  //   }catch(Exception $e){
-  //       Log::error('error in '. $e->getMessage());
-  //   }
-  // }
+    //     return true;
+
+    //   }catch(Exception $e){
+    //       Log::error('error in '. $e->getMessage());
+    //   }
+    // }
 
 
-  // public function verifyOTP($otp){
-  //     $data = Session::get('register_data');
-  //      Session::save();
-  //      Log::error('user details', ['user' => $data]);
-      
+    // public function verifyOTP($otp){
+    //     $data = Session::get('register_data');
+    //      Session::save();
+    //      Log::error('user details', ['user' => $data]);
 
-  //     if (!$data || !isset($data['otp'])) {
-  //       Log::error('Session expired or OTP missing.');
-  //       return [
-  //           'OTPerror' => true,
-  //           'message' => ' Session expired. Please register again.'
-  //       ];
-  //   }
 
-  //     if($otp != $data['otp']){
-  //         return[
-  //             'OTPerror' => true,
-  //             'message' => 'Invalid OTP. Please try again.'
-  //         ];
-  //     }
+    //     if (!$data || !isset($data['otp'])) {
+    //       Log::error('Session expired or OTP missing.');
+    //       return [
+    //           'OTPerror' => true,
+    //           'message' => ' Session expired. Please register again.'
+    //       ];
+    //   }
 
-  //     $this->register($data);
-  //     Session::forget('register_data');
-  //     return [
-  //         'OTPerror' => false
-  //     ];
-  // }
-  
-  //login athenticate user
-  public function authenticate($request)
+    //     if($otp != $data['otp']){
+    //         return[
+    //             'OTPerror' => true,
+    //             'message' => 'Invalid OTP. Please try again.'
+    //         ];
+    //     }
+
+    //     $this->register($data);
+    //     Session::forget('register_data');
+    //     return [
+    //         'OTPerror' => false
+    //     ];
+    // }
+
+    //login athenticate user
+    public function authenticate($request)
   {
       $userData = [
           'name' => $request['name'],
