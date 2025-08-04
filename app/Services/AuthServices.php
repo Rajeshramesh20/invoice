@@ -153,6 +153,7 @@ public function verifyOTP($data)
   //     ];
   // }
   
+  
   //login athenticate user
   public function authenticate($request)
   {
