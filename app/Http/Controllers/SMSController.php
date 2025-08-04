@@ -53,23 +53,6 @@ class SMSController extends Controller
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //vonage SMS send
      /* public function send($id){
     try {

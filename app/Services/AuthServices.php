@@ -9,15 +9,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Log;
+
 use Twilio\Rest\Client;
 
 use App\Models\User;
 use App\Models\UserOTP;
 
-class AuthServices{
-
+class AuthServices
+{
   public function register(array $data)
   {
    
@@ -90,22 +89,6 @@ public function verifyOTP($data)
           'OTPerror' => false
         ];
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   // public function sendOTP($data){
 
@@ -184,48 +167,45 @@ public function verifyOTP($data)
       ];
   }
 
-  // logout user
-  public function logout()
-  {
-      Auth::logout();
-  }
 
-  // send forgot password link to mail
-  public function submitforgotpasswordform($data , $viwe)
-  {
-     
-      $token = str::random(64);
+    // logout user
+    public function logout()
+    {
+        Auth::logout();
+    }
 
-      DB::table('password_reset_tokens')->updateOrInsert(
-          ['email' => $data['email']],
-          [
-              'token' => $token,
-              'created_at' => Carbon::now()
-          ]
-      );
-      Mail::send($viwe, ['token' => $token], function ($message) use ($data) {
-          $message->to($data['email']);
-          $message->subject('Reset Password');
-      });
-       
-  }
-  
-  
-  public function submitresetpasswordform($data)
-  {
-         DB::table('password_reset_tokens')
+    // send forgot password link to mail
+    public function submitforgotpasswordform($data, $viwe)
+    {
+
+        $token = str::random(64);
+
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $data['email']],
+            [
+                'token' => $token,
+                'created_at' => Carbon::now()
+            ]
+        );
+        Mail::send($viwe, ['token' => $token], function ($message) use ($data) {
+            $message->to($data['email']);
+            $message->subject('Reset Password');
+        });
+    }
+
+
+    public function submitresetpasswordform($data)
+    {
+        DB::table('password_reset_tokens')
             ->where('email', $data['email'])
             ->where('token', $data['token'])
             ->first();
 
         User::where('email', $data['email'])
-          ->update(['password' => Hash::make($data['password'])]);
+            ->update(['password' => Hash::make($data['password'])]);
 
         DB::table('password_reset_tokens')
             ->where('email', $data['email'])
             ->delete();
-  }
-
-
- 
+    }
 }

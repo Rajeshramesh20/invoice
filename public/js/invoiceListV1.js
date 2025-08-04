@@ -124,7 +124,7 @@ function invoiceTable(data) {
             <td>${formatDueDate}</td>
             <td class="right">${formatted}</td>
             <td class="right">${formattedBalance}</td>
-            <td><div class="status openPopup" data-invoice-id="${list.invoice_id}">${status}<i class="fa-solid fa-arrow-up-right-from-square"></i></div>
+            <td><div class="status openPopup" data-invoice-id="${list.invoice_id}">${status}<abbr title="Change status"><i class="fa-solid fa-arrow-up-right-from-square"></i></abbr></div>
 			</td>
             <td><div class="mail-status  left-align">${emailStatus}</div></td>
             <td>

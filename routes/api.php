@@ -33,9 +33,10 @@ Route::post('authenticate', [AuthController::class, 'authenticate'])->name('auth
 Route::post('/forgot-password', [AuthController::class, 'submitforgotpasswordformapi']);
 Route::post('/reset-password', [AuthController::class, 'submitResetPasswordForm']);
 
-//OTP generate
-Route::post('send-otp', [AuthController::class, 'sendOTP']);
-Route::post('verify/otp', [AuthController::class, 'verifyOTP']);
+// //OTP generate
+// Route::post('send-otp', [AuthController::class, 'sendOTP']);
+// Route::post('verify/otp', [AuthController::class, 'verifyOTP']);
+
 
 Route::middleware(['auth:api'])->group(function () {
     //add role
@@ -145,6 +146,7 @@ Route::middleware(['auth:api'])->group(function() {
     Route::get('/send-sms/{id}', [SMSController::class, 'send']);//vonage SMS Send
     Route::get('/twilio/send-sms/{id}', [SMSController::class, 'twilioSend']);//Twilio SMS  
     Route::get('/whatsapp/send/{id}', [SMSController::class, 'sendWhatsapp']);//Twilio Whatsapp Send
+
 
 });
 

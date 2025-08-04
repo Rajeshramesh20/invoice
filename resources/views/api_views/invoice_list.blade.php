@@ -245,7 +245,11 @@
         xhr.send();
     });
 </script> --}}
+<<<<<<< HEAD
+{{-- <script>
+=======
 <!-- <script>
+>>>>>>> 99933fcca08484342da5a1ae7ee5f28490718802
 document.addEventListener('DOMContentLoaded', function () {
     const xhr = new XMLHttpRequest();
     xhr.open('GET', 'http://127.0.0.1:8000/api/invoicechart', true);
@@ -354,7 +358,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
     xhr.send();
+<<<<<<< HEAD
+});
+</script> --}}
+=======
 });/*
+>>>>>>> 99933fcca08484342da5a1ae7ee5f28490718802
 
 
 </script> --> 
