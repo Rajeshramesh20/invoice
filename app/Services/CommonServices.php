@@ -11,6 +11,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Twilio\Rest\Client;
+use App\Models\UserOTP;
 
 class CommonServices
 {
@@ -170,6 +171,21 @@ class CommonServices
         return true;
     }
     
+
+    public function userOtp($user){
+        $otp = rand(100000, 999999);
+
+        $userOTP = userOTP::create([
+            'user_id' => $user->id,
+            'otp' => $otp,
+            'attempts' => 0, //verify otp attempts
+            'otp_expires_at' => Carbon::now()->addMinutes(2)
+        ]);
+        return [
+            'userOTP'=> $userOTP,
+            'otp'=> $otp
+        ];
+    }
 
 }
 

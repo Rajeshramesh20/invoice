@@ -141,6 +141,7 @@
                     let successMsg = response.data.message; 
                     window.location.href = "/api/login";                  
                 	alert(successMsg);
+                   window.location.href = '/api/login';
                 }else{
                     let data = response.data.message;
                     alert(data);
