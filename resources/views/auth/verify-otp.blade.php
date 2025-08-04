@@ -138,7 +138,8 @@
             if (xhr.readyState === 4) {
                     const response = JSON.parse(xhr.responseText);
                 if (xhr.status === 200) {
-                    let successMsg = response.data.message;                   
+                    let successMsg = response.data.message; 
+                    window.location.href = "/api/login";                  
                 	alert(successMsg);
                 }else{
                     let data = response.data.message;
