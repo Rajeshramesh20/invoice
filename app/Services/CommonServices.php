@@ -153,6 +153,24 @@ class CommonServices
         return $data;
     }
 
+
+    public function sendSms($phoneNum,$message){
+        $contactNo = "+91" . $phoneNum ;
+
+        $twilio = new Client(
+            config('services.twilio.sid'),
+            config('services.twilio.token')
+        );
+
+        $from = config('services.twilio.sms_from');
+        $twilio->messages->create($contactNo, [
+            'from' => $from,
+            'body' => $message
+        ]);
+        return true;
+    }
+    
+
 }
 
 
