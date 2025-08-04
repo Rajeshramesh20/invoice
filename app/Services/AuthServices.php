@@ -40,6 +40,9 @@ class AuthServices
         ]);
 
 
+
+
+
         $contactNo = "+91" . $data['user_phone_num'];
 
         $twilio = new Client(
@@ -53,17 +56,32 @@ class AuthServices
             'body' => "Your OTP is: $otp"
         ]);
 
+
+
+
         return $user;
     }
 
 
 
 
-    public function updateOtpAndLimit($id)
+    public function updateOtpAndLimit($id,$user_ph_no)
     {
         // $user_id = userOTP::findOrfail($id);
         $user_id = UserOTP::where('user_id', $id)->firstOrFail();
         $otp = rand(100000, 999999);
+
+        $contactNo = "+91" .$user_ph_no;
+        $twilio = new Client(
+            config('services.twilio.sid'),
+            config('services.twilio.token')
+        );
+
+        $from = config('services.twilio.sms_from');
+        $twilio->messages->create($contactNo, [
+            'from' => $from,
+            'body' => "Your OTP is: $otp"
+        ]);
 
         $user_id->update([
             'otp' => $otp,
@@ -100,7 +118,6 @@ class AuthServices
         // $otpRecord = UserOTP::where('user_id', $data['user_id'])->first();
         $user = User::where('user_phone_num', $data['user_phone_num'])->first();
 
-
         if (!$user) {
             return [
                 'OTPerror' => true,
@@ -108,21 +125,11 @@ class AuthServices
             ];
         }
 
-        $otpRecord = UserOTP::where('user_id', $user->id)
-            ->where('otp', $data['otp'])
-            ->first();
-
-
-        if (!$otpRecord) {
-            return [
-                'OTPerror' => true,
-                'message' => 'Invalid OTP. Please try again.'
-            ];
-        }
+        $otpRecord = UserOTP::where('user_id', $user->id)->first();
 
         // checking attempts limits
         if ($otpRecord->attempts >= 10) {
-            $this->updateOtpAndLimit($data['user_id']);
+            $this->updateOtpAndLimit($user->id,$user->user_phone_num);
             return [
                 'OTPerror' => true,
                 'message' => 'Maximum OTP attempts exceeded.'
@@ -133,13 +140,12 @@ class AuthServices
             $otpRecord->attempts += 1;
             $otpRecord->save();
 
-
             return [
                 'OTPerror' => true,
                 'message' => 'Invalid OTP. Please try again.'
             ];
         }
-
+   
         $user->update(['is_verified' => true]);
 
         // Delete OTP after use
