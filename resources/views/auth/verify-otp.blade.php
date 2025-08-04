@@ -140,6 +140,7 @@
                 if (xhr.status === 200) {
                     let successMsg = response.data.message;                   
                 	alert(successMsg);
+                   window.location.href = '/api/login';
                 }else{
                     let data = response.data.message;
                     alert(data);

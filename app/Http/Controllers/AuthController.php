@@ -122,6 +122,7 @@ class AuthController extends Controller
                 ]);
             }
             if(!$user['user']->is_verified){
+                
                 return response()->json([
                     'status' => false,
                     'message' => 'phone number does not verified!'

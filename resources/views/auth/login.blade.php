@@ -9,9 +9,9 @@
         <h2>Login</h2>
         <form id="loginForm">
 
-            <label for="name">User Name</label>
-            <input type="text" name="name" id="name" />
-            <p class="error" id="name_error"></p>
+            <label for="email">User Name</label>
+            <input type="email" name="email" id="email" />
+            <p class="error" id="email_error"></p>
             
             <label for="password">Password</label>
             <input type="password" name="password" id="password" />
@@ -31,8 +31,6 @@
 
     </div>
 </div>
-
-
 <script>
     document.getElementById("loginForm").addEventListener("submit", function(event) {
         event.preventDefault();
@@ -55,7 +53,7 @@
                     const responseErr = JSON.parse(xhr.responseText);
                     let err = responseErr.message;
                     alert(err);
-
+                    
                 }else if (xhr.status === 422) {
                     const response = JSON.parse(xhr.responseText);
                     //get the response error from laravel request errors and set the errors to this filds
@@ -77,6 +75,8 @@
         };
         xhr.send(formData);
     });
+
+
 
 </script>
 

@@ -34,17 +34,10 @@ class AuthServices
             'is_verified' => false
         ]);
 
-        $otp = rand(100000, 999999);
-
-        $userOTP = userOTP::create([
-            'user_id' => $user->id,
-            'otp' => $otp,
-            'attempts' => 0, //verify otp attempts
-            'otp_expires_at' => Carbon::now()->addMinutes(2)
-        ]);
-
         $common = new CommonServices();
-        $data = $common->sendSms($data['user_phone_num'], "Your OTP is: $otp");
+        $userOTP= $common->userOtp($user);
+
+        $data = $common->sendSms($data['user_phone_num'], `Your OTP is:`.$userOTP['otp'] );
         
         return [
           'data' => $user,
@@ -142,10 +135,11 @@ class AuthServices
     public function authenticate($request)
     {
         $userData = [
-            'name' => $request['name'],
+            'email' => $request['email'],
             'password' => $request['password'],
         ];
-        $userName = User::where('name', $request['name'])->first();
+        $userName = User::where('email', $request['email'])->first();
+
         return  [
             'userData' => $userData,
             'user' => $userName
