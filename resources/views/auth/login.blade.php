@@ -51,7 +51,12 @@
                     alert("Login successful");
                     //redirect to student list page
                     window.location.href = "/api/invoice/list";
-                } else if (xhr.status === 422) {
+                }else if(xhr.status === 404){
+                    const responseErr = JSON.parse(xhr.responseText);
+                    let err = responseErr.message;
+                    alert(err);
+
+                }else if (xhr.status === 422) {
                     const response = JSON.parse(xhr.responseText);
                     //get the response error from laravel request errors and set the errors to this filds
                     if (response.errors) {

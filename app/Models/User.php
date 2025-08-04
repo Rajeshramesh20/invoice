@@ -26,6 +26,7 @@ class User extends Authenticatable
         'user_phone_num',
         'password',
         'role_id',
+        'is_verified'
     ];
 
     /**

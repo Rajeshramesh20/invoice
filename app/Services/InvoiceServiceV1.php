@@ -149,9 +149,8 @@ class InvoiceServiceV1
                 'updated_at' => now(),
             ]));
         }
-
-        return $invoice;
-    }
+            return $invoice;
+        }
 
 
     //update status

@@ -26,7 +26,8 @@ class AuthServices{
           'email' => $data['email'],
           'user_phone_num' => $data['user_phone_num'],
           'password' => Hash::make($data['password']),
-          'role_id'=>$data['role_id'],         
+          'role_id'=>$data['role_id'],  
+          'is_verified'=> false       
     ]);
 
      $otp = rand(100000, 999999);
@@ -53,20 +54,29 @@ class AuthServices{
   }
 
 
-
 public function verifyOTP($data)
     {      
+        $user = User::where('user_phone_num',$data['user_phone_num'])->first();
 
-        $otpRecord = UserOTP::where('user_id', $data['user_id'])
+        if(!$user){
+            return [
+                'OTPerror' => true,
+                'message' => "User Not Found"
+            ];
+        }
+
+        $otpRecord = UserOTP::where('user_id',$user->id)
             ->where('otp', $data['otp'])
             ->first();
 
         if (!$otpRecord) {
-            return[
+            return [
               'OTPerror' => true,
               'message' => 'Invalid OTP. Please try again.'
           ];
         }
+
+        $user->update(['is_verified' => true]);
 
         // Delete OTP after use
         $otpRecord->delete();
@@ -167,7 +177,11 @@ public function verifyOTP($data)
           'name' => $request['name'],
           'password' => $request['password'],
       ];
-      return  $userData;
+      $userName = User::where('name',$request['name'])->first();
+      return  [
+        'userData' =>$userData,
+        'user' => $userName
+      ];
   }
 
   // logout user
