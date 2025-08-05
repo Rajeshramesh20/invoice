@@ -19,12 +19,8 @@ use App\Models\UserOTP;
 
 class AuthServices
 {
-
-
     //Register User 
-    public function register(array $data)
-    {
-
+    public function register(array $data){
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -41,7 +37,7 @@ class AuthServices
         
         return [
           'data' => $user,
-          'message' => 'OTP sent to Your Mobile Number'
+          'message' => 'OTP sent to Your Mobile Number.'
         ];
     }
 

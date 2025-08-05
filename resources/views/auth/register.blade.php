@@ -67,13 +67,15 @@ document.getElementById("registerForm").addEventListener("submit", function(even
 
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
+            const response = JSON.parse(xhr.responseText);
             if (xhr.status === 200) {
-                // alert("Registered successfully!");
+                let successMsg = response.data.message;
+                alert(successMsg);
                  //redirect to student list page
                 window.location.href = "/api/show/verify-otp";
 
             } else if (xhr.status === 422) {
-                const response = JSON.parse(xhr.responseText);
+                
                     //get the response error from laravel errors and set the errors to this filds
                 if (response.errors) {
                     for (let key in response.errors) {

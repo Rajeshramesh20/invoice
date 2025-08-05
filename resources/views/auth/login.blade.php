@@ -9,7 +9,7 @@
         <h2>Login</h2>
         <form id="loginForm">
 
-            <label for="email">User Name</label>
+            <label for="email">User Email</label>
             <input type="email" name="email" id="email" />
             <p class="error" id="email_error"></p>
             
