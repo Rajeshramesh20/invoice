@@ -127,6 +127,8 @@ class AuthServices
         }
     }
 
+    
+
 
     //login athenticate user
     public function authenticate($request)

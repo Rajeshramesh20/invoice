@@ -28,6 +28,7 @@ use App\Http\Controllers\AuthController;
 Route::post('register', [AuthController::class, 'register'])->name('user.register');
 Route::post('/verify-otp', [AuthController::class, 'verifyUserOTP']);
 Route::post('authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
+Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
 
 //forgot password
 Route::post('/forgot-password', [AuthController::class, 'submitforgotpasswordformapi']);
