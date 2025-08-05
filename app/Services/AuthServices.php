@@ -36,11 +36,12 @@ class AuthServices
 
         $common = new CommonServices();
         $userOTP= $common->userOtp($user);
-
-        $data = $common->sendSms($data['user_phone_num'], `Your OTP is:`.$userOTP['otp'] );
+        
+        $data = $common->sendSms($data['user_phone_num'], 'Your OTP is: ' . $userOTP['otp'] );
         
         return [
           'data' => $user,
+          'userOTP'=> $userOTP,
           'message' => 'OTP sent to Your Mobile Number'
         ];
     }

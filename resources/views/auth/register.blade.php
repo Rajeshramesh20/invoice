@@ -53,6 +53,8 @@
     </div>
 </div>
 
+
+
 <script>
 document.getElementById("registerForm").addEventListener("submit", function(event) {
     event.preventDefault();
@@ -68,12 +70,15 @@ document.getElementById("registerForm").addEventListener("submit", function(even
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
+            let response = JSON.parse(xhr.responseText);
+            localStorage.setItem("otp_expires_at", response.data.userOTP.userOTP.otp_expires_at);
                 // alert("Registered successfully!");
                  //redirect to student list page
                 window.location.href = "/api/show/verify-otp";
 
             } else if (xhr.status === 422) {
                 const response = JSON.parse(xhr.responseText);
+
                     //get the response error from laravel errors and set the errors to this filds
                 if (response.errors) {
                     for (let key in response.errors) {
@@ -92,5 +97,8 @@ document.getElementById("registerForm").addEventListener("submit", function(even
     };
     xhr.send(formData);
 });
+
+
+
 </script>
 @endsection

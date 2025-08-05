@@ -52,12 +52,13 @@
       outline: none;
     }
 
-    input[type="submit"] {
-      width: 100%;
+    .submit{
+      width: 100px;
       padding: 12px;
       background-color: #4a90e2;
       border: none;
       border-radius: 6px;
+      margin-right: 10px;
       color: white;
       font-weight: 600;
       font-size: 16px;
@@ -65,20 +66,31 @@
       transition: background-color 0.3s ease;
     }
 
-     input[type="submit"]:hover {
+    .submit:hover {
       background-color: #357ABD;
     }
-
+    
     p {
       font-size: 16px;
       color: red;
       margin-bottom: 12px;
     }
+  #countdown {
+      text-align: center;
+      /* color: green; */
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
 
+    .buttoncontainer{
+      text-align: center;
+    }
 </style>
 <body>
     <div class="container">
     	<form id="OTP-verify">
+         <p id="countdown">OTP Expires In: --</p>
             <label for="user_phone_num">Mobile Number</label>
             <input type="number" name="user_phone_num" id="user_phone_num" placeholder="Enter Mobile Number">
             <p id="user_phone_num_err"></p>
@@ -86,11 +98,43 @@
     		<label for="otp">OTP</label>
     		<input type="number" name="otp" id="otp" placeholder="Enter OTP">
             <p id="otp_err"></p>
-
-    		<input type="submit" value="Verify OTP">
+         <div class="buttoncontainer">
+        <button id="resend" onclick="resendOtp()" class="submit"> Resend</button>
+        <input type="submit" value="Verify OTP" class="submit">
+      </div>
     	</form>
    </div> 
+
 	<script>
+function startCountdown(otpExpiry) {
+      let countDownDate = new Date(otpExpiry).getTime();
+
+      let x = setInterval(function () {
+        let now = new Date().getTime();
+        let distance = countDownDate - now;
+
+        let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        let countdownElement = document.getElementById("countdown");
+
+        if (distance > 0) {
+          countdownElement.innerHTML = "OTP Expires In: " + minutes + "m " + seconds + "s";
+           countdownElement.style.color = "green"; 
+        } else {
+          clearInterval(x);
+          countdownElement.innerHTML = "OTP has expired!";
+           countdownElement.style.color = "red";
+        }
+      }, 1000);
+    }
+
+     let otpExpiresAt = localStorage.getItem('otp_expires_at');
+
+    if (otpExpiresAt) {
+      startCountdown(otpExpiresAt);
+    }
+
         function validation(){
             let isVaild = true;
             let phone = document.getElementById('user_phone_num').value.trim();
@@ -130,7 +174,6 @@
 
         const form = this;       
         const formData = new FormData(form);
-
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "http://127.0.0.1:8000/api/verify-otp", true);
         xhr.setRequestHeader('Accept', 'application/json');
@@ -138,11 +181,11 @@
             if (xhr.readyState === 4) {
                     const response = JSON.parse(xhr.responseText);
                 if (xhr.status === 200) {
-                    let successMsg = response.data.message;                   
+                  let successMsg = response.data.message;                   
                 	alert(successMsg);
-                   window.location.href = '/api/login';
-                }else{
-                    let data = response.data.message;
+                  window.location.href = '/api/login';
+                }else if (xhr.status === 404) {
+                    let data = response.message;
                     alert(data);
                 }
             }           
@@ -150,5 +193,6 @@
            xhr.send(formData);     
        });         	
 	</script>
+  
 </body>
 </html>

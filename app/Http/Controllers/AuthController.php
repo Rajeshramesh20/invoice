@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 
 use App\Services\AuthServices;
 use App\Http\Requests\LoginUserRequest;
@@ -122,8 +121,9 @@ class AuthController extends Controller
                 ]);
             }
             if(!$user['user']->is_verified){
-                
+               
                 return response()->json([
+                    'data'=> $user['user']->user_phone_num,
                     'status' => false,
                     'message' => 'phone number does not verified!'
                  ],404);
