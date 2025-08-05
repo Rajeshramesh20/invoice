@@ -29,7 +29,7 @@ Route::post('register', [AuthController::class, 'register'])->name('user.registe
 Route::post('/verify-otp', [AuthController::class, 'verifyUserOTP']);
 Route::post('authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
 Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
-
+Route::post('/verifyPhNo',[AuthController::class, 'verifyPhNo']);
 //forgot password
 Route::post('/forgot-password', [AuthController::class, 'submitforgotpasswordformapi']);
 Route::post('/reset-password', [AuthController::class, 'submitResetPasswordForm']);

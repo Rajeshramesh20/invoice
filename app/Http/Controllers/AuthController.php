@@ -67,9 +67,19 @@ class AuthController extends Controller
 
     }
 
-
-
-    // public function 
+    public function  verifyPhNo(Request $request, AuthServices $verifyPhNO)
+    {
+        $data = $request->validate([
+            'email' => 'required',
+        ]);
+        $verifyPhNo= $verifyPhNO->verifyphNo($data['email']);
+        if ($verifyPhNo) {
+            return response()->json([
+                'success' => true,
+                'message' => 'OTP Send successfully '
+            ]);
+        }
+    }
 
     //Resend OTP
     public function resendOtp(Request $request, AuthServices $reSendOTP){
@@ -149,7 +159,7 @@ class AuthController extends Controller
             if(!$user['user']->is_verified){
                
                 return response()->json([
-                    'data'=> $user['user']->user_phone_num,
+                    'data'=> $user['user'],
                     'status' => false,
                     'message' => 'phone number does not verified!'
                  ],404);
