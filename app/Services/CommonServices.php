@@ -174,12 +174,12 @@ class CommonServices
 
     public function userOtp($user){
         $otp = rand(100000, 999999);
-
+        $otpExpiresAt= Carbon::now()->addMinutes(2);
         $userOTP = userOTP::create([
             'user_id' => $user->id,
             'otp' => $otp,
             'attempts' => 0, //verify otp attempts
-            'otp_expires_at' => Carbon::now()->addMinutes(2)
+            'otp_expires_at' => $otpExpiresAt
         ]);
         return [
             'userOTP'=> $userOTP,

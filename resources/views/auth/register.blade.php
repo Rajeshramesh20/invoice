@@ -46,12 +46,10 @@
                 <a href="{{ route('api.signuppage') }}" class="clear">Clear</a>
             </div>
         </form>
-
-        {{-- <div class="sinupcontainer">
-            <a href="{{ route('api.login') }}" class="back">Back</a>
-        </div> --}}
     </div>
 </div>
+
+
 
 <script>
 document.getElementById("registerForm").addEventListener("submit", function(event) {
@@ -69,14 +67,10 @@ document.getElementById("registerForm").addEventListener("submit", function(even
         if (xhr.readyState === 4) {
             const response = JSON.parse(xhr.responseText);
             if (xhr.status === 200) {
-                let successMsg = response.data.message;
-                alert(successMsg);
-                 //redirect to student list page
+                localStorage.setItem("otp_expires_at", response.data.userOTP.userOTP.otp_expires_at);
                 window.location.href = "/api/show/verify-otp";
 
-            } else if (xhr.status === 422) {
-                
-                    //get the response error from laravel errors and set the errors to this filds
+             }else if (xhr.status === 422) {
                 if (response.errors) {
                     for (let key in response.errors) {
                         const errorElement = document.getElementById(`${key}_error`);
@@ -94,5 +88,8 @@ document.getElementById("registerForm").addEventListener("submit", function(even
     };
     xhr.send(formData);
 });
+
+
+
 </script>
 @endsection

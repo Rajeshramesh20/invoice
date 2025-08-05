@@ -52,6 +52,7 @@
                 }else if(xhr.status === 404){
                     const responseErr = JSON.parse(xhr.responseText);
                     let err = responseErr.message;
+                    
                     alert(err);
                     
                 }else if (xhr.status === 422) {
