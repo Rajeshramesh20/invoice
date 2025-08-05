@@ -43,10 +43,11 @@
 	<div>
 		<div class="invoice-search">
 			<p>Sales Invoice List</p>
-			<i class="fa-solid fa-magnifying-glass"></i>
+			<i class="fa-solid fa-magnifying-glass" id="toggleSearch"></i>
 		</div>
 
 		<form id="formSubmit">
+		<div class="search-form-container">
 			<div class="form-row">
 				<div class="form-group">
 					<label for="startDate">Start Date</label>
@@ -87,11 +88,13 @@
 					</select>
 				</div>	
 			</div>
+			
 			<hr>
 			<div class="reset">
 				<a href="/api/invoice/list" class="clear">Reset</a>
 				<input type="submit" name="search" value="Search" class="search">
 			</div>
+		</div>	
 	</div>
 	</form>
 		<div class="theader" style="text-align:right;border-radius:10px">
@@ -149,14 +152,26 @@
 		  	<button onclick="updatePaidAmount(selectedInvoiceId)" class="alertBtn">Enter</button>
 		</div>
 		{{-- <div id="container" style="height: 300px; width: 350px;"></div> --}}
-<div style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 20px;">
-    <div id="overallDonut" style="width: 400px; height: 300px;"></div>
-    <div id="amountColumn" style="width: 350px; height: 300px;"></div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="/js/invoiceListV1.js"></script>
+		<div style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 20px;">
+		    <div id="overallDonut" style="width: 400px; height: 300px;"></div>
+		    <div id="amountColumn" style="width: 350px; height: 300px;"></div>
+		</div>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<script src="/js/invoiceListV1.js"></script>
 
-<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+
+<script>
+		document.getElementById('toggleSearch').addEventListener('click',function(){
+			let formContainer = document.querySelector(".search-form-container");
+			if (formContainer.style.display === "none") {
+		        formContainer.style.display = "block";
+		    } else {
+		        formContainer.style.display = "none";
+		    }
+
+		});
+</script>
 
 {{-- <script>
 	// const token = localStorage.getItem('token');

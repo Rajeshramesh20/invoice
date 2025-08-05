@@ -662,8 +662,6 @@ class InvoiceServiceV1
             if ($invoice->balance_amount > 0) {
                 // Partially paid message
                 $message = "Hello {$customerName},\nInvoice:{$invoiceNo}\nPaid Amount: {$paid}\nBalance Amount:{$balance}\n pending. Thank you!";
-                // $message =  "Hello {$customerName},
-                //   \n Thank you for your payment on Invoice #{$invoiceNo}.\n We've received ₹{$paid}, and the remaining balance is ₹{$balance}.\n We appreciate your business and look forward to full settlement soon.\n Feel free to reach out if you have any questions!\n Best regards,\n Twigik Technologies Pvt. Ltd.\n";
             } else {
                 // Fully paid message
                 $message = "Hello {$customerName},\n Invoice {$invoiceNo} is fully paid. 
@@ -678,6 +676,7 @@ class InvoiceServiceV1
             $whatsappFrom = config('services.twilio.whatsapp_from');
             $smsTo = $customer;
             $whatsappTo = "whatsapp:{$customer}";
+            // Log::error('SMS Number', ['SMS' => $smsTo]);
 
             //SMS
             $client->messages->create($smsTo, [

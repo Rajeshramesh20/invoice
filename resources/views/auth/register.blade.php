@@ -46,22 +46,40 @@
                 <a href="{{ route('api.signuppage') }}" class="clear">Clear</a>
             </div>
         </form>
-
-        {{-- <div class="sinupcontainer">
-            <a href="{{ route('api.login') }}" class="back">Back</a>
-        </div> --}}
     </div>
 </div>
+
+    <!-- OTP Modal -->
+    <div id="otpModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <form id="OTP-verify">
+             <p id="countdown">OTP Expires In: --</p>
+                <label for="otp">OTP</label>
+                <input type="number" name="otp" id="otp" placeholder="Enter OTP">
+                <p id="otp_err"></p>
+
+             <div class="buttoncontainer">
+                <button id="resend" onclick="resendOtp()" class="submit"> Resend</button>
+                <input type="submit" value="Verify OTP" class="submit">
+            </div>
+        </form>
+         </div>
+    </div>        
+     
 
 
 
 <script>
+    let registeredPhone = null;
+    let userId = null;
 document.getElementById("registerForm").addEventListener("submit", function(event) {
     event.preventDefault();
 
     const form = this;
  //it's automatically get the all input data
     const formData = new FormData(form);
+    // registeredPhone = formData.get('user_phone_num');
 
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "http://127.0.0.1:8000/api/register", true);
@@ -69,17 +87,15 @@ document.getElementById("registerForm").addEventListener("submit", function(even
 
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
+            const response = JSON.parse(xhr.responseText);
             if (xhr.status === 200) {
-            let response = JSON.parse(xhr.responseText);
-            localStorage.setItem("otp_expires_at", response.data.userOTP.userOTP.otp_expires_at);
-                // alert("Registered successfully!");
-                 //redirect to student list page
-                window.location.href = "/api/show/verify-otp";
+                registeredPhone = response.data.data.user_phone_num;
+                userId = response.data.data.id;
 
-            } else if (xhr.status === 422) {
-                const response = JSON.parse(xhr.responseText);
+                localStorage.setItem("otp_expires_at", response.data.userOTP.userOTP.otp_expires_at);
+                document.getElementById("otpModal").style.display = "block";
 
-                    //get the response error from laravel errors and set the errors to this filds
+             }else if (xhr.status === 422) {
                 if (response.errors) {
                     for (let key in response.errors) {
                         const errorElement = document.getElementById(`${key}_error`);
@@ -99,6 +115,63 @@ document.getElementById("registerForm").addEventListener("submit", function(even
 });
 
 
+document.getElementById("OTP-verify").addEventListener("submit", function(event) {
+        event.preventDefault();
 
+        // if(!validation()){
+        //     return;
+        // }
+
+        const form = this;       
+        const formData = new FormData(form);
+        formData.append('user_phone_num', registeredPhone);
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://127.0.0.1:8000/api/verify-otp", true);
+        xhr.setRequestHeader('Accept', 'application/json');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                    const response = JSON.parse(xhr.responseText);
+                if (xhr.status === 200) {
+                    let successMsg = response.data.message; 
+                    alert(successMsg);
+                  window.location.href = '/api/login';
+                }else if (xhr.status === 404) {
+                    let data = response.message;
+                    alert(data);
+                }
+            }           
+        }
+           xhr.send(formData);     
+       });          
+
+
+    function closeModal() {
+    document.getElementById("otpModal").style.display = "none";
+    }
+
+   function resendOtp(){
+        let formData = new FormData;
+        formData.append('user_phone_num',registeredPhone);
+        formData.append('id',userId);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://127.0.0.1:8000/api/resend-otp", true);
+        xhr.setRequestHeader('Accept', 'application/json');
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                    const response = JSON.parse(xhr.responseText);
+                if (xhr.status === 200) {
+                    let successMsg = response.message; 
+                    alert(successMsg);
+                  // window.location.href = '/api/login';
+                }else if (xhr.status === 404) {
+                    let data = response.message;
+                    alert(data);
+                }
+            }           
+        };
+           xhr.send(formData);  
+   }
 </script>
 @endsection

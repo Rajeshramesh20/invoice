@@ -180,7 +180,7 @@ function startCountdown(otpExpiry) {
             if (xhr.readyState === 4) {
                     const response = JSON.parse(xhr.responseText);
                 if (xhr.status === 200) {
-                  let successMsg = response.data.message;                   
+                    let successMsg = response.data.message; 
                 	alert(successMsg);
                   window.location.href = '/api/login';
                 }else if (xhr.status === 404) {

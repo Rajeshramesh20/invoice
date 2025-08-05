@@ -68,7 +68,30 @@ class AuthController extends Controller
     }
 
 
+
     // public function 
+
+    //Resend OTP
+    public function resendOtp(Request $request, AuthServices $reSendOTP){
+        $data = $request->validate([
+                'user_phone_num' => 'required',
+                'id' => 'required'
+            ]);
+        $resedOTP = $reSendOTP->updateOtpAndLimit($data['id'], $data['user_phone_num']);
+
+        if($resedOTP){
+            return response()->json([
+                'success' => true,
+                'message' => 'Resend OTP Send successfully'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to resend OTP'
+        ], 500);
+    }
+
 
 
     // public function sendOTP(RegisterUserRequest $request, AuthServices $sendOTP){

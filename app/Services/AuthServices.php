@@ -19,12 +19,8 @@ use App\Models\UserOTP;
 
 class AuthServices
 {
-
-
     //Register User 
-    public function register(array $data)
-    {
-
+    public function register(array $data){
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -138,7 +134,6 @@ class AuthServices
 
         }
     }
-
     //login athenticate user
     public function authenticate($request)
     {
@@ -153,8 +148,6 @@ class AuthServices
             'user' => $userName
         ];
     }
-
-
 
     // logout user
     public function logout()
