@@ -68,6 +68,9 @@ class AuthController extends Controller
     }
 
 
+    // public function 
+
+
     // public function sendOTP(RegisterUserRequest $request, AuthServices $sendOTP){
     //     try{
     //         $user = $request->validated();

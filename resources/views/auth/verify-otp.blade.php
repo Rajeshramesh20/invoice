@@ -164,14 +164,13 @@ function startCountdown(otpExpiry) {
 
             return true;
        }     
-                
+                  
 		document.getElementById("OTP-verify").addEventListener("submit", function(event) {
         event.preventDefault();
 
         if(!validation()){
             return;
         }
-
         const form = this;       
         const formData = new FormData(form);
         const xhr = new XMLHttpRequest();
