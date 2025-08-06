@@ -65,6 +65,14 @@ class AuthServices
     }
 
 
+    public function verifyphNo($email){
+        $user = User::where('email',$email)->firstOrFail();
+        $userPhNo=$user->user_phone_num; 
+        $user_id = $user->id;
+        $userOtp= $this->updateOtpAndLimit($user_id, $userPhNo );
+        return $userOtp;
+    }
+
 
     //OTP Verification
     public function verifyOTP($data)
@@ -128,10 +136,6 @@ class AuthServices
 
         }
     }
-
-    
-
-
     //login athenticate user
     public function authenticate($request)
     {
@@ -146,8 +150,6 @@ class AuthServices
             'user' => $userName
         ];
     }
-
-
 
     // logout user
     public function logout()

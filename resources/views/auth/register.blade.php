@@ -177,6 +177,7 @@ document.getElementById("OTP-verify").addEventListener("submit", function(event)
     //close OTP Model
     function closeModal() {
         document.getElementById("otpModal").style.display = "none";
+        window.location.href = '/api/login';
     }
 
     //Resend OTP
