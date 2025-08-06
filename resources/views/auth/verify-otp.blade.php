@@ -108,7 +108,7 @@
 	<script>
 function startCountdown(otpExpiry) {
       let countDownDate = new Date(otpExpiry).getTime();
-
+      
       let x = setInterval(function () {
         let now = new Date().getTime();
         let distance = countDownDate - now;

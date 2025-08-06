@@ -34,6 +34,7 @@ class AuthServices
         $userOTP= $common->userOtp($user);
         
         $data = $common->sendSms($data['user_phone_num'], 'Your OTP is: ' . $userOTP['otp'] );
+        Log::error('register',['number' => $data['user_phone_num']]);
         
         return [
           'data' => $user,
@@ -53,13 +54,14 @@ class AuthServices
         //send SMS
         $common = new CommonServices();
         $data = $common->sendSms($userPhoneNo, "Your OTP is: $otp");
+        Log::error('update',['number' => $userPhoneNo]);
 
         $user_id->update([
             'otp' => $otp,
             'attempts' => 0,
             'otp_expires_at' => Carbon::now()->addMinutes(2)
         ]);
-        return true;
+        return $user_id;
     }
 
 

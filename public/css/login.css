@@ -52,7 +52,7 @@ input[type="email"]{
     margin-top: 20px;
 }
 
-button,
+button,input[type="submit"],
 a {
     padding: 10px 20px;
     font-size: 16px;
@@ -60,16 +60,27 @@ a {
     border-radius: 6px;
     cursor: pointer;
     margin: 0 10px;
-    background-color: #28a745;
     color: white;
     transition: background-color 0.3s ease;
     text-decoration: none;
 }
 
-button:hover,
+.resendBtn{
+    background-color:red;
+}
+
+.submit, .signUp {
+    background-color: #28a745;
+}
+
+button:disabled {
+    display: none;
+}
+
+/*button:hover,
 a:hover {
     background-color: #218838;
-}
+}*/
 
 .error {
     color: red;
@@ -133,25 +144,25 @@ a:hover {
     text-align: center;
 }
 .abtn{
-color: #2f829c;
-text-decoration: underline;
-background-color: transparent;
-margin: 0;
-padding: 5px;
-}
-.abtn:hover{
+    color: #2f829c;
+    text-decoration: underline;
     background-color: transparent;
-    color: blue;
- }
+    margin: 0;
+    padding: 5px;
+    }
+.abtn:hover{
+        background-color: transparent;
+        color: blue;
+     }
  .message{
     width: 100%;
-        padding: 10px;
-        font-size: 15px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        box-sizing: border-box;
-        margin-bottom: 20px;
-        height: 100px;
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    height: 100px;
  }
 
 
@@ -183,3 +194,15 @@ padding: 5px;
     font-weight: bold;
     cursor: pointer;
 }
+
+  #countdown {
+      text-align: center;
+      /* color: green; */
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .buttoncontainer{
+      text-align: center;
+    }

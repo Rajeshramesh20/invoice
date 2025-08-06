@@ -156,7 +156,8 @@ class CommonServices
 
 
     public function sendSms($phoneNum,$message){
-        $contactNo = "+91" . $phoneNum ;
+        $contactNo = "+91" .$phoneNum;
+        Log::error('user phone number',['twillio' => $contactNo]);
 
         $twilio = new Client(
             config('services.twilio.sid'),

@@ -21,7 +21,7 @@
 
             <div class="button-group">
                 <button type="reset" class="clear">clear</button>
-                <button type="submit" name="student_login_button">Log In</button>
+                <button type="submit" name="student_login_button" class="signUp">Log In</button>
             </div>
 
         </form>

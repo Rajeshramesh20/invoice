@@ -10,7 +10,6 @@
         <h2>Sign Up</h2>
         <form id="registerForm">
             @csrf
-
             <label for="name">Enter your Name</label>
             <input type="text" name="name" id="name" value="{{ old('name') }}" />
             <p class="error" id="name_error"></p>
@@ -42,7 +41,7 @@
             <p class="error" id="role_id_error"></p>
 
             <div class="button-group">
-                <button type="submit">Sign Up</button>
+                <button type="submit" class="signUp">Sign Up</button>
                 <a href="{{ route('api.signuppage') }}" class="clear">Clear</a>
             </div>
         </form>
@@ -60,19 +59,18 @@
                 <p id="otp_err"></p>
 
              <div class="buttoncontainer">
-                <button id="resend" onclick="resendOtp()" class="submit"> Resend</button>
+                <button id="resend"  class="resendBtn" disabled> Resend</button>
                 <input type="submit" value="Verify OTP" class="submit">
             </div>
         </form>
          </div>
     </div>        
      
-
-
-
 <script>
     let registeredPhone = null;
     let userId = null;
+
+    //Registration
 document.getElementById("registerForm").addEventListener("submit", function(event) {
     event.preventDefault();
 
@@ -91,8 +89,9 @@ document.getElementById("registerForm").addEventListener("submit", function(even
             if (xhr.status === 200) {
                 registeredPhone = response.data.data.user_phone_num;
                 userId = response.data.data.id;
-
-                localStorage.setItem("otp_expires_at", response.data.userOTP.userOTP.otp_expires_at);
+                otpExpiresAt = response.data.userOTP.userOTP.otp_expires_at;
+                //localStorage.setItem("otp_expires_at", response.data.userOTP.userOTP.otp_expires_at);
+                startCountdown(otpExpiresAt);
                 document.getElementById("otpModal").style.display = "block";
 
              }else if (xhr.status === 422) {
@@ -114,7 +113,38 @@ document.getElementById("registerForm").addEventListener("submit", function(even
     xhr.send(formData);
 });
 
+//ExpirayTime Count
+function startCountdown(otpExpiry) {
+      let countDownDate = new Date(otpExpiry).getTime();
+      const countdownElement = document.getElementById("countdown");
+      const resendBtn = document.getElementById("resend");
 
+      resendBtn.disabled = true;
+      console.log(countDownDate);
+
+      let x = setInterval(function () {
+        let now = new Date().getTime();
+        let distance = countDownDate - now;
+
+        let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        let countdownElement = document.getElementById("countdown");
+
+        if (distance > 0) {
+          countdownElement.innerHTML = "OTP Expires In: " + minutes + "m " + seconds + "s";
+           countdownElement.style.color = "green"; 
+           resendBtn.disabled = true;
+        } else {
+          clearInterval(x);
+           countdownElement.innerHTML = "OTP has expired!";
+           countdownElement.style.color = "red";
+           resendBtn.disabled = false;
+        }
+      }, 1000);
+    }
+
+//OTP verification
 document.getElementById("OTP-verify").addEventListener("submit", function(event) {
         event.preventDefault();
 
@@ -144,12 +174,15 @@ document.getElementById("OTP-verify").addEventListener("submit", function(event)
            xhr.send(formData);     
        });          
 
-
+    //close OTP Model
     function closeModal() {
-    document.getElementById("otpModal").style.display = "none";
+        document.getElementById("otpModal").style.display = "none";
     }
 
-   function resendOtp(){
+    //Resend OTP
+   document.getElementById('resend').addEventListener("click", function(){
+        e.preventDefault();
+
         let formData = new FormData;
         formData.append('user_phone_num',registeredPhone);
         formData.append('id',userId);
@@ -163,7 +196,10 @@ document.getElementById("OTP-verify").addEventListener("submit", function(event)
                     const response = JSON.parse(xhr.responseText);
                 if (xhr.status === 200) {
                     let successMsg = response.message; 
+                    let expiryAt = response.data.otp_expires_at;
+                    startCountdown(expiryAt);
                     alert(successMsg);
+                    document.getElementById("otp").value = ''; 
                   // window.location.href = '/api/login';
                 }else if (xhr.status === 404) {
                     let data = response.message;
@@ -172,6 +208,9 @@ document.getElementById("OTP-verify").addEventListener("submit", function(event)
             }           
         };
            xhr.send(formData);  
-   }
+   });
+
+
+
 </script>
 @endsection
