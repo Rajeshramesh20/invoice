@@ -9,10 +9,12 @@ use App\Models\Company;
 use Illuminate\Support\Number;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Twilio\Rest\Client;
+use App\Models\UserOTP;
 
 class CommonServices
 {
-
     public function getUserID(){
         $userId = Auth::id();
         return $userId;
@@ -46,8 +48,7 @@ class CommonServices
         ]);
         return  $BankDetail;
     }
-
-
+    //update address
     public function updateAddress($address, $request){
         $address = $address->update([
             'line1' => $request['line1'],
@@ -60,7 +61,7 @@ class CommonServices
 
         return $address;
     }
-
+  //uppdate Bank Details
     public function updateBankDetails($bankDetails, $request){
         $bank = $bankDetails->update([
               'bank_name' => $request['bank_name'],
@@ -74,7 +75,7 @@ class CommonServices
         return $bank;
     }
 
-
+   //generate Invoice Pdf
     public function generateInvoicePdfData($invoice)  {
 
         $company = Company::with(['address', 'bankDetails'])->latest()->first();
@@ -92,6 +93,7 @@ class CommonServices
         }
 
         $numberInWords = Number::spell($invoice->total_amount);
+        Log::error($numberInWords);
 
         $formattedInvoiceDate = Carbon::parse($invoice->invoice_date)->format('M j, Y');
 
@@ -112,7 +114,8 @@ class CommonServices
 
          return $data ;
     }
-
+ 
+    //generate Payslip Pdf
     public function generatePayslipPdf($employee){
         $latestPayroll = $employee->latestPayrollDetail;
 
@@ -126,8 +129,11 @@ class CommonServices
         $deduction = 0.00;
         $advanceDeduction = 0.00;
         $pf = round($base * 0.10, 2);
-        $gross = $base + $bonus;
-        $net = $gross - ($deduction + $advanceDeduction + $pf);
+
+        $gross = $base + $bonus;       
+        $totalDeduction = $deduction + $advanceDeduction + $pf;
+        $net = $gross - $totalDeduction;
+        $numberInWords = Number::spell($net);
 
         $data = [
             'employee' => $employee,
@@ -139,13 +145,49 @@ class CommonServices
                 'bonus' => $bonus,  
                 'deduction' => $deduction,
                 'advance_deduction' => $advanceDeduction,
+                'totalDeduction' => $totalDeduction,
                 'gross' => $gross,
-                'net' => $net,
-            ]
+                'net' => $net,    
+            ],
+            'numberInWords' => $numberInWords
         ];
-
         return $data;
     }
+
+
+    public function sendSms($phoneNum,$message){
+        $contactNo = "+91" .$phoneNum;
+        // Log::error('user phone number',['twillio' => $contactNo]);
+
+        $twilio = new Client(
+            config('services.twilio.sid'),
+            config('services.twilio.token')
+        );
+
+        $from = config('services.twilio.sms_from');
+        $twilio->messages->create($contactNo, [
+            'from' => $from,
+            'body' => $message
+        ]);
+        return true;
+    }
+    
+
+    public function userOtp($user){
+        $otp = rand(100000, 999999);
+        $otpExpiresAt= Carbon::now()->addMinutes(2);
+        $userOTP = userOTP::create([
+            'user_id' => $user->id,
+            'otp' => $otp,
+            'attempts' => 0, //verify otp attempts
+            'otp_expires_at' => $otpExpiresAt
+        ]);
+        return [
+            'userOTP'=> $userOTP,
+            'otp'=> $otp
+        ];
+    }
+
 }
 
 

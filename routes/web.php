@@ -3,7 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiViewController;
 use App\Http\Controllers\EmployeesController;
-
+use Laravel\Passport\ApiTokenCookieFactory;
+use Maatwebsite\Excel\Row;
+use Twilio\Rest\Client; 
 
 Route::get('/', function () {
     return view('welcome');
@@ -15,6 +17,8 @@ Route::prefix('api')->name('api.')->group(function () {
   Route::get('/register', [ApiViewController::class, 'showRegisterForm'])->name('signuppage');
     
     Route::get('/login', [ApiViewController::class, 'showLoginForm'])->name('api.login');
+
+    Route::GET('show/verify-otp', [ApiViewController::class, 'showOTPForm']);
     
     Route::get('/forgot-password', [ApiViewController::class, 'showForgotPasswordForm'])->name('forgotpassword.form');
     
@@ -50,6 +54,7 @@ Route::prefix('api')->name('api.')->group(function () {
     Route::get('employeeList', [ApiViewController::class, 'employeesList']);
 
     Route::get('edit/employee/{id}', [ApiViewController::class, 'editEmployee']);
+  Route::get('view/employee/{id}', [ApiViewController::class, 'viewEmployee']);
     
     Route::get('createemployee', [ApiViewController::class, 'employeeForm']);
 
@@ -57,6 +62,8 @@ Route::prefix('api')->name('api.')->group(function () {
 
     Route::GET('payrolldetails', [ApiViewController::class, 'payrollDetails']);
 
-  
+    Route::GET('show/employee/{id}', [ApiViewController::class, 'showEmployeeData']);
+
+
 });
 

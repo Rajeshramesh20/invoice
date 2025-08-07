@@ -1,3 +1,18 @@
+
+    function paidAmountValidation(){
+        let isValid = true;
+        let amount = document.getElementById('paid_amount').value.trim();
+        let amountErr = document.getElementById('paid_amount_err');
+        if(amount === ''){
+            amountErr.innerHTML = 'Amount is Required';
+            isValid = false;
+        }else{
+            amountErr.innerHTML = '';
+        }
+        return isValid;
+     }
+
+
 function showAlert(message, type) {
     const alertBox = document.getElementById("customAlert");
     const alertMessage = document.getElementById("alertMessage");
@@ -30,8 +45,8 @@ function closePaidAlert() {
 document.addEventListener('DOMContentLoaded', function () {
     flatpickr("#startDate", {
         altInput: true,
-        altFormat: "d-m-Y",      
-        dateFormat: "Y-m-d"      
+        altFormat: "d-m-Y",
+        dateFormat: "Y-m-d"
     });
 
     flatpickr("#endDate", {
@@ -64,7 +79,6 @@ function getInvoiceList(page) {
             pagination(meta);
         }
     }
-
     invoiceRequest.send();
 };
 
@@ -73,8 +87,12 @@ function getInvoiceList(page) {
 function invoiceTable(data) {
     data.forEach(list => {
         let row = document.createElement('tr');
-        const total = list.total_amount !== null ? list.total_amount : '_';
-        const balance = list.balance_amount !== null ? list.balance_amount : '_';
+        const total = list.total_amount !== null ? Number(list.total_amount) : null;
+        const formatted = total !== null ? total.toLocaleString('en-IN') : '_';
+
+        const balance = list.balance_amount !== null ? Number(list.balance_amount) : '_';
+        const formattedBalance = balance !== null ? balance.toLocaleString('en-IN') : '_';
+        
         let statusWord = list.invoice_status ? list.invoice_status.status : '';
         let status = statusWord.charAt(0).toUpperCase() + statusWord.slice(1);
         console.log(status);
@@ -84,8 +102,6 @@ function invoiceTable(data) {
         if (emailStatus.trim().toLowerCase() === 'not_yet_send') {
             emailStatus = emailStatus.replace(/_/g, ' ');
         }
-
-
         const invoice_date = list.invoice_date;
         const InvoiceDate = new Date(invoice_date);
         let formatInvoiceDate = `${String(InvoiceDate.getDate()).padStart(2, '0')}-${String(InvoiceDate.
@@ -102,62 +118,58 @@ function invoiceTable(data) {
                 formatDueDate = '_';
             }
         }
-        // let inviceStatus = list.invoice_status;
-        row.innerHTML += `
-                            
-                            <td>${list.invoice_no}</td>
-                            <td>${formatInvoiceDate}</td>
-                            <td>${formatDueDate}</td>
-                            <td class="right">${total}</td>
-                            <td class="right">${balance}</td>
-                          	<td><div class="status openPopup" data-invoice-id="${list.invoice_id}">${status} <i class="fa-solid fa-arrow-up-right-from-square"></i></div>
-									</td>
-                            <td><div class="mail-status  left-align">${emailStatus}</div></td>
-                            <td>
-                           <abbr title="View">  <a href="/api/show/invoicedata/${list.invoice_id}"><i class="fa-solid fa-eye"></i></a></abbr>
-                          <abbr title="Edit">   <a href="/api/edit/invoice/${list.invoice_id}"><i class='fa-solid fa-pencil'></i></a></abbr>
-                          <abbr title="Send Mail">    <button class="mail-send" onclick="sendMail(${list.invoice_id})"><i class="fa-solid fa-paper-plane"></i></button></abbr>
-                           <abbr  title="Download Pdf">   <button class="pdf" onclick="pdfDownload('${list.invoice_id}','${list.invoice_no}')">
-                                <i class="fas fa-file-pdf" style="color: red;"></i></button></abbr>
-                                <abbr title="Delete"> <button class="button" onclick="myFunction(${list.invoice_id})"><i class='fa-solid fa-trash'></i></button></abbr>
-                            </td>
-                        `
+        row.innerHTML += `                          
+            <td>${list.invoice_no}</td>
+            <td>${formatInvoiceDate}</td>
+            <td>${formatDueDate}</td>
+            <td class="right">${formatted}</td>
+            <td class="right">${formattedBalance}</td>
+            <td><div class="status openPopup" data-invoice-id="${list.invoice_id}">${status}<abbr title="Change status"><i class="fa-solid fa-arrow-up-right-from-square"></i></abbr></div>
+			</td>
+            <td><div class="mail-status  left-align">${emailStatus}</div></td>
+            <td>
+                <abbr title="View"><a href="/api/show/invoicedata/${list.invoice_id}"><i class="fa-solid fa-eye"></i></a></abbr>
+                <abbr title="Edit"><a href="/api/edit/invoice/${list.invoice_id}"><i class='fa-solid fa-pencil'></i></a></abbr>
+                <abbr title="Send Mail"><button class="mail-send" onclick="sendMail(${list.invoice_id})"><i class="fa-solid fa-paper-plane"></i></button></abbr>
+                <abbr  title="Download Pdf"><button class="pdf" onclick="pdfDownload('${list.invoice_id}','${list.invoice_no}')">
+                <i class="fas fa-file-pdf" style="color: red;"></i></button></abbr>
+                <abbr title="Delete"> <button class="button" onclick="myFunction(${list.invoice_id})"><i class='fa-solid fa-trash'></i></button></abbr>
+            </td>
+        `
         listBody.appendChild(row);
     });
 }
-//Pagination
-function pagination(meta) {
-    let pagination = document.getElementById('paginateButton');
-    pagination.innerHTML = "";
+    //Pagination
+    function pagination(meta) {
+        let pagination = document.getElementById('paginateButton');
+        pagination.innerHTML = "";
 
-    for (let i = 1; i <= meta.last_page; i++) {
-        let paginateBtn = document.createElement('button');
-        paginateBtn.classList.add('paginateBtn');
-        paginateBtn.textContent = i;
+        for (let i = 1; i <= meta.last_page; i++) {
+            let paginateBtn = document.createElement('button');
+            paginateBtn.classList.add('paginateBtn');
+            paginateBtn.textContent = i;
 
-        if (i === meta.current_page) {
-            paginateBtn.disabled = true;
-        }
-        //paginateBtn.onclick = () => getInvoiceList(i);
-        paginateBtn.onclick = () => {
-            if (isSearching) {
-                searchData(i);
+            if (i === meta.current_page) {
+                paginateBtn.disabled = true;
             }
-            else {
-                getInvoiceList(i);
+            //paginateBtn.onclick = () => getInvoiceList(i);
+            paginateBtn.onclick = () => {
+                if (isSearching) {
+                    searchData(i);
+                }
+                else {
+                    getInvoiceList(i);
+                }
             }
+            pagination.appendChild(paginateBtn);
         }
-        pagination.appendChild(paginateBtn);
     }
-}
 
 document.getElementById('formSubmit').addEventListener('submit', function (event) {
     event.preventDefault();
     searchData(1);
 
 });
-
-
 
 //Search FieldData URL  
 function searchParams() {
@@ -207,16 +219,11 @@ function searchData(page = 1) {
                 let message = "Not Found Search Data";
                 showAlert(message, type);
             }
-
             console.log(data);
-            //Store Search Data
             listBody.innerHTML = '';
             invoiceTable(data);
             pagination(meta);
-
             isSearching = true;
-
-
         }
     }
     request.send();
@@ -318,13 +325,9 @@ function deleteInvoiceData(id) {
     deleteRequest.onload = function () {
         if (deleteRequest.status === 200) {
             let successResponse = JSON.parse(deleteRequest.responseText);
-            //alert("InvoiceData Deleted Sucessfully");
-
             let authSuccess = successResponse.message;
             let type = successResponse.type;
-            // alert("InvoiceData Deleted Sucessfully");
             showAlert(authSuccess, type);
-            //getInvoiceList(current_page);
         } else if (deleteRequest.status === 403) {
             let errResponse = JSON.parse(deleteRequest.responseText);
             let authErr = errResponse.message
@@ -332,7 +335,6 @@ function deleteInvoiceData(id) {
         }
         else if (deleteRequest.status === 422) {
             let errResponse = JSON.parse(deleteRequest.responseText);
-            //alert(errResponse.errors);
             console.log(errResponse.errors);
         }
     }
@@ -356,7 +358,7 @@ document.getElementById('exportBtn').addEventListener('click', function () {
             const downloadUrl = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = downloadUrl;
-            a.download = 'invoiceData.csv'; // Change to .xlsx if needed
+            a.download = 'invoiceData.csv';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -393,9 +395,7 @@ function sendMail(invoiceId) {
                 const response = JSON.parse(xhr.responseText);
                 const success = response.type;
                 const message = response.message;
-                // const error = response.error;
                 showAlert(message, success);
-                //alert("Success: " + response.message);
             } else if (xhr.status === 422) {
                 alert("Error: " + response.error);
             }
@@ -412,7 +412,7 @@ document.getElementById('logoutBtn').addEventListener('click', function () {
     xhr.open("GET", "http://127.0.0.1:8000/api/logout", true);
     xhr.setRequestHeader("Authorization", "Bearer " + token);
     xhr.setRequestHeader("Accept", "application/json");
-    
+
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {
@@ -459,24 +459,23 @@ function pdfDownload(invoiceId, invoice_no) {
 
 }
 
-// change Invoice Status
-let selectedInvoiceId = null;
-const overlay = document.getElementById('modalOverlay');
-document.addEventListener('DOMContentLoaded', function () {
+    // change Invoice Status
+    let selectedInvoiceId = null;
+    const overlay = document.getElementById('modalOverlay');
+    document.addEventListener('DOMContentLoaded', function () {
 
+        document.body.addEventListener('click', function (e) {
+            const target = e.target.closest('.openPopup');
+            if (target) {
+                selectedInvoiceId = target.getAttribute('data-invoice-id'); // store ID
+                overlay.style.display = 'block';
+            }
+        });
 
-    document.body.addEventListener('click', function (e) {
-        const target = e.target.closest('.openPopup');
-        if (target) {
-            selectedInvoiceId = target.getAttribute('data-invoice-id'); // store ID
-            overlay.style.display = 'block';
-        }
+        document.getElementById('closePopup').addEventListener('click', function () {
+            overlay.style.display = 'none';
+        });
     });
-
-    document.getElementById('closePopup').addEventListener('click', function () {
-        overlay.style.display = 'none';
-    });
-});
 
 document.getElementById('statusSubmit').addEventListener('click', function (e) {
     e.preventDefault();
@@ -487,12 +486,17 @@ document.getElementById('statusSubmit').addEventListener('click', function (e) {
         return;
     }
 
+    if (selectedStatus.value === '4') {
+        showAlert('please pay the remaining balance.', 'info');
+        return; 
+    }
+
     let payload = {
         status_id: selectedStatus.value
     };
 
     const xhr = new XMLHttpRequest();
-    xhr.open('PUT', `http://127.0.0.1:8000/api/invoice/${selectedInvoiceId}`, true);
+    xhr.open('PUT', `http://127.0.0.1:8000/api/update/invoice/status/${selectedInvoiceId}`, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.setRequestHeader('Accept', 'application/json');
     xhr.setRequestHeader('Authorization', 'Bearer ' + token);
@@ -502,8 +506,17 @@ document.getElementById('statusSubmit').addEventListener('click', function (e) {
             overlay.style.display = 'none';
             showAlert("Invoice status updated successfully", "success");
             getInvoiceList(current_page); // Refresh table
-        } else {
-            alert('Failed to update status.');
+        } else if(xhr.status === 422){
+            let statusErr = JSON.parse(xhr.responseText);
+            const errorType = statusErr.type;
+            const statusMessage = statusErr.error;
+            showAlert(statusMessage, errorType);
+        }
+        else if(xhr.status === 404) {
+            let statusResponse = JSON.parse(xhr.responseText);
+            const error = statusResponse.type;
+            const message = statusResponse.error;
+            showAlert(message, error);
         }
     };
 
@@ -511,33 +524,39 @@ document.getElementById('statusSubmit').addEventListener('click', function (e) {
 });
 
 //update payAmount
+
 function updatePaidAmount(selectedInvoiceId){
+    if(!paidAmountValidation()){
+        return;
+    }
             let invoicePaidAmount = parseFloat(document.getElementById('paid_amount').value)
             let payload = {
                     paid_amount : invoicePaidAmount
             };
 
-            let paidAmountRequest = new XMLHttpRequest();
-            paidAmountRequest.open('PUT',`http://127.0.0.1:8000/api/update/paidamount/${selectedInvoiceId}`,true);
-            paidAmountRequest.setRequestHeader('Accept', 'application/json');
-            paidAmountRequest.setRequestHeader('Authorization', 'Bearer ' + token);
-            paidAmountRequest.setRequestHeader('Content-Type', 'application/json');
+    let paidAmountRequest = new XMLHttpRequest();
+    paidAmountRequest.open('PUT', `http://127.0.0.1:8000/api/update/paidamount/${selectedInvoiceId}`, true);
+    paidAmountRequest.setRequestHeader('Accept', 'application/json');
+    paidAmountRequest.setRequestHeader('Authorization', 'Bearer ' + token);
+    paidAmountRequest.setRequestHeader('Content-Type', 'application/json');
 
-            paidAmountRequest.onload = function(){
-                if(paidAmountRequest.status === 200){
-                        let paidAmountResponse = JSON.parse(paidAmountRequest.responseText);
-                        const success = paidAmountResponse.type;
-                      const message = paidAmountResponse.message;
-                      const error = paidAmountResponse.error;
-                      showAlert(message,success);   
-                      document.getElementById("paidAlert").style.display = "none"; // Close alert
-                overlay.style.display = "none"; // Close modal
-                getInvoiceList(current_page); // Refresh list
-                }else if(paidAmountRequest.status === 422){
-                    showAlert(error,success);
-                }
-            }
-            console.log(payload);
-            console.log(selectedInvoiceId);
-            paidAmountRequest.send(JSON.stringify(payload));
-     }
+
+    paidAmountRequest.onload = function () {
+        if (paidAmountRequest.status === 200) {
+            let paidAmountResponse = JSON.parse(paidAmountRequest.responseText);
+            const success = paidAmountResponse.type;
+            const message = paidAmountResponse.message;
+            const error = paidAmountResponse.error;
+            showAlert(message, success);
+            document.getElementById("paidAlert").style.display = "none"; // Close alert
+            overlay.style.display = "none"; // Close modal
+            getInvoiceList(current_page); // Refresh list
+        } else if (paidAmountRequest.status === 422) {
+            showAlert(error, success);
+        }
+    }
+         console.log(payload);
+         console.log(selectedInvoiceId);
+         paidAmountRequest.send(JSON.stringify(payload));
+}
+

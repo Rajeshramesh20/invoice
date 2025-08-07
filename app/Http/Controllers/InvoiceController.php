@@ -69,13 +69,21 @@ class InvoiceController extends Controller
             ]);
         $updateinvoicestatus = $invoiceService->updateStatusTOInvoiceTable($validated, $invoiceId);
     
-        //  $invoiceService->generatePdf($invoiceId);
-           
+        if($updateinvoicestatus){
             return response()->json([
-            'status' => true,
-            'message' => 'Invoice  status updated successfully.',
-            'invoice' => $updateinvoicestatus
-        ]);
+                    'status' => true,
+                    'message' => 'Invoice  status updated successfully.',
+                    'invoice' => $updateinvoicestatus
+            ]);
+        }
+        else {
+                return response()->json([
+                    'type' => 'warning',
+                    'error' => 'The Status Does Not Change'
+                ], 404);
+            }
+           
+            
     }catch(Exception $e){
             return response()->json([
                 'status' => false,

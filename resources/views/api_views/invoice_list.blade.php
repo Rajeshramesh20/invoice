@@ -17,7 +17,7 @@
 	<script>
 		const token = localStorage.getItem('token');
 		if(!token){
-			window.location.replace('./api/login')
+			window.location.replace('/api/login')
 		}else{
 			window.addEventListener('DOMContentLoaded',()=>{
 				document.body.style.display='block';
@@ -43,10 +43,11 @@
 	<div>
 		<div class="invoice-search">
 			<p>Sales Invoice List</p>
-			<i class="fa-solid fa-magnifying-glass"></i>
+			<i class="fa-solid fa-magnifying-glass" id="toggleSearch"></i>
 		</div>
 
 		<form id="formSubmit">
+		<div class="search-form-container">
 			<div class="form-row">
 				<div class="form-group">
 					<label for="startDate">Start Date</label>
@@ -87,11 +88,13 @@
 					</select>
 				</div>	
 			</div>
+			
 			<hr>
 			<div class="reset">
 				<a href="/api/invoice/list" class="clear">Reset</a>
 				<input type="submit" name="search" value="Search" class="search">
 			</div>
+		</div>	
 	</div>
 	</form>
 		<div class="theader" style="text-align:right;border-radius:10px">
@@ -141,14 +144,124 @@
 </div>
 
 	<!-- Custom alert Box for Partially Paid -->
-		<div id="paidAlert" class="custom-alert paid">
+		<div id="paidAlert" class="custom-alert paid" >
 				<span id="closePopup" onclick="closePaidAlert()">&times;</span>
 				<label for="partiallyPaid">Enter Amount</label>
 		  	<input type="number" name="partiallyPaid" id="paid_amount" placeholder="Enter Amount">
+		  	<p id="paid_amount_err" class="error"></p>
 		  	<button onclick="updatePaidAmount(selectedInvoiceId)" class="alertBtn">Enter</button>
 		</div>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="/js/invoiceListV1.js"></script>
+		{{-- <div id="container" style="height: 300px; width: 350px;"></div> --}}
+		<div style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 20px;">
+		    <div id="overallDonut" style="width: 400px; height: 300px;"></div>
+		    <div id="amountColumn" style="width: 350px; height: 300px;"></div>
+		</div>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<script src="/js/invoiceListV1.js"></script>
+
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+
+<script>
+		document.getElementById('toggleSearch').addEventListener('click',function(){
+			let formContainer = document.querySelector(".search-form-container");
+			if (formContainer.style.display === "none") {
+		        formContainer.style.display = "block";
+		    } else {
+		        formContainer.style.display = "none";
+		    }
+
+		});
+</script>
+
+{{-- <script>
+	// const token = localStorage.getItem('token');
+		
+ document.addEventListener('DOMContentLoaded', function () {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://127.0.0.1:8000/api/invoicechart', true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+		xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+
+                if (response.status && response.data.overall) {
+                    const data = response.data.overall;
+                    const total = parseFloat(data.total);
+                    const paid = parseFloat(data.paid);
+                    const unpaid = parseFloat(data.unpaid_total);
+                    const invoiceCount = data.count;
+
+                    Highcharts.chart('container', {
+                        chart: {
+                            type: 'pie',
+                            custom: {},
+                            events: {
+                              render() {
+    const chart = this;
+    const series = chart.series[0];
+
+    let customLabel = chart.options.chart.custom.label;
+
+    const labelHTML = `
+        <div style="text-align: center; font-size: 14px;">
+            Invoices<br/>
+            <span style="font-weight: bold; font-size: 18px;">${invoiceCount}</span><br/>
+            ₹${total.toLocaleString()}
+        </div>
+    `;
+
+    if (!customLabel) {
+        customLabel = chart.options.chart.custom.label =
+            chart.renderer.label(labelHTML, 0, 0, null, null, null, true) // `true` = useHTML
+                .css({
+                    width: '120px'
+                })
+                .add();
+    } else {
+        customLabel.attr({ text: labelHTML });
+    }
+
+    const labelBBox = customLabel.getBBox();
+    const x = series.center[0] + chart.plotLeft - (labelBBox.width / 2);
+    const y = series.center[1] + chart.plotTop - (labelBBox.height / 2);
+
+    customLabel.attr({ x, y });
+}
+
+                            }
+                        },
+                        title: {
+                            text: 'Overall Invoice Summary'
+                        },
+                        tooltip: {
+                            pointFormat: '{point.name}: <b>₹{point.y}</b> ({point.percentage:.0f}%)'
+                        },
+                        plotOptions: {
+                            pie: {
+                                innerSize: '70%',
+                                dataLabels: [{
+                                    enabled: true,
+                                    format: '{point.name}: ₹{point.y}'
+                                }]
+                            }
+                        },
+                        series: [{
+                            name: 'Amount',
+                            colorByPoint: true,
+                            data: [
+                                { name: 'Paid', y: paid },
+                                { name: 'Unpaid', y: unpaid }
+                            ]
+                        }]
+                    });
+                }
+            }
+        };
+        xhr.send();
+    });
+</script> --}}
+
 
 </body>
 

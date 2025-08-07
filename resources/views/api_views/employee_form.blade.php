@@ -127,6 +127,7 @@
 		}
 		p {
 			color: red;
+	
 		}
 		/* Display correct form */
 		#tab1:checked ~ #employeeInfo,
@@ -172,13 +173,13 @@
 		<form id="employeeInfo" class="employee">
 				<h1>Employee Form<span class="close" id="closebtn">&times;</span></h1>
 			<div class="form-group">			
-				<label for="first_name"><span>*</span>FirstName</label>
+				<label for="first_name"><span>*</span>First name</label>
 				<input type="text" name="first_name" id="first_name" placeholder="Enter Your FirstName">
 			</div>
 			<p id="first_name_err"></p>
 
 			<div class="form-group">
-				<label for="last_name"><span>*</span>LastName</label>
+				<label for="last_name"><span>*</span>Last name</label>
 				<input type="text" name="last_name" id="last_name" placeholder="Enter Your lastName">
 			</div>
 			<p id="last_name_err"></p>
@@ -190,7 +191,7 @@
 			<p id="email_err"></p>
 
 			<div class="form-group">
-				<label for="contact_number"><span>*</span>ContactNumber</label>
+				<label for="contact_number"><span>*</span>Contact number</label>
 				<input type="number" name="contact_number" id="contact_number" placeholder="Enter Contact Number">
 			</div>
 			<p id="contact_number_err"></p>
@@ -221,7 +222,7 @@
 			<p id="date_of_birth_err"></p>
 
 			<div class="form-group">
-				<label for="marital_status"><span>*</span>Marital_Status</label>
+				<label for="marital_status"><span>*</span>Marital status</label>
 				<input type="text" name="marital_status" id="marital_status" placeholder="Enter Marital_Status">
 			</div>
 			<p id="marital_status_err"></p>
@@ -279,7 +280,7 @@
 		<form id="employeeBank" class="employee">
 			<h1>Employee Form</h1>
 			<div class="form-group">
-					<label for="bank_name"><span>*</span>Bank Name </label>
+					<label for="bank_name"><span>*</span>Bank name </label>
 					<input type="text" name="bank_name" id="bank_name" placeholder="Enter Bank Name">				
 			</div>
 			<p id="bank_name_err"></p>
@@ -291,7 +292,7 @@
 			<p id="account_holder_name_err"></p>
 
 			<div class="form-group">
-				<label for="account_number"><span>*</span>Account Number </label>
+				<label for="account_number"><span>*</span>Account number </label>
 				<input type="number" name="account_number" id="account_number" placeholder="Enter Account Number">
 			</div>
 			<p id="account_number_err"></p>
@@ -303,13 +304,13 @@
 			<p id="ifsc_code_err"></p>
 
 			<div class="form-group">
-					<label for="branch_name"><span>*</span>Branch Name</label>
+					<label for="branch_name"><span>*</span>Branch name</label>
 					<input type="text" name="branch_name" id="branch_name" placeholder="Enter Branch Name">			
 			</div>
 			<p id="branch_name_err"></p>
 
 			<div class="form-group">
-				<label for="account_type"><span>*</span>Account Type</label>
+				<label for="account_type"><span>*</span>Account type</label>
 				<input type="text" name="account_type" id="account_type" placeholder="Enter Account Type">
 			</div>
 			<p id="account_type_err"></p>
@@ -337,7 +338,7 @@
 			<p id="department_id_err"></p>
 
 			<div class="form-group">
-				<label for="employee_type">Employee Type</label>
+				<label for="employee_type">Employee type</label>
 				<select name="employee_type" id="employee_type">
 					<option value="Select Employee Type" disabled selected hidden>Select Employee Type</option>
 					<option value="full_time">FullTime</option>

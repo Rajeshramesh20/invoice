@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Services\EmployeeService;
 use App\Http\Requests\EmployeeRequests;
 use App\Http\Requests\StorePayrollRequest;
-use Exception;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\EmployeeExport;
+use Exception;
+use Twilio\Rest\Client;
+use Illuminate\Support\Facades\Http;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -162,10 +164,9 @@ class EmployeesController extends Controller
     }
 
     //Update Employee Data 
-    public function updateEmployeeData($id, Request $request, EmployeeService $updateEmployee)
+    public function updateEmployeeData($id, EmployeeRequests $request, EmployeeService $updateEmployee)
     {
         try {
-
             // $validatedEmployee = $request->validated();
             $updateEmployeesData = $updateEmployee->updateEmployeeData($id, $request);
             if ($updateEmployeesData) {
@@ -361,4 +362,29 @@ class EmployeesController extends Controller
         return $response;
     }
 
+
+    // public function sendPayslipsToEmployees(Request $request, EmployeeService $sendPayslipsToEmployees){
+    //     try{
+    //     $employeeId = $request->input('id');    
+    //     $employee = $sendPayslipsToEmployees->sendPayslipsToEmployees($employeeId);
+
+    //     if($employee){
+    //             return response()->json([
+    //                 'status' => 'success',
+    //                 'data' => $employee,
+    //                 'message' => 'mail send Successfully to the Employee Mail'
+    //             ]);
+    //         }else{
+    //             return response()->json([
+    //                 'status' => 'false',
+    //                 'message' => 'mail does not send'
+    //             ]);
+    //         }
+    //     }catch(Exception $e){
+    //          Log::error('Error in send payroll mail', ['exception' => $e->getMessage()]);
+    //     }    
+    // }
+
 }
+
+

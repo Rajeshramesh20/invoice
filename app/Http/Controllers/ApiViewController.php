@@ -9,9 +9,12 @@ class ApiViewController extends Controller
 {
     public function showRegisterForm()
     {
-
-        
         return view('auth.register');
+    }
+
+    public function showOTPForm()
+    {
+        return view('auth.verify-otp');
     }
 
     public function showLoginForm()
@@ -42,7 +45,7 @@ class ApiViewController extends Controller
     }
     public function Addinvoice()
     {
-        return view('api_views.invoice_form');
+        return view('api_views.invoice_formV1');
     }
     public function invoiceList()
     {
@@ -101,5 +104,9 @@ class ApiViewController extends Controller
     public function payrollDetails()
     {
         return view('api_views.payroll_details');
+    }
+
+    public function viewEmployee(){
+        return view('api_views.employee_view');
     }
 }

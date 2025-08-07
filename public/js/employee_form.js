@@ -8,7 +8,7 @@
 	let phone = document.getElementById('contact_number').value.trim();
     let nationality = document.getElementById('nationality').value.trim();
 	let department = document.getElementById('department_id').value;
-	let maritalStatus = document.getElementById('nationality').value.trim();
+	let maritalStatus = document.getElementById('marital_status').value.trim();
 	const genderRadios = document.getElementsByName("gender");
 		                   
 
@@ -149,7 +149,6 @@
 		}
 
 		return isValid;	
-
 	}
 
 	//employee bank validation
@@ -321,10 +320,52 @@
 		}else{
 		  	payFrequencyErr.innerHTML = "";
 		}   
-		return isValid;
+			return isValid;
 	}
 
-	const token = localStorage.getItem('token');
+
+
+	document.querySelector('label[for="tab2"]').addEventListener('click', function (e) {
+    	e.preventDefault();
+
+	    // Run your validation function
+	    if (validation()) {
+			document.getElementById("tab2").checked = true;
+		}
+		
+	});
+
+	document.querySelector('label[for="tab3"]').addEventListener('click', function (e) {
+    	e.preventDefault();
+
+	    // Run your validation function
+	    if (employeesAddress()) {
+	        document.getElementById("tab3").checked = true;
+	    }
+	});
+
+
+	document.querySelector('label[for="tab4"]').addEventListener('click', function (e) {
+    	e.preventDefault();
+
+	    // Run your validation function
+	    if (employeeBandDetail()) {
+	        document.getElementById("tab4").checked = true;
+	    }
+	});
+
+	document.querySelector('label[for="tab5"]').addEventListener('click', function (e) {
+    	e.preventDefault();
+
+	    // Run your validation function
+	    if (jobDetailsValidation()) {
+	        document.getElementById("tab5").checked = true;
+	    }
+	});
+
+
+				//Store the Employee Data
+				const token = localStorage.getItem('token');
 				document.addEventListener("DOMContentLoaded", function () {
 				    const employeeInfo = document.getElementById("employeeInfo");
 				    const employeeAddress = document.getElementById("employeeAddress");
@@ -332,7 +373,8 @@
 				    const employeeJob = document.getElementById("employeeJob");
 				    const employeeSalary = document.getElementById("employeeSalary");
 
-				    document.getElementById("submitAll").onclick = function () {                     
+				    document.getElementById("submitAll").onclick = function () {  
+
 				    	if(!salaryValidation()){
 				    		return;
 				    	}
@@ -370,13 +412,12 @@
 					        xhr.send(formData);
 
         			};
-				});
+		});
 
 		//this is for Close Employee Form
 		document.getElementById('closebtn').addEventListener('click',function(){
             window.location.href = "/api/employeeList";
         });
-
 
         //employee Department
 	document.addEventListener('DOMContentLoaded', function () {
@@ -387,7 +428,7 @@
 	    http.setRequestHeader('Accept', 'application/json');
 	    if (!token) {
 	        alert('Token has been Expired! Please Login Again');
-	        window.location.href = './api/login';
+	        window.location.href = '	/api/login';
 	        return;
 	    }
 

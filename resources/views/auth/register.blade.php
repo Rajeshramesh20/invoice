@@ -10,7 +10,6 @@
         <h2>Sign Up</h2>
         <form id="registerForm">
             @csrf
-
             <label for="name">Enter your Name</label>
             <input type="text" name="name" id="name" value="{{ old('name') }}" />
             <p class="error" id="name_error"></p>
@@ -42,24 +41,43 @@
             <p class="error" id="role_id_error"></p>
 
             <div class="button-group">
-                <button type="submit">Sign Up</button>
+                <button type="submit" class="signUp">Sign Up</button>
                 <a href="{{ route('api.signuppage') }}" class="clear">Clear</a>
             </div>
         </form>
-
-        {{-- <div class="sinupcontainer">
-            <a href="{{ route('api.login') }}" class="back">Back</a>
-        </div> --}}
     </div>
 </div>
 
+    <!-- OTP Modal -->
+    <div id="otpModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <form id="OTP-verify">
+             <p id="countdown">OTP Expires In: --</p>
+                <label for="otp">OTP</label>
+                <input type="number" name="otp" id="otp" placeholder="Enter OTP">
+                <p id="otp_err"></p>
+
+             <div class="buttoncontainer">
+                <button id="resend"  class="resendBtn" disabled> Resend</button>
+                <input type="submit" value="Verify OTP" class="submit">
+            </div>
+        </form>
+         </div>
+    </div>        
+     
 <script>
+    let registeredPhone = null;
+    let userId = null;
+
+    //Registration
 document.getElementById("registerForm").addEventListener("submit", function(event) {
     event.preventDefault();
 
     const form = this;
  //it's automatically get the all input data
     const formData = new FormData(form);
+    // registeredPhone = formData.get('user_phone_num');
 
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "http://127.0.0.1:8000/api/register", true);
@@ -67,14 +85,18 @@ document.getElementById("registerForm").addEventListener("submit", function(even
 
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
+            const response = JSON.parse(xhr.responseText);
             if (xhr.status === 200) {
-                alert("Registered successfully!");
-                 //redirect to student list page
-                window.location.href = "/api/login";
+                registeredPhone = response.data.data.user_phone_num;
+                userId = response.data.data.id;
 
-            } else if (xhr.status === 422) {
-                const response = JSON.parse(xhr.responseText);
-                    //get the response error from laravel errors and set the errors to this filds
+                otpExpiresAt = response.data.userOTP.userOTP.otp_expires_at;
+                //localStorage.setItem("otp_expires_at", response.data.userOTP.userOTP.otp_expires_at);
+                startCountdown(otpExpiresAt);
+
+                document.getElementById("otpModal").style.display = "block";
+                startCountdown(otpExpiresAt); 
+             }else if (xhr.status === 422) {
                 if (response.errors) {
                     for (let key in response.errors) {
                         const errorElement = document.getElementById(`${key}_error`);
@@ -92,5 +114,107 @@ document.getElementById("registerForm").addEventListener("submit", function(even
     };
     xhr.send(formData);
 });
+//ExpirayTime Count
+function startCountdown(otpExpiry) {
+      let countDownDate = new Date(otpExpiry).getTime();
+      const countdownElement = document.getElementById("countdown");
+      const resendBtn = document.getElementById("resend");
+
+      resendBtn.disabled = true;
+      console.log(countDownDate);
+
+      let x = setInterval(function () {
+        let now = new Date().getTime();
+        let distance = countDownDate - now;
+
+        let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        let countdownElement = document.getElementById("countdown");
+
+        if (distance > 0) {
+          countdownElement.innerHTML = "OTP Expires In: " + minutes + "m " + seconds + "s";
+           countdownElement.style.color = "green"; 
+           resendBtn.disabled = true;
+        } else {
+          clearInterval(x);
+           countdownElement.innerHTML = "OTP has expired!";
+           countdownElement.style.color = "red";
+           resendBtn.disabled = false;
+        }
+      }, 1000);
+    }
+
+//OTP verification
+document.getElementById("OTP-verify").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        // if(!validation()){
+        //     return;
+        // }
+
+        const form = this;       
+        const formData = new FormData(form);
+        formData.append('user_phone_num', registeredPhone);
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://127.0.0.1:8000/api/verify-otp", true);
+        xhr.setRequestHeader('Accept', 'application/json');
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                    const response = JSON.parse(xhr.responseText);
+                if (xhr.status === 200) {
+                    let successMsg = response.data.message; 
+                    alert(successMsg);
+                  window.location.href = '/api/login';
+                }else if (xhr.status === 404) {
+                    let data = response.message;
+
+                    alert(data);
+                }
+            }           
+        }
+           xhr.send(formData);     
+       });          
+
+    //close OTP Model
+    function closeModal() {
+        document.getElementById("otpModal").style.display = "none";
+        window.location.href = '/api/login';
+    }
+
+    //Resend OTP
+   document.getElementById('resend').addEventListener("click", function(e){
+        e.preventDefault();
+
+        let formData = new FormData;
+        formData.append('user_phone_num',registeredPhone);
+        formData.append('id',userId);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://127.0.0.1:8000/api/resend-otp", true);
+        xhr.setRequestHeader('Accept', 'application/json');
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                    const response = JSON.parse(xhr.responseText);
+                    // console.log(response)
+                if (xhr.status === 200) {
+                    let successMsg = response.message; 
+                    let expiryAt = response.data.otp_expires_at;
+                    startCountdown(expiryAt);
+                    alert(successMsg);
+                    document.getElementById("otp").value = ''; 
+                  // window.location.href = '/api/login';
+                }else if (xhr.status === 404) {
+                    let data = response.message;
+                    alert(data);
+                }
+            }           
+        };
+           xhr.send(formData);  
+   });
+
+
+
 </script>
 @endsection

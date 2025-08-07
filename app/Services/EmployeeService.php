@@ -12,7 +12,7 @@ use App\Models\BankDetail;
 use App\Models\Company;
 
 
-
+use App\Http\Requests\EmployeeRequests;
 
 use App\Services\CommonServices;
 use Exception;
@@ -200,21 +200,22 @@ class EmployeeService
     }
 
     //Update Employee Data
-    public function updateEmployeeData($id, Request $request){
+    public function updateEmployeeData($id,EmployeeRequests $request){
         try{
             $employee = Employees::with(['jobDetails.department', 'address', 'salary.bankDetails'])->findOrFail($id);
             $commonServices = new CommonServices();
+            $validatedEmployee = $request->validated();
 
             $updateData = [
-                'first_name'        => $request->input('first_name', $employee->first_name),
-                'last_name'         => $request->input('last_name', $employee->last_name),
-                'gender'            => $request->input('gender', $employee->gender),
-                'date_of_birth'     => $request->input('date_of_birth', $employee->date_of_birth),
-                'nationality'       => $request->input('nationality', $employee->nationality),
-                'marital_status'    => $request->input('marital_status', $employee->marital_status),
-                'contact_number'    => $request->input('contact_number', $employee->contact_number),
-                'email'             => $request->input('email', $employee->email),
-                'updated_by' => $commonServices->getUserID()
+                'first_name'        => $validatedEmployee['first_name'],
+                'last_name'         => $validatedEmployee['last_name'],
+                'gender'            => $validatedEmployee['gender'],
+                'date_of_birth'     => $validatedEmployee['date_of_birth'],
+                'nationality'       => $validatedEmployee['nationality'],
+                'marital_status'    => $validatedEmployee['marital_status'],
+                'contact_number'    => $validatedEmployee['contact_number'],
+                'email'             => $validatedEmployee['email'],
+                'updated_by'        => $commonServices->getUserID()
             ];
 
         
@@ -237,32 +238,32 @@ class EmployeeService
 
                 //employee Address 
                 $employeeAddress = $employee->address;
-                $address = $commonServices->updateAddress($employeeAddress, $request);
+                $address = $commonServices->updateAddress($employeeAddress, $validatedEmployee);
 
                 //Employee Bankdetails
                 $employeeBank = $employee->salary->bankDetails;
-                $bank = $commonServices->updateBankDetails($employeeBank, $request);
+                $bank = $commonServices->updateBankDetails($employeeBank, $validatedEmployee);
 
             //Employee Salary
             if($employee->salary){
                 $employee->salary->update([
-                  'base_salary' => $request->input('base_salary', $employee->salary->base_salary),
-                  'pay_grade' => $request->input('pay_grade', $employee->salary->pay_grade),
-                  'pay_frequency' => $request->input('pay_frequency', $employee->salary->pay_frequency)
+                    'base_salary'   => $validatedEmployee['base_salary'],
+                    'pay_grade'     => $validatedEmployee['pay_grade'],
+                    'pay_frequency' => $validatedEmployee['pay_frequency']
                 ]);
             }
 
         //Employee JobDetails
         if($employee->jobDetails){
             $employee->jobDetails->update([
-              'job_title' => $request->input('job_title', $employee->jobDetails->job_title),
-              'department_id' => $request->input('department_id', $employee->jobDetails->department_id),
-              'employee_type' => $request->input('employee_type', $employee->jobDetails->employee_type),
-              'employment_status' => $request->input('employment_status', $employee->jobDetails->employment_status),
-              'joining_date' => $request->input('joining_date', $employee->jobDetails->joining_date),
-              'probation_period' => $request->input('probation_period', $employee->jobDetails->probation_period),
-               'work_location' => $request->input('work_location', $employee->jobDetails->work_location),
-               'updated_by' => $commonServices->getUserID()
+                'job_title'         => $validatedEmployee['job_title'],
+                'department_id'     => $validatedEmployee['department_id'],
+                'employee_type'     => $validatedEmployee['employee_type'],
+                'employment_status' => $validatedEmployee['employment_status'],
+                'joining_date'      => $validatedEmployee['joining_date'],
+                'probation_period'  => $validatedEmployee['probation_period'],
+                'work_location'     => $validatedEmployee['work_location'],
+                'updated_by'        => $commonServices->getUserID()
             ]);
         }
 
@@ -274,7 +275,7 @@ class EmployeeService
 
     //Show(Separate) Employee Data
     public function showEmployeeData($id){
-        $employee = Employees::with(['jobDetails', 'salary', 'address'])->findOrFail($id);
+        $employee = Employees::with(['jobDetails.department', 'salary', 'address'])->findOrFail($id);
         return $employee;
     }
 
@@ -287,6 +288,7 @@ class EmployeeService
 
     //store payroll month
     public function storePayroll(array $employeeIds, $createdBy = null) {
+        $commonServices = new CommonServices();
         $payrollId = strtoupper('PYR-' . Str::random(6));
         $payDate = Carbon::now()->toDateString();
 
@@ -294,7 +296,8 @@ class EmployeeService
         $failed = 0;
 
         foreach ($employeeIds as $empId) {
-            $employee = Employees::with('salary')->find($empId);
+            $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])->
+                        findOrFail($empId);
 
             if (!$employee || !$employee->salary) {
                 $failed++;
@@ -309,7 +312,7 @@ class EmployeeService
             $pf =  round($base * 0.10, 2);
 
             $gross = $base + $bonus;
-            $net = $gross - ($advanceDeduction + $deduction + $pf);
+            $net = $gross - ($advanceDeduction + $deduction + $pf);  
 
             PayrollDetail::create([
                 'payroll_id' => $payrollId,
@@ -324,6 +327,24 @@ class EmployeeService
                 'gross_pay' => $gross,
                 'net_pay' => $net,
             ]);
+
+             $employee->load('latestPayrollDetail');
+            
+            //generate PDF With Mail Send
+            $company = Company::with(['address', 'bankDetails'])->latest()->first();
+            $employeeMail = $employee->email;
+            $data = $commonServices->generatePayslipPdf($employee);
+            $employeeMail = $employee->email;
+            $pdf = Pdf::loadView('pdf.payslip', $data);
+
+            Mail::send('mail.employee_payroll_mail', ['employee' => $employee, 'company' => $company, 'payroll_date'=> $payDate], function($message) use($employee, $employeeMail, $pdf, $company) {
+                $message->to($employeeMail);
+                $message->subject('Your Payroll From '. $company->company_name);
+                $message->attachData($pdf->output(), 'Employee-' . $employee->employee_id . '.pdf', [
+                    'mime' => 'application/pdf',
+                ]);
+         });
+
 
             $success++;
         }
@@ -362,7 +383,7 @@ class EmployeeService
 
     // get pay roll history
     public function getpayroll_history() {
-        $payroll_history = payroll_history::paginate(2);
+        $payroll_history = payroll_history::paginate(5);
         return  $payroll_history;
     }
 
@@ -385,7 +406,7 @@ class EmployeeService
         $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])->
                     findOrFail($id);
         $company = Company::with(['address', 'bankDetails'])->latest()->first();
-
+        
         //geneartePdf for payslip
         $commonServices = new CommonServices();
         $data = $commonServices->generatePayslipPdf($employee);
@@ -406,7 +427,36 @@ class EmployeeService
         }
     }
 
-    
+
+   /* public function sendPayslipsToEmployees($Ids){
+        try{
+           foreach($Ids as $employeeIds){
+                $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])
+                            ->findOrFail($employeeIds);
+                $company = Company::with(['address', 'bankDetails'])->latest()->first();
+                $employeeMail = $employee->email;
+
+                if($employee && $employeeMail){  
+                    //geneartePdf for payslip
+                    $commonServices = new CommonServices();
+                    $data = $commonServices->generatePayslipPdf($employee);                
+                    $pdf = Pdf::loadView('pdf.payslip', $data);
+
+                 Mail::send('mail.employee_payroll_mail', ['employee' => $employee, 'company' => $company], function($message) use($employee, $employeeMail, $pdf, $company) {
+                        $message->to($employeeMail);
+                        $message->subject('Your Payroll From '. $company->company_name);
+                        $message->attachData($pdf->output(), 'Employee-' . $employee->employee_id . '.pdf', [
+                            'mime' => 'application/pdf',
+                        ]);
+                    });
+                }            
+           }
+           return true;
+        }catch(Exception $e){
+            Log::error('error in send mail' . $e->getMessage());
+        }
+    }*/
+   
     public function generateplyslipPdf($employeeId) {
         $employee = Employees::with(['jobDetails.department', 'salary.bankDetails', 'latestPayrollDetail'])
             ->where('id', $employeeId)->first();
@@ -416,7 +466,5 @@ class EmployeeService
 
         $pdf = Pdf::loadView('pdf.payslip', $data);
         return   $pdf->download('payslip-'.$employee->id.'.pdf');
-
-
     }
 }

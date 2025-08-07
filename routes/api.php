@@ -6,6 +6,8 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\MenusController;
 use App\Http\Controllers\RoleMenuPermissionController;
 use App\Http\Controllers\EmployeesController;
+use App\Http\Controllers\SMSController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,12 +25,18 @@ use App\Http\Controllers\EmployeesController;
 // });
 
 //auth
-Route::post('register', [InvoiceControllerV1::class, 'register'])->name('user.register');
-Route::post('authenticate', [InvoiceControllerV1::class, 'authenticate'])->name('authenticate');
-
+Route::post('register', [AuthController::class, 'register'])->name('user.register');
+Route::post('/verify-otp', [AuthController::class, 'verifyUserOTP']);
+Route::post('authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
+Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
+Route::post('/verifyPhNo',[AuthController::class, 'verifyPhNo']);
 //forgot password
-Route::post('/forgot-password', [InvoiceControllerV1::class, 'submitforgotpasswordformapi']);
-Route::post('/reset-password', [InvoiceControllerV1::class, 'submitResetPasswordForm']);
+Route::post('/forgot-password', [AuthController::class, 'submitforgotpasswordformapi']);
+Route::post('/reset-password', [AuthController::class, 'submitResetPasswordForm']);
+
+// //OTP generate
+// Route::post('send-otp', [AuthController::class, 'sendOTP']);
+// Route::post('verify/otp', [AuthController::class, 'verifyOTP']);
 
 
 Route::middleware(['auth:api'])->group(function () {
@@ -63,7 +71,7 @@ Route::middleware(['auth:api'])->group(
     
         //invoice Status
         Route::get('invoicestatus', [InvoiceControllerV1::class, 'invoiceStatus']);
-        Route::put('invoice/{id}', [InvoiceControllerV1::class, 'updateStatusTOInvoiceTable']);
+        Route::put('update/invoice/status/{id}', [InvoiceControllerV1::class, 'updateStatusTOInvoiceTable']);
 
         //show invoice table data
         Route::get('invoicedata', [InvoiceControllerV1::class, 'invoiceDataList']);
@@ -80,7 +88,7 @@ Route::middleware(['auth:api'])->group(
         Route::get('/invoicechart', [InvoiceControllerV1::class, 'invoiceChart']);
 
         //logout
-        Route::get('logout', [InvoiceControllerV1::class, 'logout'])->name('logout');
+        Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
     }
 );
@@ -113,8 +121,6 @@ Route::middleware(['auth:api'])->group(function() {
     Route::PUT('updateemployee/{id}',[EmployeesController::class, 'updateEmployeeData']); //update employee
     Route::GET('showemployee/{id}',[EmployeesController::class, 'showEmployeeData']); //show employee Data
 
-    Route::DELETE('deleteemployee/{id}',[EmployeesController::class, 'deleteEmployeeData']); //Delete employee Data
-
     Route::PUT('deleteemployee/{id}',[EmployeesController::class, 'deleteEmployeeData']); //Delete employee Data
 
     Route::get('searchEmployee', [EmployeesController::class, 'searchData']);
@@ -134,6 +140,14 @@ Route::middleware(['auth:api'])->group(function() {
 
     Route::POST('payroll/mail/{id}', [EmployeesController::class, 'sendPayRollMail']);
     Route::post('downloadPayslip/{id}',[EmployeesController::class, 'downloadpayslip']);
+
+    Route::POST('employee/payroll/mail', [EmployeesController::class, 'sendPayslipsToEmployees']);
+
+
+    Route::get('/send-sms/{id}', [SMSController::class, 'send']);//vonage SMS Send
+    Route::get('/twilio/send-sms/{id}', [SMSController::class, 'twilioSend']);//Twilio SMS  
+    Route::get('/whatsapp/send/{id}', [SMSController::class, 'sendWhatsapp']);//Twilio Whatsapp Send
+
 
 });
 

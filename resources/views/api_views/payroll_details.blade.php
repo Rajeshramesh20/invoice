@@ -115,7 +115,7 @@
                             return date.toLocaleDateString('en-GB').replace(/\//g, '-');
                         }
                     let payDate = formatDate(payroll_date);
-                    
+                    let employee_id = list.employee?.employee_id;
                     let row = document.createElement('tr');
                     row.innerHTML += `                           
                         <td>${list.payroll_id}</td>
@@ -128,6 +128,8 @@
                           <abbr title="Edit"><a href="/${list.id}"><i class='fa-solid fa-pencil'></i></a></abbr>
                           <abbr title="Send Mail"><button class="mail-send" onclick="sendMail(${list.employee_id})">
                           <i class="fa-solid fa-paper-plane"></i></button></abbr>
+                           <abbr  title="Download payslip"> <button class="pdf" onclick="pdfDownload('${list.employee_id}','${employee_id}')">
+                              <i class="fas fa-file-pdf" style="color: red;"></i></button></abbr>
                         </td>                   
                     `
                     listBody.appendChild(row);
@@ -223,6 +225,38 @@
             xhr.send();
 
         }
+
+
+//dowload payslip
+ function pdfDownload(employeeId,employee_id ) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `http://127.0.0.1:8000/api/downloadPayslip/${employeeId}`, true);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+    xhr.setRequestHeader('Accept', 'application/pdf');
+    xhr.responseType = 'blob';
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            const blob = new Blob([xhr.response], {
+                type: 'application/pdf'
+            });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `payslip-${employee_id}.pdf`;
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+        else if (xhr.status === 403) {
+            alert(' your unauthorized  to download pdf');
+        }
+        else {
+            alert('PDF download failed');
+        }
+    };
+
+    xhr.send();
+
+}
 
 	</script>
 
