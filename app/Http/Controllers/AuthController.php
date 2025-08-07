@@ -14,7 +14,7 @@ use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\ForgotPasswordRequest;
 
 use Exception;
-
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
@@ -109,44 +109,7 @@ class AuthController extends Controller
 
 
 
-    // public function sendOTP(RegisterUserRequest $request, AuthServices $sendOTP){
-    //     try{
-    //         $user = $request->validated();
-    //         $data = $sendOTP->sendOTP($user);
-    //         if($data){
-    //             return response([
-    //                 'status' => true,
-    //                 'data' => $data
-    //             ]);
-    //         }
-    //     }catch(Exception $e){
-    //            Log::error('Registration failed', ['error_message' => $e->getMessage()]);
-    //            return response(['status' => false, 'message' => 'Registration failed.']);
-    //     }
 
-    // }
-
-    // public function verifyOTP(Request $request, AuthServices $verifyOTP){
-    //     try{
-    //         $validatedOTP = $request->validate([
-    //              'otp' => 'required|digits:6',
-    //         ]);
-    //         $OTP = $verifyOTP->verifyOTP($validatedOTP);
-    //         if($OTP){
-    //             return response([
-    //                 'status' => true,
-    //                 'data' => $OTP
-    //             ]);
-    //         }else if($OTP['OTPerror']){
-    //             return [
-    //                 'type' => 'error',
-    //                 'message' => $OTP['message'] ?? 'Invalid OTP'
-    //             ];
-    //         }
-    //     }catch(Exception $e){
-    //         Log::error('Error in ', ['error_message' => $e->getMessage()]);
-    //     }
-    // }
     
     // login authenticate user
     public function authenticate(LoginUserRequest $request, AuthServices $AuthService)
@@ -171,7 +134,7 @@ class AuthController extends Controller
             }
 
             $token = auth()->user()->createToken('userToken')->accessToken;
-
+            Session(['token'=>  $token]);
            
             return response([
                 'data' => auth()->user(),

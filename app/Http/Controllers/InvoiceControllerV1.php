@@ -173,7 +173,7 @@ class InvoiceControllerV1 extends Controller
     {
         try {
             $Customer = $invoiceService->getAllCostomer();
-            Log::error('invoice token', ['session Token '=> session::get('token')]);
+            Log::error('invoice token',['session Token'=> Session('token')]);
             if ($Customer) {
                 return response()->json(
                     [

@@ -1,8 +1,12 @@
-@extends('layouts.app')
-@section('style')
-<link rel="stylesheet" href="{{ asset('css/login.css') }}">
-@endsection
-@section('content')
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+</head>
+<body>
 
 <div class="wrapper cover">
     <div class="container">
@@ -32,8 +36,6 @@
     </div>
 </div>
 
-
-
   <!-- OTP Modal -->
     <div id="otpModal" class="modal">
         <div class="modal-content">
@@ -50,7 +52,9 @@
             </div>
         </form>
          </div>
-    </div>        
+    </div> 
+
+
      
 <script>
     let userEmail= "";
@@ -187,4 +191,5 @@ document.getElementById("OTP-verify").addEventListener("submit", function(event)
    }
 </script>
 
-@endsection
+</body>
+</html>

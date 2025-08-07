@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,9 +10,7 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
 	<link rel="stylesheet" type="text/css" href="{{asset('css/invoice-table.css')}}">
-	<style>
 
-	</style>
 	<script>
 		const token = localStorage.getItem('token');
 		if(!token){
@@ -25,7 +22,7 @@
 		}
 
 	</script>
-</head>
+	</head>
 
 {{--
 
@@ -33,7 +30,7 @@
 
 	<body>
 		<header>
-			<img src="{{ asset('/images/twigik.png') }}" class="twigikImage" alt="Twigik Logo">
+			<a href="/api/invoice/list"><img src="{{ asset('/images/twigik.png') }}" class="twigikImage" alt="Twigik Logo"></a>
 		<div>
 
 			<a href="/api/payrolllist" class="create">PayRoll List</a>
@@ -41,18 +38,21 @@
 			<a href="/api/createemployee" class="create">Add Employee</a>				
             <button id="openPayrollBtn"  class="create">Generate Payroll</button>
 			<button class='logout btn' id="logoutBtn">Logout</button>
-			<span class="close" id="closebtn">&times;</span>
+			<!-- <span class="close" id="closebtn">&times;</span> -->
             
 		</div>
 	</header>
-
-			<div class="invoice-search">
-				<p>Employees List</p>
-				<i class="fa-solid fa-magnifying-glass"></i>
-			</div>
+		<div class="invoice-search">
+		    <div class="back-button">
+		        <i class="fa-solid fa-angles-left" id="closebtn"></i>
+		        <p>Employees List</p>
+		    </div>
+    		<i class="fa-solid fa-magnifying-glass" id="toggleSearch"></i>
+		</div>
 
 
 			<form id="formSubmit">
+			  <div class="search-form-container">
 				<div class="form-row">
 					<div class="form-group">
 						<label for="startDate">Joining date from</label>
@@ -93,6 +93,7 @@
 					<a href="/api/employeeList" class="clear">Reset</a>
 					<input type="submit" name="search" value="Search" class="search">
 				</div>
+			</div>	
 		</div>
 		</form>
 		<div class="theader" style="text-align:right;border-radius:10px">
@@ -158,21 +159,34 @@
 		{{-- <script src="/js/invoiceListV1.js"></script> --}}
 
 		<script>
-			document.addEventListener('DOMContentLoaded', function () {
-	getemployeeList(1);
-	getemployeeListDroupdown();
-    flatpickr("#startDate", {
-        altInput: true,
-        altFormat: "d-m-Y",      
-        dateFormat: "Y-m-d"      
-    });
 
-    flatpickr("#endDate", {
-        altInput: true,
-        altFormat: "d-m-Y",
-        dateFormat: "Y-m-d"
-    });
-});
+		//toggle for Search field
+		document.getElementById('toggleSearch').addEventListener('click',function(){
+			let formContainer = document.querySelector(".search-form-container");
+			if (formContainer.style.display === "none") {
+		        formContainer.style.display = "block";
+		    } else {
+		        formContainer.style.display = "none";
+		    }
+
+		});
+
+		//flatpicker for Data Format
+		document.addEventListener('DOMContentLoaded', function () {
+			getemployeeList(1);
+			getemployeeListDroupdown();
+		    flatpickr("#startDate", {
+		        altInput: true,
+		        altFormat: "d-m-Y",      
+		        dateFormat: "Y-m-d"      
+		    });
+
+		    flatpickr("#endDate", {
+		        altInput: true,
+		        altFormat: "d-m-Y",
+		        dateFormat: "Y-m-d"
+		    });
+	});
 
 
 let listBody = document.getElementById('employeelist');
@@ -215,10 +229,10 @@ data.forEach((list, index) => {
                 <td>${list.contact_number}</td>
         		<td>${list.job_details?.job_title}</td>
                 <td>
-					<span title="View"><a href="/api/view/employee/${list.id}"><i class="fa-solid fa-eye"></i></a>
-                	</span>
-                   <abbr  title="Edit"><a href="/api/edit/employee/${list.id}"><i class='fa-solid fa-pencil'></i></a></abbr>
-                   <abbr  title="Delete"> <button class="button" onclick="myFunction(${list.id})"><i class='fa-solid fa-trash'></i></button></abbr>
+					<a href="/api/view/employee/${list.id}" title="View"><i class="fa-solid fa-eye"></i></a>
+                	
+                   <a href="/api/edit/employee/${list.id}" title="Edit"><i class='fa-solid fa-pencil'></i></a>
+                   <button class="button" onclick="myFunction(${list.id})" title="Delete"><i class='fa-solid fa-trash'></i></button>
                 </td>`
         listBody.appendChild(row);
     });

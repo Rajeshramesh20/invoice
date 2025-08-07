@@ -24,6 +24,7 @@ use App\Http\Controllers\AuthController;
 //     return $request->user();
 // });
 
+
 //auth
 Route::post('register', [AuthController::class, 'register'])->name('user.register');
 Route::post('/verify-otp', [AuthController::class, 'verifyUserOTP']);
@@ -36,7 +37,8 @@ Route::post('/reset-password', [AuthController::class, 'submitResetPasswordForm'
 
 // //OTP generate
 // Route::post('send-otp', [AuthController::class, 'sendOTP']);
-// Route::post('verify/otp', [AuthController::class, 'verifyOTP']);
+// Route::post('verify/otp', [AuthController::class, 'verifyUserOTP']);
+
 
 
 Route::middleware(['auth:api'])->group(function () {

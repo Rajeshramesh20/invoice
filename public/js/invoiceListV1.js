@@ -128,12 +128,12 @@ function invoiceTable(data) {
 			</td>
             <td><div class="mail-status  left-align">${emailStatus}</div></td>
             <td>
-                <abbr title="View"><a href="/api/show/invoicedata/${list.invoice_id}"><i class="fa-solid fa-eye"></i></a></abbr>
-                <abbr title="Edit"><a href="/api/edit/invoice/${list.invoice_id}"><i class='fa-solid fa-pencil'></i></a></abbr>
-                <abbr title="Send Mail"><button class="mail-send" onclick="sendMail(${list.invoice_id})"><i class="fa-solid fa-paper-plane"></i></button></abbr>
-                <abbr  title="Download Pdf"><button class="pdf" onclick="pdfDownload('${list.invoice_id}','${list.invoice_no}')">
-                <i class="fas fa-file-pdf" style="color: red;"></i></button></abbr>
-                <abbr title="Delete"> <button class="button" onclick="myFunction(${list.invoice_id})"><i class='fa-solid fa-trash'></i></button></abbr>
+                <a href="/api/show/invoicedata/${list.invoice_id}" title="View"><i class="fa-solid fa-eye"></i></a>
+                <a href="/api/edit/invoice/${list.invoice_id}" title="Edit"><i class='fa-solid fa-pencil'></i></a>
+                <button class="mail-send" onclick="sendMail(${list.invoice_id})" title="Send Mail"><i class="fa-solid fa-paper-plane"></i></button>
+                <button class="pdf" onclick="pdfDownload('${list.invoice_id}','${list.invoice_no}')" title="Download Pdf">
+                <i class="fas fa-file-pdf" style="color: red;"></i></button>
+                <button class="button" onclick="myFunction(${list.invoice_id})" title="Delete"><i class='fa-solid fa-trash'></i></button>
             </td>
         `
         listBody.appendChild(row);

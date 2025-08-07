@@ -9,8 +9,9 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use App\Services\CommonServices;
+use Illuminate\Support\Facades\Session;
 
 use Twilio\Rest\Client;
 
@@ -34,8 +35,7 @@ class AuthServices
         $userOTP= $common->userOtp($user);
         
         $data = $common->sendSms($data['user_phone_num'], 'Your OTP is: ' . $userOTP['otp'] );
-        Log::error('register',['number' => $data['user_phone_num']]);
-        
+
         return [
           'data' => $user,
           'userOTP'=> $userOTP,
@@ -44,7 +44,7 @@ class AuthServices
     }
 
 
-    //OTP Limit
+   // OTP Limit
     public function updateOtpAndLimit($id,$userPhoneNo)
     {
         // $user_id = userOTP::findOrfail($id);
@@ -158,7 +158,7 @@ class AuthServices
     }
 
     // send forgot password link to mail
-    public function submitforgotpasswordform($data, $viwe)
+    public function submitforgotpasswordform($data, $view)
     {
 
         $token = str::random(64);
@@ -170,7 +170,7 @@ class AuthServices
                 'created_at' => Carbon::now()
             ]
         );
-        Mail::send($viwe, ['token' => $token], function ($message) use ($data) {
+        Mail::send($view, ['token' => $token], function ($message) use ($data) {
             $message->to($data['email']);
             $message->subject('Reset Password');
         });
@@ -191,5 +191,8 @@ class AuthServices
             ->where('email', $data['email'])
             ->delete();
     }
+
+
+    
 
 }

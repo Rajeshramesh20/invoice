@@ -306,4 +306,91 @@ class Controller extends BaseController
     //           'message' => ' Session expired. Please register again.'
     //       ];
     //   }
+
+//             public function sendOTP($data){
+//       try{
+//         $otp = rand(100000, 999999);
+//         Session::put('register_data',[
+//             'name' => $data['name'],
+//             'email' => $data['email'],
+//             'user_phone_num' => $data['user_phone_num'],
+//             'password' => $data['password'],
+//             'role_id'=>$data['role_id'],  
+//             'otp' => $otp
+//         ]);
+//          Session::save();
+//          Log::error('Full session', session()->all());
+//         $contactNo = "+91".$data['user_phone_num'];
+//         Log::error('contact_no', ['contact_no' => $contactNo]);
+//         //Twilio Send SMS
+//         $twilio = new Client(
+//           config('services.twilio.sid'),
+//           config('services.twilio.token')
+//         );
+//         $from = config('services.twilio.sms_from');
+//         $twilio->messages->create($contactNo,[
+//           'from' => $from,
+//           'body' => "Your OTP is: $otp"
+//         ]);
+
+//         return true;
+
+//       }catch(Exception $e){
+//           Log::error('error in '. $e->getMessage());
+//       }
+//     }
+
+
+//     public function verifyUserOTP($otp){
+//         $data = Session::get('register_data');
+//          Session::save();
+//         Log::error('Session OTP.', ['otp' => $data]);
+
+//         if (!$data || !isset($data['otp'])) {
+         
+//           return [
+//               'OTPerror' => true,
+//               'message' => ' Session expired. Please register again.'
+//           ];
+//       }
+// }
+
+                // public function sendOTP(RegisterUserRequest $request, AuthServices $sendOTP){
+    //     try{
+    //         $user = $request->validated();
+    //         $data = $sendOTP->sendOTP($user);
+    //         if($data){
+    //             return response([
+    //                 'status' => true,
+    //                 'data' => $data
+    //             ]);
+    //         }
+    //     }catch(Exception $e){
+    //            Log::error('Registration failed', ['error_message' => $e->getMessage()]);
+    //            return response(['status' => false, 'message' => 'Registration failed.']);
+    //     }
+
+    // }
+
+    // public function verifyUserOTP(Request $request, AuthServices $verifyOTP){
+    //     try{
+    //         $validatedOTP = $request->validate([
+    //              'otp' => 'required|digits:6',
+    //         ]);
+    //         $OTP = $verifyOTP->verifyUserOTP($validatedOTP);
+    //         if($OTP){
+    //             return response([
+    //                 'status' => true,
+    //                 'data' => $OTP
+    //             ]);
+    //         }else if($OTP['OTPerror']){
+    //             return [
+    //                 'type' => 'error',
+    //                 'message' => $OTP['message'] ?? 'Invalid OTP'
+    //             ];
+    //         }
+    //     }catch(Exception $e){
+    //         Log::error('Error in ', ['error_message' => $e->getMessage()]);
+    //     }
+    // }
 }

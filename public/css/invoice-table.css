@@ -617,4 +617,13 @@
 			cursor: pointer;
 		}
 
-    
+    .back-button {
+      display: flex;
+      justify-content:flex-start;
+      align-items: center;
+    }
+
+    .fa-angles-left {
+        color: white;
+        margin-left: 8px;
+    }

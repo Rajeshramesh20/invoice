@@ -24,16 +24,18 @@
 
 
     <header>
-        <img src="{{ asset('/images/twigik.png') }}" class="twigikImage" alt="Twigik Logo">
+        <a href="/api/invoice/list"><img src="{{ asset('/images/twigik.png') }}" class="twigikImage" alt="Twigik Logo"></a>
         <div>
             <button class='logout btn' id="logoutBtn">Logout</button>
-            <span class="close" id="closebtn">&times;</span>
         </div>
     </header>
 
     <div class="invoice-search">
-        <p>PayRoll HistoryList</p>
-        <i class="fa-solid fa-magnifying-glass"></i>
+        <div class="back-button">
+            <i class="fa-solid fa-angles-left" id="closebtn"></i>
+            <p>PayRoll HistoryList</p>
+        </div>
+        <i class="fa-solid fa-magnifying-glass" id="toggleSearch"></i>
     </div>
 
 	<table>

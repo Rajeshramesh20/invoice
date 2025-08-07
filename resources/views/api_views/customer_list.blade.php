@@ -12,26 +12,27 @@
 
 		<!-- Header -->
 		<header>
-			<img src="{{ asset('/images/twigik.png') }}" class="twigikImage" alt="Twigik Logo">
+			<a href="/api/invoice/list"><img src="/images/twigik.png" class="twigikImage" alt="Twigik Logo"></a>
 			<div class="buttondiv">
-				<!-- <a href="" class="create-note">Credit Note</a>
-					<a href="" class="group-invoice">Group Invoice</a> -->
-					{{-- <a href="/api/company/form" class="create">Add Company</a> --}}
-					<a href="/api/customer/list" class="create">view customer</a>
+				<a href="/api/customer/list" class="create">view customer</a>
 				<a href="/api/customer/form" class="create">Add Customer</a>
 				<a href="/api/invoice" class="create"><i class="bi bi-plus"></i>Create</a>
 				<button class='logout btn' id="logoutBtn">Logout</button>
-				<span class="close" id="closebtn">&times;</span>
+				<!-- <span class="close" id="closebtn">&times;</span> -->
 			</div>
 		</header>
 
 		<div class="invoice-search">
-				<p>Customer Details  List</p>	
-				<i class="fa-solid fa-magnifying-glass"></i>
+		    <div class="back-button">
+		        <i class="fa-solid fa-angles-left" id="closebtn"></i>
+		        <p>Customer Details List</p>
+		    </div>
+    		<i class="fa-solid fa-magnifying-glass" id="toggleSearch"></i>
 		</div>
 
 		<!-- Search Field in Customer Name -->
 		<form id="formSubmit">
+		  <div class="search-form-container">
 			<div class="form-group">
 				<label for="customer_name">Customer Name</label>
 				<select name="customer_name" id="customer_name">
@@ -43,14 +44,15 @@
 			<a href="./api/customer/list" class="clear">Reset</a>
 			<input type="submit" name="search" value="Search" class="search">
 		</div>
+	</div>	
 		</form>	
 		
 		<table>
 			<thead>
 				<tr>	
 					<th>Customer ID</th>
-					<th>Customer Name</th>
-					<th>Customer Email</th>
+					<th>Name</th>
+					<th>Email</th>
 					<th>Contact Name</th>
 					<th>Contact Number</th>
 					<th>Address</th>
@@ -64,6 +66,18 @@
 		<div id="paginateButton" class="pagination"></div>
 
 		<script>
+
+
+			//toggle for Search field
+		document.getElementById('toggleSearch').addEventListener('click',function(){
+			let formContainer = document.querySelector(".search-form-container");
+			if (formContainer.style.display === "none") {
+		        formContainer.style.display = "block";
+		    } else {
+		        formContainer.style.display = "none";
+		    }
+
+		});
 
 	  const token = localStorage.getItem('token');
 		if(!token){
@@ -119,7 +133,7 @@
 							Pincode:${list.address?.pincode || ''}
 							</td>
 		<td>
-				 <abbr  title="Edite"> <a href="/api/editcustomer/${list.customer_id}" id="update"><i class='fa-solid fa-pencil'></i></a></abbr>
+				 <a href="/api/editcustomer/${list.customer_id}" id="update" title="edit"><i class='fa-solid fa-pencil'></i></a>
 				<label class="switch">
 				<input type="checkbox" class="myToggle" ${list.status == '1' ? 'checked' : ''}>
 					<span class="slider round"></span>
@@ -274,8 +288,8 @@ document.querySelectorAll(".myToggle").forEach(toggle => {
 		  });
 
 		  document.getElementById('closebtn').addEventListener('click',function(){
-        window.location.href = "/api/invoice/list";
-    });
+        	window.location.href = "/api/invoice/list";
+    	});
 	
 	//log out
 document.getElementById('logoutBtn').addEventListener('click', function () {
