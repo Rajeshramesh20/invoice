@@ -57,17 +57,18 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <form id="OTP-verify">
-                <p id="countdown">OTP Expires In: --</p>
+
+             <p id="countdown">OTP Expires In: --</p>
                 <label for="otp">OTP</label>
                 <input type="number" name="otp" id="otp" placeholder="Enter OTP">
                 <p id="otp_err"></p>
 
-            <div class="buttoncontainer">
+             <div class="buttoncontainer">
                 <button id="resend"  class="resendBtn" disabled> Resend</button>
                 <input type="submit" value="Verify OTP" class="submit">
             </div>
-            </form>
-        </div>
+        </form>
+         </div>
     </div>        
      
 <script>
@@ -75,14 +76,15 @@
     let userId = null;
 
     //Registration
-    document.getElementById("registerForm").addEventListener("submit", function(event) {
-        event.preventDefault();
+document.getElementById("registerForm").addEventListener("submit", function(event) {
+    event.preventDefault();
 
         const form = this;
         const formData = new FormData(form);
         const xhr = new XMLHttpRequest();
         xhr.open("POST", "http://127.0.0.1:8000/api/register", true);
         xhr.setRequestHeader('Accept', 'application/json');
+
 
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
@@ -115,14 +117,14 @@
     });
 
 
-    //ExpirayTime Count
-    function startCountdown(otpExpiry) {
-          let countDownDate = new Date(otpExpiry).getTime();
-          const countdownElement = document.getElementById("countdown");
-          const resendBtn = document.getElementById("resend");
+//ExpirayTime Count
+function startCountdown(otpExpiry) {
+      let countDownDate = new Date(otpExpiry).getTime();
+      const countdownElement = document.getElementById("countdown");
+      const resendBtn = document.getElementById("resend");
 
-          resendBtn.disabled = true;
-          console.log(countDownDate);
+      resendBtn.disabled = true;
+      console.log(countDownDate);
 
         let x = setInterval(function () {
         let now = new Date().getTime();
@@ -145,6 +147,7 @@
         }
       }, 1000);
     }
+
 
     //OTP verification
     document.getElementById("OTP-verify").addEventListener("submit", function(event) {
@@ -174,6 +177,7 @@
             }           
         }
            xhr.send(formData);     
+
        });    
 
 
@@ -183,10 +187,9 @@
         window.location.href = '/api/login';
     }
 
-
     //Resend OTP
-    document.getElementById('resend').addEventListener("click", function(event){
-        event.preventDefault();
+   document.getElementById('resend').addEventListener("click", function(e){
+        e.preventDefault();
 
         let formData = new FormData;
         formData.append('user_phone_num',registeredPhone);
@@ -198,7 +201,8 @@
 
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
-                    const response = JSON.parse(xhr.responseText);
+                const response = JSON.parse(xhr.responseText);
+
                 if (xhr.status === 200) {
                     let successMsg = response.message; 
                     let expiryAt = response.data.otp_expires_at;
@@ -214,9 +218,13 @@
            xhr.send(formData);  
    });
 
+
     document.getElementById('closebtn').addEventListener('click',function(){
         window.location.href = "/api/login";
     });
+
+
+
 
 </script>
 </body>

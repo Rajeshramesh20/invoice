@@ -128,6 +128,7 @@ function invoiceTable(data) {
 			</td>
             <td><div class="mail-status  left-align">${emailStatus}</div></td>
             <td>
+
                 <a href="/api/show/invoicedata/${list.invoice_id}" title="View"><i class="fa-solid fa-eye"></i></a>
                 <a href="/api/edit/invoice/${list.invoice_id}" title="Edit"><i class='fa-solid fa-pencil'></i></a>
                 <button class="mail-send" onclick="sendMail(${list.invoice_id})" title="Send Mail"><i class="fa-solid fa-paper-plane"></i></button>

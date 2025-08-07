@@ -238,7 +238,6 @@ data.forEach((list, index) => {
     });
 }
 
- // <abbr  title="View"> <a href="/showemployee/${list.id}"><i class="fa-solid fa-eye"></i></a></abbr>
 
 //Pagination 
 function pagination(meta) {

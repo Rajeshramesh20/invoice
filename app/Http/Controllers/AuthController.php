@@ -34,6 +34,7 @@ class AuthController extends Controller
         } catch (Exception $e) {
             Log::error('Registration failed', ['error_message' => $e->getMessage()]);
             return response(['status' => false, 'message' => 'Registration failed.']);
+
         }
     }
 
@@ -81,6 +82,9 @@ class AuthController extends Controller
         }
     }
 
+
+
+
     //Resend OTP
     public function resendOtp(Request $request, AuthServices $reSendOTP){
       try{
@@ -107,9 +111,6 @@ class AuthController extends Controller
       }
     }
 
-
-
-
     
     // login authenticate user
     public function authenticate(LoginUserRequest $request, AuthServices $AuthService)
@@ -134,6 +135,7 @@ class AuthController extends Controller
             }
 
             $token = auth()->user()->createToken('userToken')->accessToken;
+
             Session(['token'=>  $token]);
            
             return response([

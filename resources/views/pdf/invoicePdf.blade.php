@@ -9,7 +9,7 @@
             size: A4;
             margin: 10mm;
         }
-    
+
         body {
             font-family: DejaVu Sans, sans-serif;
             font-size: 13px;
@@ -26,94 +26,93 @@
             display: table;
             clear: both;
         }
-    
+
         .flex_container .left {
             float: left;
             width: 60%;
         }
-    
+
         .flex_container .right {
             float: right;
             width: 38%;
             text-align: right;
         }
-    
-    
+
+
         .bold {
             font-weight: bold;
             text-align: right;
         }
-    
+
         .logo {
             width: 180px;
             margin-top: 14px;
         }
-    
+
         .address {
             margin-bottom: 8px;
         }
-    
+
         .border-top {
             border-top: 1px solid #000;
             margin-top: 20px;
         }
-    
+
         .table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
         }
-    
+
         .table th,
         .table td {
             padding: 8px 10px;
         }
-    
+
         .table thead {
             border-top: 1px solid #000;
             border-bottom: 1px solid #000;
         }
-    
+
         .footer {
-        /* margin-top: 40px; */
             font-size: 12px;
         }
-    
+
         .title_section {
             font-weight: bold;
             font-size: 14px;
             margin-bottom: 6px;
         }
-    
+
         .payment_detail {
             width: 100%;
             margin-top: 10px;
         }
-    
+
         .payment_detail td {
             padding: 4px 0;
         }
-    
+
         .border-bottom-total {
             border-bottom: 1px solid #000;
         }
-    
+
         .no-border td {
             border: none;
         }
-    
+
         .align {
             text-align: center;
         }
-        p{
-            margin:10px;  
+
+        p {
+            margin: 10px;
 
         }
-        .algn-right{
+
+        .algn-right {
             text-align: right;
         }
-     
-      
     </style>
 </head>
 
@@ -128,23 +127,82 @@
                 </div>
                 <h2 class="bold right ">INVOICE</h2>
             </div>
-            <div class="left">
-                <p class="address"> {{$companyAddress->line1}}, {{$companyAddress->line2}},<br>
-                    {{$companyAddress->line3}}, <br>
-                  {{$companyAddress->line4}}, {{$companyAddress->pincode}}<br>
-                    Phone no: +91- {{$company->contact_number}}<br>
-                    GSTIN: {{$company->gstin}}</p>
-            </div>
-            <div class="right">
-                <p><strong>Invoice #:</strong> {{ $invoice->invoice_no }}</p>
-                <p><strong>Invoice date:</strong> {{ $formattedInvoiceDate }}</p>
-                <p><strong>Bill to:</strong> {{ucfirst($invoice->customer->customer_name)}}</p>
-                <p><strong>Address:</strong> {{ $invoice->customer->address->line1 }}
-                    {{ $invoice->customer->address->line2 }}, {{ $invoice->customer->address->line3 }},
-                    {{$invoice->customer->address->line4 }} -
-                    {{ $invoice->customer->address->pincode }}</p>
-                <p><strong>Phone:</strong> +91-{{ $invoice->customer->contact_number}}</p>
-            </div>
+
+
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <!-- Company Info -->
+                    <td style="vertical-align: top; width: 50%;">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="text-align: start;">
+                                    <p style="padding-bottom: 5px; margin: 0;">
+                                        {{
+                                        $companyAddress->line1 }}, {{
+                                        $companyAddress->line2 }},
+
+                                    </p>
+                                    <p style="padding-bottom: 5px; margin: 0;">{{ $companyAddress->line3 }},</p>
+                                    <p style="padding-bottom: 15px; margin: 0;">{{ $companyAddress->line4 }},
+                                        {{ $companyAddress->pincode }}</p>
+
+                                    <p style="padding-bottom: 15px; margin: 0;"><strong>Phone no:</strong>+91-{{
+                                        $company->contact_number }}</p>
+                                    <p style="margin: 0;"><strong>GSTIN:</strong>{{ $company->gstin
+                                        }}</p>
+
+                                </td>
+                            </tr>
+
+                        </table>
+                    </td>
+
+                    <!-- Invoice & Customer Info -->
+                    <td style="vertical-align: top; width: 50%;">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="text-align: end; padding-bottom: 6px;"><strong>Invoice #:</strong></td>
+                                <td style="text-align: start;padding-bottom: 6px;">{{ $invoice->invoice_no }}</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: end; padding-bottom: 6px;"><strong>Invoice
+                                        Date:</strong></td>
+                                <td style="text-align: start;padding-bottom: 6px;">{{ $formattedInvoiceDate }}</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: end; padding-bottom: 6px;"><strong>Bill To:</strong></td>
+                                <td style="text-align: start;padding-bottom: 6px;">{{
+                                    ucfirst($invoice->customer->customer_name) }}</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: end; padding-bottom: 6px; vertical-align: top;">
+                                    <strong>Address: </strong>
+                                </td>
+                                <td style="text-align: start;padding-bottom: 6px;">
+                                    <p style="margin: 0;">
+                                        {{
+                                        $invoice->customer->address->line1 }}, {{
+                                        $invoice->customer->address->line2 }},
+
+                                    </p>
+
+                                    <p style="margin: 0;">
+                                        {{ $invoice->customer->address->line3 }},{{ $invoice->customer->address->line4
+                                        }},
+                                        {{ $invoice->customer->address->pincode }}</p>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: end; padding-right: 10px;"><strong>Phone:</strong></td>
+                                <td style="text-align: start;">{{ $invoice->customer->contact_number }}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+
         </div>
 
         <!-- Table -->
@@ -154,7 +212,7 @@
                     <th>Description</th>
                     <th>Qty</th>
                     <th>₹ Unit price</th>
-                    <th>₹  Net Amount</th>
+                    <th>₹ Net Amount</th>
                     <th>GST(%)</th>
                     <th>₹ GST Amount</th>
                     <th>₹ Total</th>
@@ -188,7 +246,7 @@
                 <tr class="border-bottom-total">
                     <td colspan="4"></td>
                     <td></td>
-                    <td class="align"><strong>	Grand Total</strong></td>
+                    <td class="align"><strong> Grand Total</strong></td>
                     <td class="algn-right"><strong>{{ $invoice->total_amount }} </strong></td>
                 </tr>
             </tbody>

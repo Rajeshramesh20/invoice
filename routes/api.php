@@ -37,7 +37,9 @@ Route::post('/reset-password', [AuthController::class, 'submitResetPasswordForm'
 
 // //OTP generate
 // Route::post('send-otp', [AuthController::class, 'sendOTP']);
+
 // Route::post('verify/otp', [AuthController::class, 'verifyUserOTP']);
+// Route::post('verify/otp', [AuthController::class, 'verifyOTP']);
 
 
 

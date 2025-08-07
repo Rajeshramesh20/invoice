@@ -307,6 +307,7 @@ class Controller extends BaseController
     //       ];
     //   }
 
+
 //             public function sendOTP($data){
 //       try{
 //         $otp = rand(100000, 999999);
@@ -393,4 +394,5 @@ class Controller extends BaseController
     //         Log::error('Error in ', ['error_message' => $e->getMessage()]);
     //     }
     // }
+
 }

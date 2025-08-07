@@ -43,8 +43,7 @@ class AuthServices
         ];
     }
 
-
-   // OTP Limit
+    //OTP Limit and update otp
     public function updateOtpAndLimit($id,$userPhoneNo)
     {
         // $user_id = userOTP::findOrfail($id);
@@ -53,13 +52,12 @@ class AuthServices
 
         //send SMS
         $common = new CommonServices();
-        $data = $common->sendSms($userPhoneNo, "Your OTP is: $otp");
-        Log::error('update',['number' => $userPhoneNo]);
 
+        $common->sendSms($userPhoneNo, "Your OTP is: $otp");
         $user_id->update([
-            'otp' => $otp,
-            'attempts' => 0,
-            'otp_expires_at' => Carbon::now()->addMinutes(2)
+             'otp' => $otp,
+             'attempts' => 0,
+             'otp_expires_at' => Carbon::now()->addMinutes(2)
         ]);
         return $user_id;
     }
@@ -136,6 +134,7 @@ class AuthServices
 
         }
     }
+    
     //login athenticate user
     public function authenticate($request)
     {
@@ -157,10 +156,9 @@ class AuthServices
       Auth::logout();
     }
 
-    // send forgot password link to mail
+    //send forgot password link to mail
     public function submitforgotpasswordform($data, $view)
     {
-
         $token = str::random(64);
 
         DB::table('password_reset_tokens')->updateOrInsert(
@@ -170,7 +168,9 @@ class AuthServices
                 'created_at' => Carbon::now()
             ]
         );
+
         Mail::send($view, ['token' => $token], function ($message) use ($data) {
+
             $message->to($data['email']);
             $message->subject('Reset Password');
         });
@@ -191,8 +191,5 @@ class AuthServices
             ->where('email', $data['email'])
             ->delete();
     }
-
-
-    
 
 }
